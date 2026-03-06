@@ -1,0 +1,2642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mise — The Chef in Your Pocket</title>
+  <meta name="description" content="Mise teaches you to think like a chef — understanding technique, mastering vocabulary, and cooking with intention. AI cooking companion.">
+  <meta property="og:title" content="Mise — The Chef in Your Pocket">
+  <meta property="og:description" content="Not a recipe app. A culinary education. AI-powered cooking companion that teaches technique, vocabulary, and intention.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://li0nel.github.io/mise-ai/">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Mise — The Chef in Your Pocket">
+  <meta name="twitter:description" content="Not a recipe app. A culinary education.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;1,14..32,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, system-ui, sans-serif;
+      background: #111110;
+      color: #FAFAF8;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { text-decoration: none; color: inherit; }
+
+    /* ── Nav ── */
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 48px;
+      position: fixed; top: 0; left: 0; right: 0;
+      background: rgba(17,17,16,0.92);
+      backdrop-filter: blur(20px);
+      z-index: 100;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .logo { font-size: 21px; font-weight: 800; letter-spacing: -0.8px; }
+    .logo span { color: #C8481C; }
+    .nav-actions { display: flex; align-items: center; gap: 10px; }
+    .btn-store {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: rgba(255,255,255,0.09); border: 1px solid rgba(255,255,255,0.14);
+      color: #FAFAF8; padding: 8px 16px; border-radius: 9999px;
+      font-size: 12px; font-weight: 600; transition: all 0.15s;
+    }
+    .btn-store:hover { background: rgba(255,255,255,0.16); }
+    .btn-see {
+      border: 1px solid rgba(255,255,255,0.14); color: rgba(250,250,248,0.55);
+      padding: 8px 18px; border-radius: 9999px; font-size: 12px; font-weight: 500;
+      transition: all 0.15s;
+    }
+    .btn-see:hover { color: #FAFAF8; border-color: rgba(255,255,255,0.3); }
+
+    /* ── Hero title — scrolls away normally ── */
+    .hero-title {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 120px 48px 80px;
+      position: relative; overflow: hidden;
+    }
+    .hero-title::before {
+      content: '';
+      position: absolute;
+      top: 30%; left: 50%; transform: translate(-50%, -50%);
+      width: 700px; height: 500px;
+      background: radial-gradient(ellipse at center, rgba(200,72,28,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-eyebrow {
+      font-size: 11px; font-weight: 600; letter-spacing: 2px;
+      text-transform: uppercase; color: #C8481C;
+      margin-bottom: 28px; position: relative; z-index: 1;
+    }
+    h1 {
+      font-size: clamp(60px, 9vw, 112px);
+      font-weight: 800; letter-spacing: -4px; line-height: 0.9;
+      margin-bottom: 12px; position: relative; z-index: 1;
+    }
+    h1 .accent { color: #C8481C; }
+    .h1-sub {
+      font-size: clamp(38px, 5vw, 64px);
+      font-weight: 300; letter-spacing: -2px;
+      color: rgba(250,250,248,0.35); line-height: 1;
+      margin-bottom: 28px; position: relative; z-index: 1;
+    }
+    .sub {
+      font-size: 16px; color: rgba(250,250,248,0.42);
+      max-width: 400px; margin: 0 auto 44px;
+      line-height: 1.65; letter-spacing: -0.1px;
+      position: relative; z-index: 1;
+    }
+    .hero-actions {
+      display: flex; gap: 10px; align-items: center; justify-content: center;
+      position: relative; z-index: 1; flex-wrap: wrap;
+    }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: #C8481C; color: #FAFAF8;
+      padding: 12px 24px; border-radius: 9999px;
+      font-size: 13px; font-weight: 600; transition: all 0.15s;
+    }
+    .btn-primary:hover { background: #E05520; transform: translateY(-1px); }
+    .btn-outline {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.14);
+      color: #FAFAF8; padding: 11px 22px; border-radius: 9999px;
+      font-size: 13px; font-weight: 600; transition: all 0.15s;
+    }
+    .btn-outline:hover { background: rgba(255,255,255,0.14); }
+    .btn-dl-wrap { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .btn-disabled { opacity: 0.38; pointer-events: none; cursor: not-allowed; }
+    .dl-soon { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(250,250,248,0.28); }
+
+    /* ── Parallax scroll container — 520vh so there's ample scroll to reach the end ── */
+    .hero-scroll { height: 800vh; position: relative; }
+
+    /* Phone stays in view while page scrolls */
+    .hero-sticky {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      padding: 70px 48px 40px;
+      overflow: hidden;
+    }
+    .hero-sticky::before {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: 600px; height: 700px;
+      background: radial-gradient(ellipse at center, rgba(200,72,28,0.09) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    /* ── Phone shell ── */
+    .phone {
+      width: 310px; height: 640px;
+      background: #1a1a19; border-radius: 50px; padding: 16px 13px;
+      box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.12),
+        0 0 0 1px rgba(0,0,0,0.8),
+        0 60px 120px rgba(0,0,0,0.65),
+        0 0 80px rgba(200,72,28,0.10);
+      position: relative; z-index: 1;
+    }
+    .phone::before {
+      content: ''; position: absolute;
+      right: -2.5px; top: 140px; width: 2.5px; height: 70px;
+      background: #252422; border-radius: 0 2px 2px 0;
+    }
+    .phone::after {
+      content: ''; position: absolute;
+      left: -2.5px; top: 120px; width: 2.5px; height: 38px;
+      background: #252422; border-radius: 2px 0 0 2px;
+      box-shadow: 0 56px 0 #252422;
+    }
+    .phone-screen {
+      width: 284px; height: 608px; border-radius: 36px;
+      overflow: hidden; background: #FAFAF8; position: relative;
+    }
+    .island {
+      position: absolute; top: 13px; left: 50%; transform: translateX(-50%);
+      width: 88px; height: 24px; background: #1a1a19; border-radius: 12px;
+      z-index: 20; pointer-events: none;
+    }
+    /*
+      iframe renders at 390×844 content pixels, scaled to fit the 284×608 phone screen.
+      The scale is 284/390 = 0.7282. Only the chat-feed is scrolled via JS —
+      the status bar, app bar, and input bar stay fixed inside the iframe.
+    */
+    #phoneIframe {
+      width: 390px; height: 844px; border: none;
+      transform: scale(0.7282);
+      transform-origin: top left;
+      pointer-events: none; display: block;
+    }
+
+    /* ── Chapter strip below phone ── */
+    .chapter-strip {
+      margin-top: 20px;
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+      position: relative; z-index: 1;
+    }
+    .chapter-block {
+      text-align: center;
+      transition: opacity 0.35s ease, transform 0.35s ease;
+    }
+    .chapter-block.fading { opacity: 0; transform: translateY(-6px); }
+    .chapter-num {
+      font-size: 10px; font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; color: #C8481C; margin-bottom: 4px;
+    }
+    .chapter-title {
+      font-size: 17px; font-weight: 700; letter-spacing: -0.4px;
+      color: rgba(250,250,248,0.85);
+    }
+    .chapter-dots { display: flex; gap: 7px; justify-content: center; }
+    .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: rgba(255,255,255,0.18);
+      transition: background 0.4s, transform 0.3s;
+    }
+    .dot.active { background: #C8481C; transform: scale(1.3); }
+
+    /* Scroll cue */
+    .scroll-cue {
+      position: absolute;
+      bottom: 28px; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      font-size: 10px; font-weight: 600; letter-spacing: 2px;
+      text-transform: uppercase; color: rgba(250,250,248,0.22);
+      transition: opacity 0.6s; pointer-events: none;
+    }
+    .scroll-cue.hidden { opacity: 0; }
+    .scroll-cue svg { animation: bounce 2s ease-in-out infinite; }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(5px); }
+    }
+
+    /* ── Features ── */
+    .features { max-width: 1100px; margin: 0 auto; padding: 100px 48px 80px; }
+    .features-header { text-align: center; margin-bottom: 52px; }
+    .features-header h2 { font-size: 42px; font-weight: 800; letter-spacing: -1.8px; margin-bottom: 12px; }
+    .features-header p { font-size: 16px; color: rgba(250,250,248,0.4); }
+    .grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
+      background: rgba(255,255,255,0.07); border-radius: 20px; overflow: hidden;
+    }
+    .card { background: #161614; padding: 36px 30px; }
+    .card-num { font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #C8481C; margin-bottom: 20px; }
+    .card-title { font-size: 19px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 10px; line-height: 1.25; }
+    .card-text { font-size: 14px; color: rgba(250,250,248,0.4); line-height: 1.6; }
+
+    /* ── Footer ── */
+    footer {
+      padding: 32px 48px; display: flex; justify-content: space-between; align-items: center;
+      border-top: 1px solid rgba(255,255,255,0.07);
+    }
+    .footer-logo { font-size: 18px; font-weight: 800; letter-spacing: -0.6px; }
+    .footer-logo span { color: #C8481C; }
+    .footer-copy { font-size: 13px; color: rgba(250,250,248,0.25); }
+
+    @media (max-width: 768px) {
+      .btn-store { display: none; }
+      .grid { grid-template-columns: 1fr; }
+      .features { padding: 60px 24px 60px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="logo">mise<span>.</span></div>
+    <div class="nav-actions">
+      <a href="#" class="btn-store btn-disabled">
+        <svg width="13" height="13" viewBox="0 0 814 1000" fill="currentColor"><path d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76 0-103.7 40.8-165.9 40.8s-105-43.4-150.3-109.2C82.3 753.3 0 609.2 0 479.8 0 284.3 121 175.8 240 175.8c60.5 0 111 39.5 148.4 39.5 35.7 0 92.3-41.8 161.4-41.8 26 0 108.2 2.6 168.7 80.8zm-126.7-111.5c30.1-36.7 52-87.7 52-138.8 0-7.1-.6-14.3-1.9-20.1-49.4 1.9-108.5 33.1-143.9 75.1-26.6 30.8-52 80.5-52 132.2 0 8.4 1.3 16.9 1.9 19.5 3.2.6 8.4 1.3 13.6 1.3 43.5 0 97.9-28.7 130.3-69.2z"/></svg>
+        iOS
+      </a>
+      <a href="#" class="btn-store btn-disabled">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.523 15.341c-.356 0-.66-.277-.66-.638 0-.356.304-.633.66-.633.356 0 .66.277.66.633 0 .361-.304.638-.66.638zm-11.046 0c-.356 0-.66-.277-.66-.638 0-.356.304-.633.66-.633.356 0 .66.277.66.633 0 .361-.304.638-.66.638zM17.928 9.52l1.666-2.877a.344.344 0 00-.125-.47.347.347 0 00-.47.125l-1.687 2.917C15.98 8.4 14.1 8.003 12 8.003c-2.1 0-3.98.397-5.312 1.212L5.001 6.298a.347.347 0 00-.47-.125.344.344 0 00-.125.47l1.666 2.877C3.7 10.844 2.066 13.107 2 15.748h20c-.066-2.641-1.7-4.904-4.072-6.228z"/></svg>
+        Android
+      </a>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════════════════
+       HERO TITLE — scrolls away, then phone takes over
+  ═══════════════════════════════════════ -->
+  <section class="hero-title">
+    <p class="hero-eyebrow">AI Cooking Companion</p>
+    <h1>Not a<br><span class="accent">recipe</span><br>app.</h1>
+    <p class="h1-sub">A culinary education.</p>
+    <p class="sub">Mise teaches you to think like a chef — understanding technique, mastering vocabulary, and cooking with intention.</p>
+    <div class="hero-actions">
+      <div class="btn-dl-wrap">
+        <a href="#" class="btn-primary btn-disabled">
+          <svg width="14" height="14" viewBox="0 0 814 1000" fill="currentColor"><path d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76 0-103.7 40.8-165.9 40.8s-105-43.4-150.3-109.2C82.3 753.3 0 609.2 0 479.8 0 284.3 121 175.8 240 175.8c60.5 0 111 39.5 148.4 39.5 35.7 0 92.3-41.8 161.4-41.8 26 0 108.2 2.6 168.7 80.8zm-126.7-111.5c30.1-36.7 52-87.7 52-138.8 0-7.1-.6-14.3-1.9-20.1-49.4 1.9-108.5 33.1-143.9 75.1-26.6 30.8-52 80.5-52 132.2 0 8.4 1.3 16.9 1.9 19.5 3.2.6 8.4 1.3 13.6 1.3 43.5 0 97.9-28.7 130.3-69.2z"/></svg>
+          Download for iOS
+        </a>
+        <span class="dl-soon">Coming soon</span>
+      </div>
+      <div class="btn-dl-wrap">
+        <a href="#" class="btn-outline btn-disabled">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.523 15.341c-.356 0-.66-.277-.66-.638 0-.356.304-.633.66-.633.356 0 .66.277.66.633 0 .361-.304.638-.66.638zm-11.046 0c-.356 0-.66-.277-.66-.638 0-.356.304-.633.66-.633.356 0 .66.277.66.633 0 .361-.304.638-.66.638zM17.928 9.52l1.666-2.877a.344.344 0 00-.125-.47.347.347 0 00-.47.125l-1.687 2.917C15.98 8.4 14.1 8.003 12 8.003c-2.1 0-3.98.397-5.312 1.212L5.001 6.298a.347.347 0 00-.47-.125.344.344 0 00-.125.47l1.666 2.877C3.7 10.844 2.066 13.107 2 15.748h20c-.066-2.641-1.7-4.904-4.072-6.228z"/></svg>
+          Download for Android
+        </a>
+        <span class="dl-soon">Coming soon</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════
+       PARALLAX PHONE — phone is sticky, only chat-feed scrolls
+       Status bar, app bar, and input bar stay fixed inside the frame.
+  ═══════════════════════════════════════════════════ -->
+  <section id="heroSection" class="hero-scroll">
+    <div class="hero-sticky">
+
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <!--
+            iframe at its natural 390×844 size, scaled to 284×608.
+            JS scrolls only the .chat-feed inside — the header and input bar
+            stay sticky/fixed within the iframe as they do in the real app.
+          -->
+          <iframe
+            id="phoneIframe"
+            srcdoc="<!DOCTYPE html>
+<html lang=&quot;en&quot;>
+<head>
+  <meta charset=&quot;UTF-8&quot;>
+  <meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;>
+  <title>Mise — Complete Showcase: All Widgets</title>
+  <style>
+/* ================================================================
+   MISE — Cooking App Design System
+   Mobile-first, Gemini-inspired chat UI merged with recipe features
+   ================================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;1,14..32,400&amp;display=swap');
+
+/* ======================== CSS VARIABLES ======================== */
+:root {
+  /* --- Backgrounds --- */
+  --bg: #FAFAF8;
+  --bg-surface: #FFFFFF;
+  --bg-elevated: #F5F2EC;
+  --bg-overlay: rgba(20, 16, 12, 0.52);
+
+  /* --- Borders --- */
+  --border: #E8E2D9;
+  --border-subtle: #F0EBE2;
+  --border-strong: #C8BFB4;
+
+  /* --- Text --- */
+  --text: #1C1917;
+  --text-2: #6B6360;
+  --text-3: #A8A09A;
+  --text-4: #C4BCB5;
+  --text-inv: #FAFAF8;
+
+  /* --- Brand: warm terracotta / cooking clay --- */
+  --brand: #C8481C;
+  --brand-hover: #B83D14;
+  --brand-light: #FCE9E2;
+  --brand-muted: #F5D0C0;
+  --brand-50: #FFF5F2;
+
+  /* --- Semantic --- */
+  --success: #15803D;
+  --success-bg: #F0FDF4;
+  --warning: #B45309;
+  --warning-bg: #FFFBEB;
+  --info: #1D4ED8;
+  --info-bg: #EFF6FF;
+
+  /* --- Chat --- */
+  --user-bubble: #1C1917;
+  --user-text: #F5F2EC;
+
+  /* --- Radii --- */
+  --r-xs: 4px;
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-xl: 20px;
+  --r-2xl: 24px;
+  --r-full: 9999px;
+
+  /* --- Shadows --- */
+  --shadow-xs: 0 1px 2px rgba(28,25,23,0.06);
+  --shadow-sm: 0 1px 3px rgba(28,25,23,0.08), 0 1px 2px rgba(28,25,23,0.04);
+  --shadow-md: 0 4px 12px rgba(28,25,23,0.1), 0 2px 4px rgba(28,25,23,0.04);
+  --shadow-lg: 0 8px 24px rgba(28,25,23,0.12), 0 4px 8px rgba(28,25,23,0.06);
+  --shadow-xl: 0 20px 40px rgba(28,25,23,0.16), 0 8px 16px rgba(28,25,23,0.08);
+
+  /* --- Typography --- */
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+  --font-mono: 'SF Mono', 'Fira Code', Consolas, monospace;
+
+  /* --- Font sizes (px) --- */
+  --fs-2xs: 10px;
+  --fs-xs: 11px;
+  --fs-sm: 13px;
+  --fs-base: 15px;
+  --fs-md: 16px;
+  --fs-lg: 18px;
+  --fs-xl: 20px;
+  --fs-2xl: 22px;
+  --fs-3xl: 26px;
+  --fs-4xl: 30px;
+  --fs-5xl: 36px;
+
+  /* --- Line heights --- */
+  --lh-tight: 1.25;
+  --lh-snug: 1.4;
+  --lh-normal: 1.6;
+  --lh-relaxed: 1.75;
+
+  /* --- Transitions --- */
+  --t-fast: 100ms ease;
+  --t-base: 180ms ease;
+  --t-slow: 300ms ease;
+
+  /* --- Mobile layout --- */
+  --mobile-w: 390px;
+  --safe-bottom: 34px;
+  --header-h: 44px;
+  --appbar-h: 52px;
+}
+
+/* ======================== RESET ======================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+html { font-size: 16px; -webkit-text-size-adjust: 100%; }
+body {
+  font-family: var(--font);
+  background: #E8E3DC; /* page background for preview */
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+img { display: block; max-width: 100%; }
+button { cursor: pointer; font-family: inherit; border: none; background: none; color: inherit; }
+a { text-decoration: none; color: inherit; }
+input, textarea { font-family: inherit; }
+
+/* Mobile frame wrapper — 390px centered */
+.mobile-frame {
+  width: var(--mobile-w);
+  margin: 0 auto;
+  background: var(--bg);
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* ======================== STATUS BAR ======================== */
+.status-bar {
+  height: var(--header-h);
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.status-bar-time {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+  color: var(--text);
+}
+.status-icons {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.status-icon { color: var(--text); }
+
+/* ======================== APP HEADER ======================== */
+.app-bar {
+  height: var(--appbar-h);
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  position: sticky;
+  top: var(--header-h);
+  z-index: 99;
+}
+.app-logo {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -1px;
+  color: var(--text);
+}
+.app-logo-dot { color: var(--brand); }
+.header-actions { display: flex; gap: 4px; align-items: center; }
+
+/* ======================== ICON BUTTON ======================== */
+.icon-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--r-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text);
+  transition: background var(--t-fast);
+  position: relative;
+}
+.icon-btn:hover, .icon-btn.active { background: var(--bg-elevated); }
+.icon-btn svg { width: 20px; height: 20px; }
+.badge-dot {
+  position: absolute;
+  top: 6px; right: 6px;
+  width: 8px; height: 8px;
+  background: var(--brand);
+  border-radius: var(--r-full);
+  border: 2px solid var(--bg);
+}
+
+/* ======================== BACK BUTTON ======================== */
+.back-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--brand);
+  font-size: var(--fs-base);
+  font-weight: 500;
+  padding: 4px 0;
+}
+.back-btn svg { width: 20px; height: 20px; }
+
+/* ======================== BUTTONS ======================== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 18px;
+  border-radius: var(--r-full);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  line-height: 1;
+  transition: all var(--t-fast);
+  white-space: nowrap;
+  cursor: pointer;
+  border: none;
+  letter-spacing: -0.1px;
+}
+.btn-primary { background: var(--brand); color: #fff; }
+.btn-primary:hover { background: var(--brand-hover); }
+.btn-secondary { background: var(--bg-elevated); color: var(--text); }
+.btn-secondary:hover { background: var(--border); }
+.btn-outline { background: transparent; border: 1.5px solid var(--border); color: var(--text); }
+.btn-outline:hover { background: var(--bg-elevated); }
+.btn-ghost { background: transparent; color: var(--text-2); }
+.btn-ghost:hover { background: var(--bg-elevated); }
+.btn-success { background: var(--success); color: #fff; }
+.btn-sm { padding: 7px 13px; font-size: var(--fs-xs); }
+.btn-lg { padding: 13px 24px; font-size: var(--fs-base); }
+.btn-icon-only { padding: 10px; border-radius: var(--r-full); }
+
+/* ======================== BADGES ======================== */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: var(--r-full);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  white-space: nowrap;
+  letter-spacing: 0.1px;
+}
+.badge-default { background: var(--bg-elevated); color: var(--text-2); }
+.badge-brand { background: var(--brand-light); color: var(--brand); }
+.badge-success { background: var(--success-bg); color: var(--success); }
+.badge-warning { background: var(--warning-bg); color: var(--warning); }
+.badge-info { background: var(--info-bg); color: var(--info); }
+
+/* ======================== CHAT CONTAINER ======================== */
+.chat-feed {
+  padding: 20px 16px 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* --- User Message --- */
+.msg-user {
+  display: flex;
+  justify-content: flex-end;
+  padding-left: 52px;
+}
+.msg-user-bubble {
+  background: var(--user-bubble);
+  color: var(--user-text);
+  padding: 10px 14px;
+  border-radius: 18px 18px 4px 18px;
+  font-size: var(--fs-base);
+  line-height: var(--lh-normal);
+  max-width: 100%;
+}
+
+/* --- AI Message --- */
+.msg-ai {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.msg-ai-text {
+  font-size: var(--fs-base);
+  line-height: var(--lh-normal);
+  color: var(--text);
+}
+.msg-ai-text p { margin-bottom: 8px; }
+.msg-ai-text p:last-child { margin-bottom: 0; }
+.msg-ai-text strong { font-weight: 600; }
+
+/* Thinking / loading dots */
+.thinking {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  padding: 2px 0;
+}
+.thinking-dot {
+  width: 7px; height: 7px;
+  border-radius: var(--r-full);
+  background: var(--text-3);
+  animation: td-pulse 1.4s ease-in-out infinite;
+}
+.thinking-dot:nth-child(2) { animation-delay: 0.18s; }
+.thinking-dot:nth-child(3) { animation-delay: 0.36s; }
+@keyframes td-pulse {
+  0%, 80%, 100% { transform: scale(0.75); opacity: 0.4; }
+  40% { transform: scale(1); opacity: 1; }
+}
+.tool-call-status {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: var(--fs-xs);
+  color: var(--text-3);
+  padding: 2px 0;
+}
+
+/* ======================== CHIP ROW ======================== */
+.chip-row {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 0;
+  scrollbar-width: none;
+}
+.chip-row::-webkit-scrollbar { display: none; }
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: var(--r-full);
+  border: 1.5px solid var(--border);
+  background: var(--bg-surface);
+  font-size: var(--fs-sm);
+  color: var(--text);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all var(--t-fast);
+  font-weight: 400;
+}
+.chip:hover, .chip.active {
+  background: var(--bg-elevated);
+  border-color: var(--border-strong);
+}
+.chip-emoji { font-size: 14px; line-height: 1; }
+
+/* ======================== INPUT BAR ======================== */
+.input-bar-wrap {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: var(--mobile-w);
+  background: var(--bg);
+  border-top: 1px solid var(--border-subtle);
+  z-index: 90;
+  padding-bottom: var(--safe-bottom);
+}
+/* Suggestion chips row: sits above the input row within the input-bar-wrap.
+   Supports floating mode (.input-chips-row.floating) positioned above the bar. */
+.input-chips-row {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 10px 14px 0;
+  scrollbar-width: none;
+}
+.input-chips-row::-webkit-scrollbar { display: none; }
+/* Floating variant: positions chips above the input bar entirely */
+.input-chips-row.floating {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  padding: 8px 14px;
+  background: var(--bg);
+  border-top: 1px solid var(--border-subtle);
+  z-index: 91;
+}
+.input-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 8px 12px 10px;
+}
+.input-field {
+  flex: 1;
+  min-height: 42px;
+  max-height: 120px;
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border);
+  border-radius: 21px;
+  padding: 10px 14px;
+  font-size: var(--fs-base);
+  font-family: var(--font);
+  color: var(--text);
+  resize: none;
+  outline: none;
+  overflow-y: auto;
+  line-height: 1.4;
+  display: flex;
+  align-items: center;
+}
+.input-field::placeholder { color: var(--text-3); }
+.input-field:focus { border-color: var(--brand); }
+.input-field.search-active {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px var(--brand-light);
+}
+.input-action-btn {
+  width: 42px; height: 42px;
+  border-radius: var(--r-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all var(--t-fast);
+}
+.input-action-btn svg { width: 18px; height: 18px; }
+/* Send button: hidden by default, shown when input has content (JS adds .has-text to .input-bar-wrap or .input-send) */
+.input-send { background: var(--brand); color: #fff; opacity: 0; pointer-events: none; }
+.input-send:hover { background: var(--brand-hover); }
+.input-send:disabled { background: var(--bg-elevated); color: var(--text-3); opacity: 0; pointer-events: none; }
+.has-text .input-send,
+.input-send.visible { opacity: 1; pointer-events: auto; }
+.input-icon { background: var(--bg-elevated); color: var(--text-2); }
+.input-icon:hover { background: var(--border); }
+.input-icon.active { background: var(--brand-light); color: var(--brand); }
+
+/* ======================== SEARCH OVERLAY ======================== */
+.search-overlay {
+  position: fixed;
+  bottom: 108px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 362px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-xl);
+  box-shadow: var(--shadow-xl);
+  overflow: hidden;
+  z-index: 95;
+}
+.search-overlay-header {
+  padding: 12px 16px 8px;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.search-result-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 16px;
+  cursor: pointer;
+  transition: background var(--t-fast);
+}
+.search-result-item:hover { background: var(--bg-elevated); }
+.search-result-item + .search-result-item { border-top: 1px solid var(--border-subtle); }
+.search-thumb {
+  width: 46px; height: 46px;
+  border-radius: var(--r-md);
+  object-fit: cover;
+  background: var(--bg-elevated);
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.search-thumb-img { width: 100%; height: 100%; object-fit: cover; }
+.search-result-text { flex: 1; min-width: 0; }
+.search-result-title { font-size: var(--fs-sm); font-weight: 500; color: var(--text); }
+.search-result-title strong { color: var(--brand); }
+.search-result-meta { font-size: var(--fs-xs); color: var(--text-3); margin-top: 2px; }
+.search-overlay-footer {
+  padding: 10px 16px;
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  gap: 8px;
+}
+
+/* ======================== ENTITY BUBBLES ======================== */
+.entity-bubble-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 4px 0;
+}
+.entity-bubble {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 12px 8px 8px;
+  background: var(--bg-surface);
+  border: 1.5px solid var(--brand-muted);
+  border-radius: var(--r-lg);
+  cursor: pointer;
+  transition: all var(--t-fast);
+}
+.entity-bubble:hover { background: var(--brand-50); border-color: var(--brand); }
+.entity-thumb {
+  width: 34px; height: 34px;
+  border-radius: var(--r-sm);
+  background: var(--bg-elevated);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.entity-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.entity-info {}
+.entity-name { font-size: var(--fs-sm); font-weight: 500; color: var(--text); line-height: 1.3; }
+.entity-sub { font-size: var(--fs-xs); color: var(--text-3); }
+
+/* ======================== RECIPE CARD WIDGET (chat) ======================== */
+.recipe-widget {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+.recipe-widget-img {
+  width: 100%;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+  background: var(--bg-elevated);
+  position: relative;
+  overflow: hidden;
+}
+.recipe-widget-img .fake-img { width: 100%; height: 100%; object-fit: cover; }
+.recipe-widget-body { padding: 14px 16px 16px; }
+.recipe-widget-title {
+  font-size: var(--fs-md);
+  font-weight: 700;
+  letter-spacing: -0.4px;
+  color: var(--text);
+  margin-bottom: 8px;
+  line-height: var(--lh-tight);
+}
+.recipe-meta-row {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.recipe-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+}
+.recipe-meta-item svg { width: 13px; height: 13px; color: var(--text-3); }
+.recipe-widget-actions { display: flex; gap: 8px; }
+
+/* ======================== RECIPE CAROUSEL ======================== */
+.recipe-carousel {
+  margin: 0 -16px;
+}
+.recipe-carousel-scroll {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 4px 16px 8px;
+  scrollbar-width: none;
+}
+.recipe-carousel-scroll::-webkit-scrollbar { display: none; }
+.carousel-card {
+  flex-shrink: 0;
+  width: 158px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform var(--t-fast), box-shadow var(--t-fast);
+}
+.carousel-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.carousel-img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  background: var(--bg-elevated);
+  overflow: hidden;
+}
+.carousel-img img { width: 100%; height: 100%; object-fit: cover; }
+.carousel-body { padding: 10px 11px 12px; }
+.carousel-title { font-size: var(--fs-sm); font-weight: 600; line-height: 1.3; margin-bottom: 5px; color: var(--text); }
+.carousel-meta { font-size: var(--fs-xs); color: var(--text-3); }
+.carousel-tag {
+  margin-top: 6px;
+  display: inline-block;
+  padding: 2px 7px;
+  background: var(--bg-elevated);
+  border-radius: var(--r-full);
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-2);
+}
+.carousel-footer {
+  padding: 10px 16px;
+  border-top: 1px solid var(--border-subtle);
+  font-size: var(--fs-xs);
+  color: var(--brand);
+  font-weight: 500;
+  text-align: right;
+}
+
+/* ======================== INGREDIENTS WIDGET ======================== */
+.ingredients-widget {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-xs);
+}
+.widget-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.widget-head-left {}
+.widget-title { font-size: var(--fs-base); font-weight: 600; color: var(--text); }
+.widget-sub { font-size: var(--fs-xs); color: var(--text-3); margin-top: 2px; }
+.ingr-list {}
+.ingr-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.ingr-item:last-child { border-bottom: none; }
+.ingr-check {
+  width: 20px; height: 20px;
+  border-radius: 4px;
+  border: 2px solid var(--border);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.ingr-check.checked { background: var(--brand); border-color: var(--brand); }
+/* Ingredient layout: name LEFT, qty RIGHT */
+.ingr-amount {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+  order: 3;
+  margin-left: auto;
+  flex-shrink: 0;
+  text-align: right;
+}
+.ingr-name { flex: 1; font-size: var(--fs-sm); color: var(--text); line-height: 1.4; order: 2; }
+.ingr-note { font-size: var(--fs-xs); color: var(--text-3); margin-top: 1px; }
+/* Glossary term */
+.gls { color: var(--brand); border-bottom: 1px dashed var(--brand-muted); cursor: pointer; font-style: italic; }
+
+/* ======================== COOK STEP WIDGET ======================== */
+.cook-step {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+.cook-step-head {
+  background: var(--brand);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.cook-step-label { color: rgba(255,255,255,0.75); font-size: var(--fs-xs); font-weight: 500; }
+.cook-step-progress { color: #fff; font-size: var(--fs-sm); font-weight: 700; }
+.cook-step-body { padding: 16px 16px 14px; }
+.cook-step-text {
+  font-size: var(--fs-md);
+  line-height: 1.65;
+  color: var(--text);
+  margin-bottom: 12px;
+}
+.ingr-inline {
+  background: var(--brand-light);
+  color: var(--brand);
+  padding: 1px 6px;
+  border-radius: var(--r-xs);
+  font-weight: 600;
+  white-space: nowrap;
+  font-size: 0.92em;
+}
+.timer-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--warning-bg);
+  color: var(--warning);
+  padding: 3px 8px;
+  border-radius: var(--r-full);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  margin-left: 4px;
+}
+.cook-step-nav { display: flex; gap: 8px; padding: 0 16px 16px; }
+.cook-progress-bar {
+  height: 3px;
+  background: var(--border);
+  border-radius: var(--r-full);
+  margin: 0 16px 4px;
+  overflow: hidden;
+}
+.cook-progress-fill {
+  height: 100%;
+  background: var(--brand);
+  border-radius: var(--r-full);
+  transition: width var(--t-slow);
+}
+
+/* ======================== TIPS / VARIATIONS WIDGET ======================== */
+.tip-item {
+  display: flex;
+  gap: 11px;
+  padding: 12px 14px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  margin-bottom: 8px;
+}
+.tip-item:last-child { margin-bottom: 0; }
+.tip-icon { font-size: 18px; line-height: 1.4; flex-shrink: 0; }
+.tip-label {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--brand);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 3px;
+}
+.tip-text { font-size: var(--fs-sm); line-height: var(--lh-normal); color: var(--text); }
+
+/* ======================== RESCUE / ERROR WIDGET ======================== */
+.rescue-widget {
+  background: var(--warning-bg);
+  border: 1.5px solid #F59E0B;
+  border-radius: var(--r-xl);
+  padding: 16px;
+}
+.rescue-head { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.rescue-icon { font-size: 20px; }
+.rescue-title { font-size: var(--fs-base); font-weight: 700; color: var(--warning); }
+.rescue-step { display: flex; gap: 10px; margin-bottom: 10px; }
+.rescue-step:last-child { margin-bottom: 0; }
+.rescue-num {
+  width: 22px; height: 22px;
+  border-radius: var(--r-full);
+  background: var(--warning);
+  color: #fff;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.rescue-text { font-size: var(--fs-sm); line-height: var(--lh-normal); color: var(--text); padding-top: 2px; }
+
+/* ======================== COMPARISON WIDGET ======================== */
+.comparison-widget {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-xl);
+  overflow: hidden;
+}
+.comparison-col {
+  flex: 1;
+  border-right: 1px solid var(--border-subtle);
+}
+.comparison-col:last-child { border-right: none; }
+.comparison-head {
+  padding: 12px 14px 10px;
+  border-bottom: 1px solid var(--border-subtle);
+  text-align: center;
+}
+.comparison-head-label {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--text-2);
+}
+.comparison-head-title { font-size: var(--fs-sm); font-weight: 600; margin-top: 2px; color: var(--text); }
+.comparison-item { padding: 8px 14px; font-size: var(--fs-sm); line-height: 1.5; border-bottom: 1px solid var(--border-subtle); }
+.comparison-item:last-child { border-bottom: none; }
+
+/* ======================== SUBSTITUTION WIDGET ======================== */
+.sub-widget {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-xl);
+  overflow: hidden;
+}
+.sub-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  cursor: pointer;
+  transition: background var(--t-fast);
+}
+.sub-item:last-child { border-bottom: none; }
+.sub-item:hover { background: var(--bg-elevated); }
+.sub-rank {
+  width: 28px; height: 28px;
+  border-radius: var(--r-full);
+  background: var(--bg-elevated);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--text-2);
+  flex-shrink: 0;
+}
+.sub-rank.best { background: var(--brand-light); color: var(--brand); }
+.sub-info {}
+.sub-name { font-size: var(--fs-sm); font-weight: 600; color: var(--text); }
+.sub-ratio { font-size: var(--fs-xs); color: var(--brand); font-weight: 500; margin-top: 2px; }
+.sub-note { font-size: var(--fs-xs); color: var(--text-2); margin-top: 2px; }
+
+/* ======================== VARIATION SELECTOR ======================== */
+.variation-selector { display: flex; flex-direction: column; gap: 8px; }
+.variation-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 14px;
+  background: var(--bg-surface);
+  border: 2px solid var(--border);
+  border-radius: var(--r-lg);
+  cursor: pointer;
+  transition: all var(--t-fast);
+}
+.variation-option.selected { border-color: var(--brand); background: var(--brand-50); }
+.variation-opt-icon { font-size: 20px; flex-shrink: 0; }
+.variation-label { font-size: var(--fs-sm); font-weight: 600; color: var(--text); }
+.variation-desc { font-size: var(--fs-xs); color: var(--text-2); margin-top: 1px; }
+.variation-time { font-size: var(--fs-xs); color: var(--text-3); margin-top: 3px; }
+
+/* ======================== GLOSSARY POPUP ======================== */
+.glossary-popup {
+  background: var(--text);
+  color: var(--text-inv);
+  border-radius: var(--r-lg);
+  padding: 12px 14px;
+  max-width: 280px;
+  position: relative;
+  box-shadow: var(--shadow-lg);
+}
+.glossary-popup::after {
+  content: '';
+  position: absolute;
+  top: 100%; left: 20px;
+  border: 8px solid transparent;
+  border-top-color: var(--text);
+}
+.glossary-term { font-size: var(--fs-sm); font-weight: 700; margin-bottom: 4px; color: var(--brand-muted); }
+.glossary-def { font-size: var(--fs-sm); line-height: var(--lh-snug); }
+.glossary-related { margin-top: 8px; font-size: var(--fs-xs); color: rgba(255,255,255,0.6); }
+
+/* ======================== RECIPE FULL VIEW ======================== */
+.recipe-hero-wrap { position: relative; overflow: hidden; }
+.recipe-hero-img {
+  width: 100%;
+  aspect-ratio: 4/3;
+  object-fit: cover;
+  background: var(--bg-elevated);
+  display: block;
+  overflow: hidden;
+}
+.recipe-hero-img img { width: 100%; height: 100%; object-fit: cover; }
+.recipe-hero-gradient {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 160px;
+  background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, transparent 100%);
+  pointer-events: none;
+}
+.recipe-hero-actions {
+  position: absolute;
+  top: 14px; left: 14px; right: 14px;
+  display: flex;
+  justify-content: space-between;
+  z-index: 10;
+}
+.hero-icon-btn {
+  width: 36px; height: 36px;
+  background: rgba(0,0,0,0.38);
+  backdrop-filter: blur(8px);
+  border-radius: var(--r-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+.hero-icon-btn svg { width: 18px; height: 18px; }
+.recipe-hero-title-block {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 20px 20px 16px;
+  z-index: 10;
+}
+.recipe-hero-cuisine {
+  display: inline-block;
+  padding: 3px 9px;
+  background: rgba(255,255,255,0.18);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: var(--r-full);
+  font-size: var(--fs-xs);
+  color: rgba(255,255,255,0.9);
+  font-weight: 500;
+  margin-bottom: 8px;
+  letter-spacing: 0.2px;
+}
+.recipe-hero-name {
+  font-size: var(--fs-3xl);
+  font-weight: 800;
+  letter-spacing: -0.8px;
+  color: #fff;
+  line-height: 1.2;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+/* Recipe body */
+.recipe-body { padding: 0 20px 32px; }
+.recipe-meta-bar {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: 20px;
+}
+.recipe-meta-col {
+  flex: 1;
+  text-align: center;
+  padding: 16px 8px;
+  border-right: 1px solid var(--border-subtle);
+}
+.recipe-meta-col:last-child { border-right: none; }
+.recipe-meta-val { font-size: var(--fs-xl); font-weight: 800; letter-spacing: -0.5px; color: var(--text); }
+.recipe-meta-lbl { font-size: var(--fs-xs); color: var(--text-3); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.4px; }
+
+/* Section title */
+.section-title {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-3);
+  margin-bottom: 14px;
+}
+
+/* Serve scaler */
+.serve-scaler {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-elevated);
+  border-radius: var(--r-full);
+  padding: 6px 14px;
+  margin-bottom: 18px;
+}
+.serve-btn {
+  width: 28px; height: 28px;
+  border-radius: var(--r-full);
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: var(--text);
+  line-height: 1;
+}
+.serve-count { font-size: var(--fs-base); font-weight: 700; color: var(--text); min-width: 24px; text-align: center; }
+.serve-lbl { font-size: var(--fs-sm); color: var(--text-2); }
+
+/* Full ingredient list */
+.ingr-full-item {
+  display: flex;
+  gap: 12px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.ingr-full-item:last-child { border-bottom: none; }
+/* Ingredient full layout: name LEFT, qty RIGHT */
+.ingr-full-amount { font-size: var(--fs-sm); font-weight: 600; color: var(--text-2); font-variant-numeric: tabular-nums; order: 2; margin-left: auto; text-align: right; flex-shrink: 0; }
+.ingr-full-name { flex: 1; font-size: var(--fs-sm); color: var(--text); }
+.ingr-full-note { font-size: var(--fs-xs); color: var(--text-3); margin-top: 2px; }
+
+/* Full instruction steps */
+.instr-step { display: flex; gap: 14px; margin-bottom: 22px; }
+.step-num {
+  width: 30px; height: 30px;
+  border-radius: var(--r-full);
+  border: 2px solid var(--border);
+  background: var(--bg-elevated);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--text-2);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.step-num.done { background: var(--success); border-color: var(--success); color: #fff; }
+.step-text { flex: 1; font-size: var(--fs-base); line-height: var(--lh-normal); color: var(--text); padding-top: 4px; }
+.step-tip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+  padding: 4px 8px;
+  background: var(--info-bg);
+  border-radius: var(--r-sm);
+  font-size: var(--fs-xs);
+  color: var(--info);
+}
+
+/* ======================== AI NOTES SECTION ======================== */
+.ai-notes {
+  background: linear-gradient(135deg, var(--brand-50) 0%, var(--brand-light) 100%);
+  border: 1px solid var(--brand-muted);
+  border-radius: var(--r-xl);
+  padding: 16px;
+  margin-top: 28px;
+}
+.ai-notes-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.ai-notes-orb {
+  width: 26px; height: 26px;
+  background: var(--brand);
+  border-radius: var(--r-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 12px;
+}
+.ai-notes-title { font-size: var(--fs-sm); font-weight: 700; color: var(--brand); }
+.ai-note-card {
+  background: rgba(255,255,255,0.85);
+  border-radius: var(--r-lg);
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  border: 1px solid rgba(200,72,28,0.12);
+}
+.ai-note-card:last-child { margin-bottom: 0; }
+.ai-note-type {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+.ai-note-type.shortcut { color: var(--brand); }
+.ai-note-type.pro { color: #6366F1; }
+.ai-note-type.variation { color: var(--success); }
+.ai-note-text { font-size: var(--fs-sm); line-height: var(--lh-normal); color: var(--text); }
+
+/* ======================== SOURCE ATTRIBUTION ======================== */
+.source-attr {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: var(--bg-elevated);
+  border-radius: var(--r-md);
+  font-size: var(--fs-xs);
+  color: var(--text-2);
+  margin-top: 20px;
+}
+.source-favicon {
+  width: 20px; height: 20px;
+  border-radius: 4px;
+  background: var(--border);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  overflow: hidden;
+}
+.source-domain { color: var(--text-2); }
+.source-link { color: var(--brand); font-weight: 500; }
+
+/* ======================== TABS ======================== */
+.tab-bar {
+  display: flex;
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 0 20px;
+  background: var(--bg);
+  position: sticky;
+  top: 96px;
+  z-index: 50;
+}
+.tab-item {
+  flex: 1;
+  padding: 14px 0;
+  text-align: center;
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--text-3);
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all var(--t-fast);
+  letter-spacing: -0.1px;
+}
+.tab-item.active { color: var(--brand); border-bottom-color: var(--brand); }
+
+/* ======================== BOTTOM SHEET MODAL ======================== */
+.modal-backdrop {
+  background: var(--bg-overlay);
+  backdrop-filter: blur(4px);
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.bottom-sheet {
+  width: var(--mobile-w);
+  background: var(--bg-surface);
+  border-radius: var(--r-2xl) var(--r-2xl) 0 0;
+  padding-bottom: var(--safe-bottom);
+  max-height: 88vh;
+  overflow-y: auto;
+}
+.sheet-handle {
+  width: 36px; height: 4px;
+  background: var(--border);
+  border-radius: var(--r-full);
+  margin: 10px auto 0;
+}
+.sheet-header {
+  padding: 16px 20px 12px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.sheet-title { font-size: var(--fs-lg); font-weight: 800; letter-spacing: -0.4px; }
+.sheet-subtitle { font-size: var(--fs-sm); color: var(--text-2); margin-top: 3px; }
+.sheet-body { padding: 16px 20px; }
+
+/* ======================== SHOPPING LIST ======================== */
+.shop-section { margin-bottom: 24px; }
+.shop-section-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0 6px;
+  border-bottom: 2px solid var(--border-subtle);
+  margin-bottom: 4px;
+}
+.shop-section-thumb {
+  width: 32px; height: 32px;
+  border-radius: var(--r-sm);
+  background: var(--bg-elevated);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.shop-section-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.shop-section-icon { font-size: 20px; width: 32px; text-align: center; }
+.shop-section-name {
+  flex: 1;
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--text-2);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.shop-section-count { font-size: var(--fs-xs); color: var(--text-3); }
+.shop-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.shop-item:last-child { border-bottom: none; }
+.shop-check {
+  width: 24px; height: 24px;
+  border-radius: 4px;
+  border: 2px solid var(--border-strong);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--t-fast);
+}
+.shop-check.done { background: var(--success); border-color: var(--success); }
+.shop-item-info { flex: 1; min-width: 0; }
+.shop-item-name { font-size: var(--fs-base); color: var(--text); line-height: 1.3; }
+.shop-item-name.done { text-decoration: line-through; color: var(--text-3); }
+.shop-item-amount { font-size: var(--fs-sm); color: var(--text-2); margin-top: 1px; }
+.shop-item-recipe { font-size: var(--fs-xs); color: var(--text-3); margin-top: 2px; }
+.shop-item-actions { display: flex; gap: 4px; }
+
+/* Sort toggle */
+.sort-toggle {
+  display: flex;
+  background: var(--bg-elevated);
+  border-radius: var(--r-full);
+  padding: 3px;
+  gap: 2px;
+}
+.sort-opt {
+  padding: 7px 16px;
+  border-radius: var(--r-full);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: all var(--t-fast);
+  white-space: nowrap;
+}
+.sort-opt.active { background: var(--bg-surface); color: var(--text); box-shadow: var(--shadow-xs); }
+
+/* ======================== EMPTY STATE ======================== */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 72px 32px 40px;
+  text-align: center;
+  gap: 12px;
+}
+.empty-icon { font-size: 52px; margin-bottom: 4px; }
+.empty-title { font-size: var(--fs-2xl); font-weight: 800; letter-spacing: -0.5px; color: var(--text); }
+.empty-desc { font-size: var(--fs-base); color: var(--text-2); line-height: var(--lh-normal); max-width: 260px; }
+.empty-actions { margin-top: 8px; display: flex; flex-direction: column; gap: 10px; width: 100%; }
+
+/* ======================== SKELETON ======================== */
+.skeleton {
+  background: linear-gradient(90deg, var(--bg-elevated) 25%, var(--border-subtle) 50%, var(--bg-elevated) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s ease-in-out infinite;
+  border-radius: var(--r-sm);
+}
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+/* ======================== DIVIDER ======================== */
+.divider { height: 1px; background: var(--border-subtle); margin: 20px 0; }
+.divider-strong { height: 6px; background: var(--bg-elevated); margin: 0 -20px; }
+
+/* ======================== PROGRESS BAR ======================== */
+.progress-bar { height: 4px; background: var(--border); border-radius: var(--r-full); overflow: hidden; margin: 8px 0; }
+.progress-fill { height: 100%; background: var(--brand); border-radius: var(--r-full); transition: width var(--t-slow); }
+
+/* ======================== IMAGE GALLERY ======================== */
+.img-gallery {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 0 20px 4px;
+  margin: 0 -20px;
+  scrollbar-width: none;
+}
+.img-gallery::-webkit-scrollbar { display: none; }
+.gallery-img {
+  flex-shrink: 0;
+  width: 120px; height: 120px;
+  border-radius: var(--r-lg);
+  object-fit: cover;
+  background: var(--bg-elevated);
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border-color var(--t-fast);
+}
+.gallery-img.active { border-color: var(--brand); }
+.gallery-img img { width: 100%; height: 100%; object-fit: cover; }
+
+/* ======================== SUCCESS BANNER ======================== */
+.success-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: var(--success-bg);
+  border: 1px solid #86EFAC;
+  border-radius: var(--r-lg);
+  font-size: var(--fs-sm);
+  color: var(--success);
+  font-weight: 500;
+}
+
+/* ======================== RECIPE COMPACT (chat widget small) ======================== */
+.recipe-compact {
+  display: flex;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  cursor: pointer;
+  transition: all var(--t-fast);
+}
+.recipe-compact:hover { background: var(--bg-elevated); }
+.recipe-compact-img {
+  width: 56px; height: 56px;
+  border-radius: var(--r-md);
+  background: var(--bg-elevated);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.recipe-compact-img img { width: 100%; height: 100%; object-fit: cover; }
+.recipe-compact-info { flex: 1; }
+.recipe-compact-title { font-size: var(--fs-sm); font-weight: 600; line-height: 1.3; color: var(--text); }
+.recipe-compact-meta { font-size: var(--fs-xs); color: var(--text-3); margin-top: 3px; }
+.recipe-compact-arrow { color: var(--text-3); align-self: center; }
+
+/* ======================== MEAL PLAN ROW ======================== */
+.meal-plan-day { margin-bottom: 20px; }
+.meal-plan-day-label { font-size: var(--fs-xs); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-3); margin-bottom: 8px; padding-top: 8px; }
+
+/* ======================== FLOATING ACTION BAR ======================== */
+.fab-bar {
+  position: fixed;
+  bottom: 110px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--text);
+  color: var(--text-inv);
+  border-radius: var(--r-full);
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: var(--shadow-xl);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  z-index: 80;
+}
+.fab-divider { width: 1px; height: 20px; background: rgba(255,255,255,0.2); }
+
+/* ======================== INLINE TEXT HELPERS ======================== */
+.highlight { background: #FEF3C7; padding: 1px 3px; border-radius: 3px; }
+.tag-cuisine {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  background: var(--bg-elevated);
+  border-radius: var(--r-full);
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  color: var(--text-2);
+}
+
+/* ======================== PAGE LABEL (for gallery) ======================== */
+.page-label {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  z-index: 999;
+  pointer-events: none;
+}
+
+/* ======================== NIGHT MODE (class toggle) ======================== */
+.night-mode {
+  --bg: #121210;
+  --bg-surface: #1E1D1A;
+  --bg-elevated: #282520;
+  --border: #2E2C28;
+  --border-subtle: #252320;
+  --text: #F5F2EA;
+  --text-2: #9E9890;
+  --text-3: #6B6560;
+  --text-4: #48443E;
+  --brand-light: #3D1A0C;
+  --brand-muted: #5A2810;
+  --brand-50: #2A1208;
+}
+
+/* ======================== INLINE SEARCH DECORATIONS ======================== */
+.search-highlight { color: var(--brand); font-weight: 600; }
+
+/* ================================================================
+   GLOBAL DESIGN RULES (bwv.2)
+   Applied globally to enforce spec-1 design conventions.
+   ================================================================ */
+
+/* RULE 1 — No avatars: hide all avatar elements globally.
+   Individual views define .ai-avatar in their local <style> blocks;
+   this shared rule zeroes them out. */
+.avatar,
+.ai-avatar,
+.user-avatar,
+.msg-avatar {
+  display: none !important;
+}
+
+/* RULE 2 — Rounded-square checkboxes (4px radius) enforced above:
+   .ingr-check  border-radius: 4px  (ingredients widget)
+   .shop-check  border-radius: 4px  (shopping list)
+   Also cover any generic checkbox inputs. */
+input[type=&quot;checkbox&quot;] {
+  border-radius: 4px;
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--border-strong);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+input[type=&quot;checkbox&quot;]:checked {
+  background: var(--brand);
+  border-color: var(--brand);
+}
+
+/* RULE 3 — Ingredient layout: name LEFT, qty RIGHT.
+   See .ingr-item, .ingr-name, .ingr-amount above. */
+
+/* RULE 4 — Send button hidden by default.
+   See .input-send above — opacity:0 / pointer-events:none by default.
+   Activated via .has-text parent class or .input-send.visible. */
+
+/* RULE 5 — Suggestion chips positioned above the input bar.
+   .input-bar-wrap is already position:fixed, which creates a containing
+   block for absolutely-positioned children. The .input-chips-row.floating
+   variant uses position:absolute; bottom:100% to float above the bar. */
+
+/* ================================================================
+   PAGE HEADER — Shared floating header component (bwv.3)
+   Usage:
+     <header class=&quot;page-header&quot;>
+       <button class=&quot;page-header-back&quot; aria-label=&quot;Back&quot;>
+         <svg ...back arrow svg...></svg>
+       </button>
+       <h1 class=&quot;page-header-title&quot;>Title</h1>
+       <button class=&quot;page-header-cart&quot; aria-label=&quot;Shopping cart&quot;>
+         <svg ...cart icon svg...></svg>
+       </button>
+     </header>
+   Used by: recipe card view, shopping list view, sign-in view.
+   ================================================================ */
+
+.page-header {
+  /* Floating: sticky to the top of the mobile frame, sits above content */
+  position: sticky;
+  top: 0;
+  z-index: 90;
+
+  /* Layout: flex row, vertically centred, left/title/right */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  /* Sizing — matches --appbar-h token */
+  height: var(--appbar-h);   /* 52px */
+  padding: 0 8px;
+
+  /* Appearance — same as .app-bar */
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Back arrow button — left slot */
+.page-header-back {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--r-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text);
+  background: none;
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background var(--t-fast);
+}
+.page-header-back:hover,
+.page-header-back:active {
+  background: var(--bg-elevated);
+}
+.page-header-back svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+}
+
+/* Centred title — fills available space, text centred */
+.page-header-title {
+  flex: 1;
+  text-align: center;
+  font-size: var(--fs-md);   /* 16px */
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 4px;
+  /* Remove default h1 margin */
+  margin: 0;
+}
+
+/* Shopping cart button — right slot */
+.page-header-cart {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--r-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text);
+  background: none;
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background var(--t-fast);
+  position: relative;
+}
+.page-header-cart:hover,
+.page-header-cart:active {
+  background: var(--bg-elevated);
+}
+.page-header-cart svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+}
+/* Optional badge on the cart icon (e.g. item count) */
+.page-header-cart .badge-dot {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 8px;
+  height: 8px;
+  background: var(--brand);
+  border-radius: var(--r-full);
+  border: 2px solid var(--bg-surface);
+}
+
+</style>
+  <style>
+    .system-msg {
+      text-align: center;
+      font-size: var(--fs-xs);
+      color: var(--text-3);
+      padding: 4px 0;
+    }
+    .system-msg span {
+      background: var(--bg-elevated);
+      padding: 5px 14px;
+      border-radius: var(--r-full);
+      display: inline-block;
+    }
+    .ai-hint {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      background: var(--bg-elevated);
+      border-radius: var(--r-lg);
+      padding: 11px 13px;
+      font-size: var(--fs-sm);
+      color: var(--text-2);
+      line-height: var(--lh-snug);
+    }
+    .star-rating {
+      display: flex;
+      gap: 3px;
+    }
+    .star { font-size: 15px; }
+    .star.filled { color: #F59E0B; }
+    .star.empty { color: var(--border-strong); }
+    .difficulty-stars {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+    .recipe-bookmark {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-xl);
+      overflow: hidden;
+    }
+    .recipe-bookmark-head {
+      background: var(--success-bg);
+      border-bottom: 1px solid #A7F3D0;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .recipe-bookmark-title {
+      font-size: var(--fs-sm);
+      font-weight: 600;
+      color: var(--success);
+      flex: 1;
+    }
+    .recipe-bookmark-body {
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .variation-teaser {
+      background: var(--brand-50);
+      border: 1px solid var(--brand-muted);
+      border-radius: var(--r-lg);
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+    .variation-teaser-icon {
+      width: 32px; height: 32px;
+      border-radius: var(--r-md);
+      background: var(--brand-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    .variation-teaser-text {
+      flex: 1;
+    }
+    .variation-teaser-title {
+      font-size: var(--fs-sm);
+      font-weight: 600;
+      color: var(--brand);
+    }
+    .variation-teaser-sub {
+      font-size: var(--fs-xs);
+      color: var(--text-2);
+      margin-top: 2px;
+    }
+    .entity-section-label {
+      font-size: var(--fs-xs);
+      font-weight: 600;
+      color: var(--text-3);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+    .step-important-note {
+      display: flex;
+      align-items: flex-start;
+      gap: 7px;
+      background: var(--warning-bg);
+      border: 1px solid #FDE68A;
+      border-radius: var(--r-md);
+      padding: 9px 12px;
+      font-size: var(--fs-xs);
+      color: var(--warning);
+      margin-top: 10px;
+      line-height: var(--lh-snug);
+    }
+
+    /* ── Cook Mode: all steps stacked vertically, no nav buttons ── */
+    .cook-mode-all {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-xl);
+      overflow: hidden;
+    }
+    .cook-mode-all-head {
+      background: var(--bg-elevated);
+      border-bottom: 1px solid var(--border);
+      padding: 11px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .cook-mode-all-label {
+      font-size: var(--fs-xs);
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      color: var(--brand);
+    }
+    .cook-mode-all-count {
+      font-size: var(--fs-xs);
+      color: var(--text-3);
+    }
+    .cook-mode-step-item {
+      padding: 13px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .cook-mode-step-item:last-child {
+      border-bottom: none;
+    }
+    .cook-mode-step-num-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .cook-mode-step-num {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--brand);
+      color: #fff;
+      font-size: var(--fs-xs);
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .cook-mode-step-title {
+      font-size: var(--fs-sm);
+      font-weight: 600;
+      color: var(--text);
+    }
+  </style>
+</head>
+<body>
+<div class=&quot;mobile-frame&quot;>
+
+  <!-- STATUS BAR -->
+  <div class=&quot;status-bar&quot;>
+    <span class=&quot;status-bar-time&quot;>7:38</span>
+    <div class=&quot;status-icons&quot;>
+      <svg class=&quot;status-icon&quot; width=&quot;17&quot; height=&quot;12&quot; viewBox=&quot;0 0 17 12&quot; fill=&quot;currentColor&quot;><rect x=&quot;0&quot; y=&quot;8&quot; width=&quot;3&quot; height=&quot;4&quot; rx=&quot;0.5&quot;/><rect x=&quot;4.5&quot; y=&quot;5.5&quot; width=&quot;3&quot; height=&quot;6.5&quot; rx=&quot;0.5&quot;/><rect x=&quot;9&quot; y=&quot;3&quot; width=&quot;3&quot; height=&quot;9&quot; rx=&quot;0.5&quot;/><rect x=&quot;13.5&quot; y=&quot;0&quot; width=&quot;3&quot; height=&quot;12&quot; rx=&quot;0.5&quot;/></svg>
+      <svg class=&quot;status-icon&quot; width=&quot;25&quot; height=&quot;12&quot; viewBox=&quot;0 0 25 12&quot; fill=&quot;none&quot;><rect x=&quot;0.5&quot; y=&quot;0.5&quot; width=&quot;21&quot; height=&quot;11&quot; rx=&quot;2&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1&quot;/><rect x=&quot;22&quot; y=&quot;3.5&quot; width=&quot;2.5&quot; height=&quot;5&quot; rx=&quot;1&quot; fill=&quot;currentColor&quot;/><rect x=&quot;2&quot; y=&quot;2&quot; width=&quot;16&quot; height=&quot;8&quot; rx=&quot;1.2&quot; fill=&quot;currentColor&quot;/></svg>
+    </div>
+  </div>
+
+  <!-- APP BAR -->
+  <div class=&quot;app-bar&quot;>
+    <span class=&quot;app-logo&quot;>mise<span class=&quot;app-logo-dot&quot;>.</span></span>
+    <div class=&quot;header-actions&quot;>
+      <button class=&quot;icon-btn&quot;>
+        <svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.8&quot;><circle cx=&quot;8&quot; cy=&quot;21&quot; r=&quot;1&quot;/><circle cx=&quot;19&quot; cy=&quot;21&quot; r=&quot;1&quot;/><path d=&quot;M2.05 2.05h2l2.66 12.42a2 2 0 002 1.58h9.78a2 2 0 001.95-1.57l1.65-7.43H5.12&quot;/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- CHAT FEED — Beef Bourguignon full journey -->
+  <div class=&quot;chat-feed&quot;>
+
+    <!-- ===== 1. USER OPENER ===== -->
+    <div class=&quot;msg-user&quot;>
+      <div class=&quot;msg-user-bubble&quot;>Good evening mise. I've been meaning to learn Beef Bourguignon — the proper Julia Child way. I want the full experience, not shortcuts.</div>
+    </div>
+
+    <!-- ===== 2. AI WELCOME — no avatar, no bubble ===== -->
+    <div class=&quot;msg-ai&quot;>
+      <p class=&quot;msg-ai-text&quot;>Excellent choice — Julia Child's Boeuf Bourguignon is the gold standard. Let's do it properly, no shortcuts.</p>
+    </div>
+
+    <!-- ===== 3. RECIPE CARD WIDGET ===== -->
+    <div class=&quot;msg-ai&quot;>
+      <div class=&quot;recipe-widget&quot;>
+        <div class=&quot;recipe-widget-img&quot;>
+          <div style=&quot;width:100%;height:100%;background:linear-gradient(160deg,#D4B0A8 0%,#8B4838 40%,#4A1818 100%);display:flex;align-items:flex-end;padding:12px;&quot;>
+            <span style=&quot;font-size:42px;&quot;>🥩</span>
+          </div>
+        </div>
+        <div class=&quot;recipe-widget-body&quot;>
+          <div style=&quot;display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;&quot;>
+            <div class=&quot;recipe-widget-title&quot; style=&quot;margin-bottom:0;&quot;>Boeuf Bourguignon</div>
+            <div class=&quot;star-rating&quot;>
+              <span class=&quot;star filled&quot;>★</span>
+              <span class=&quot;star filled&quot;>★</span>
+              <span class=&quot;star filled&quot;>★</span>
+            </div>
+          </div>
+          <div style=&quot;font-size:var(--fs-xs);color:var(--brand);font-weight:600;margin-bottom:10px;&quot;>Julia Child's Classic</div>
+          <div class=&quot;recipe-meta-row&quot;>
+            <div class=&quot;recipe-meta-item&quot;>⏱ 3h 30 min</div>
+            <div class=&quot;recipe-meta-item&quot;>👥 6 servings</div>
+            <div class=&quot;recipe-meta-item&quot;>🇫🇷 French</div>
+          </div>
+          <div style=&quot;font-size:var(--fs-sm);color:var(--text-2);line-height:var(--lh-snug);margin-bottom:14px;&quot;>Beef braised in Burgundy wine with lardons, pearl onions and mushrooms. Julia Child's defining recipe from <em>Mastering the Art of French Cooking</em>.</div>
+          <div class=&quot;recipe-widget-actions&quot;>
+            <button class=&quot;btn btn-primary btn-sm&quot; style=&quot;flex:1;&quot;>Cook Now</button>
+            <button class=&quot;btn btn-outline btn-sm&quot;>View Full Recipe</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 4. USER ===== -->
+    <div class=&quot;msg-user&quot;>
+      <div class=&quot;msg-user-bubble&quot;>Perfect! What do I need?</div>
+    </div>
+
+    <!-- ===== 5. LARGE INGREDIENTS WIDGET ===== -->
+    <div class=&quot;msg-ai&quot;>
+      <p class=&quot;msg-ai-text&quot;>Here's the full shopping list for Julia's version. This serves 6 generously — it's actually better the next day, so don't worry about making too much.</p>
+      <div class=&quot;ingredients-widget&quot;>
+        <div class=&quot;widget-head&quot;>
+          <div class=&quot;widget-head-left&quot;>
+            <div class=&quot;widget-title&quot;>🧂 Ingredients</div>
+            <div class=&quot;widget-sub&quot;>6 servings · 15 items</div>
+          </div>
+          <span class=&quot;badge badge-default&quot;>6 servings</span>
+        </div>
+        <div class=&quot;ingr-list&quot;>
+          <div class=&quot;ingr-item&quot;>
+            <div class=&quot;ingr-check&quot;></div>
+            <div class=&quot;ingr-amount&quot;>170 g</div>
+            <div class=&quot;ingr-name&quot;>Lardons (thick-cut pancetta or bacon)</div>
+          </div>
+          <div class=&quot;ingr-item&quot;>
+            <div class=&quot;ingr-check&quot;></div>
+            <div class=&quot;ingr-amount&quot;>1.3 kg</div>
+            <div class=&quot;ingr-name&quot;>Stewing beef, cut into 5cm cubes<div class=&quot;ingr-note&quot;>Chuck, brisket or beef cheek — never lean cuts</div></div>
+          </div>
+          <div class=&quot;ingr-item&quot;>
+            <div class=&quot;ingr-check&quot;></div>
+            <div class=&quot;ingr-amount&quot;>2 medium</div>
+            <div class=&quot;ingr-name&quot;>Carrots, sliced</div>
+          </div>
+          <div class=&quot;ingr-item&quot;>
+            <div class=&quot;ingr-check&quot;></div>
+            <div class=&quot;ingr-amount&quot;>1 large</div>
+            <div class=&quot;ingr-name&quot;>Onion, sliced</div>
+          </div>
+          <div class=&quot;ingr-item&quot;>
+            <div class=&quot;ingr-check&quot;></div>
+            <div class=&quot;ingr-amount&quot;>1 bottle</div>
+            <div class=&quot;ingr-name&quot;>Full-bodied red wine<div class=&quot;ingr-note&quot;>Burgundy, Côtes du Rhône or Chianti — drinkable quality</div></div>
+          </div>
+          <div class=&quot;ingr-item&quot;>
+            <div class=&quot;ingr-check&quot;></div>
+            <div class=&quot;ingr-amount&quot;>500 ml</div>
+            <div class=&quot;ingr-name&quot;>Beef stock, homemade or good quality</div>
+          </div>
+          <div class=&quot;ingr-item&quot;>
+            <div class=&quot;ingr-check&quot;></div>
+            <div class=&quot;ingr-amount&quot;>2 tbsp</div>
+            <div class=&quot;ingr-name&quot;>Tomato paste</div>
+          </div>
+          <div class=&quot;ingr-item&quot;>
+            <div class=&quot;ingr-check&quot;></div>
+            <div class=&quot;ingr-amount&quot;>4 cloves</div>
+            <div class=&quot;ingr-name&quot;>Garlic, smashed</div>
+          </div>
+          <div class=&quot;ingr-item&quot;>
+            <div class=&quot;ingr-check&quot;></div>
+            <div class=&quot;ingr-amount&quot;>1</div>
+            <div class=&quot;ingr-name&quot;>Bouquet garni (thyme, bay leaf, parsley)</div>
+          </div>
+          <div class=&quot;ingr-item&quot;>
+            <div class=&quot;ingr-check&quot;></div>
+            <div class=&quot;ingr-amount&quot;>18–24</div>
+            <div class=&quot;ingr-name&quot;>Pearl onions, blanched and peeled</div>
+          </div>
+          <div class=&quot;ingr-item&quot;>
+            <div class=&quot;ingr-check&quot;></div>
+            <div class=&quot;ingr-amount&quot;>450 g</div>
+            <div class=&quot;ingr-name&quot;>Button mushrooms, quartered</div>
+          </div>
+          <div class=&quot;ingr-item&quot;>
+            <div class=&quot;ingr-check&quot;></div>
+            <div class=&quot;ingr-amount&quot;>3 tbsp</div>
+            <div class=&quot;ingr-name&quot;>Unsalted butter, divided</div>
+          </div>
+          <div class=&quot;ingr-item&quot;>
+            <div class=&quot;ingr-check&quot;></div>
+            <div class=&quot;ingr-amount&quot;>2 tbsp</div>
+            <div class=&quot;ingr-name&quot;>Neutral oil (vegetable or grapeseed)</div>
+          </div>
+          <div class=&quot;ingr-item&quot;>
+            <div class=&quot;ingr-check&quot;></div>
+            <div class=&quot;ingr-amount&quot;>3 tbsp</div>
+            <div class=&quot;ingr-name&quot;>Plain flour (for dredging)</div>
+          </div>
+          <div class=&quot;ingr-item&quot; style=&quot;border-bottom:none;&quot;>
+            <div class=&quot;ingr-check&quot;></div>
+            <div class=&quot;ingr-amount&quot;>To taste</div>
+            <div class=&quot;ingr-name&quot;>Salt and freshly ground black pepper</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 6. TIPS WIDGET ===== -->
+    <div class=&quot;msg-ai&quot;>
+      <p class=&quot;msg-ai-text&quot;>Before we start, three things Julia was emphatic about:</p>
+      <div class=&quot;tip-item&quot;>
+        <div class=&quot;tip-icon&quot;>🥩</div>
+        <div>
+          <div class=&quot;tip-label&quot;>Dry the beef</div>
+          <div class=&quot;tip-text&quot;>Pat every piece of beef completely dry with kitchen paper before browning. Wet beef steams instead of browning — and browning is where 40% of the flavour lives. Julia used to get frustrated watching people skip this.</div>
+        </div>
+      </div>
+      <div class=&quot;tip-item&quot;>
+        <div class=&quot;tip-icon&quot;>🍷</div>
+        <div>
+          <div class=&quot;tip-label&quot;>Use good wine</div>
+          <div class=&quot;tip-text&quot;>Julia's rule: if you wouldn't drink it, don't cook with it. The wine reduces and concentrates — a bad wine becomes a very bad sauce. A decent £10-12 bottle is all you need.</div>
+        </div>
+      </div>
+      <div class=&quot;tip-item&quot;>
+        <div class=&quot;tip-icon&quot;>🔥</div>
+        <div>
+          <div class=&quot;tip-label&quot;>Brown in small batches</div>
+          <div class=&quot;tip-text&quot;>Never crowd the pan. The beef must sear, not steam. Work in batches of 4–5 pieces maximum, with hot fat and space between them. A packed pan drops the temperature and ruins the <span class=&quot;gls&quot;>Maillard</span> reaction.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 7. USER ===== -->
+    <div class=&quot;msg-user&quot;>
+      <div class=&quot;msg-user-bubble&quot;>Let's cook! I'll go step by step.</div>
+    </div>
+
+    <!-- ===== AI thinking with tool call indicator (ephemeral, disappears on completion) ===== -->
+    <div class=&quot;msg-ai&quot;>
+      <div class=&quot;thinking&quot;>
+        <div class=&quot;thinking-dot&quot;></div>
+        <div class=&quot;thinking-dot&quot;></div>
+        <div class=&quot;thinking-dot&quot;></div>
+      </div>
+      <div class=&quot;tool-call-status&quot;>
+        <svg width=&quot;12&quot; height=&quot;12&quot; viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot;><circle cx=&quot;12&quot; cy=&quot;12&quot; r=&quot;10&quot;/><polyline points=&quot;12 6 12 12 16 14&quot;/></svg>
+        Loading cook steps...
+      </div>
+    </div>
+
+    <!-- ===== 8–15. COOK MODE — all steps vertical, no nav buttons ===== -->
+    <div class=&quot;msg-ai&quot;>
+      <div class=&quot;cook-mode-all&quot;>
+        <div class=&quot;cook-mode-all-head&quot;>
+          <span class=&quot;cook-mode-all-label&quot;>Cook Now</span>
+          <span class=&quot;cook-mode-all-count&quot;>6 steps</span>
+        </div>
+
+        <!-- Step 1 -->
+        <div class=&quot;cook-mode-step-item&quot;>
+          <div class=&quot;cook-mode-step-num-row&quot;>
+            <div class=&quot;cook-mode-step-num&quot;>1</div>
+            <div class=&quot;cook-mode-step-title&quot;>Blanch the lardons</div>
+          </div>
+          <p class=&quot;cook-step-text&quot;>Bring a medium pot of water to a boil. Add <span class=&quot;ingr-inline&quot;>170g lardons</span> and blanch for 8 minutes. This removes excess salt and the &quot;smoky&quot; flavour so it doesn't overwhelm the finished dish. Drain and pat dry with kitchen paper.</p>
+          <div class=&quot;timer-pill&quot; style=&quot;margin-top:8px;&quot;>⏱ 8 min blanch</div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class=&quot;cook-mode-step-item&quot;>
+          <div class=&quot;cook-mode-step-num-row&quot;>
+            <div class=&quot;cook-mode-step-num&quot;>2</div>
+            <div class=&quot;cook-mode-step-title&quot;>Render the lardons</div>
+          </div>
+          <p class=&quot;cook-step-text&quot;>In a large heavy casserole (Dutch oven), heat <span class=&quot;ingr-inline&quot;>1 tbsp butter + 1 tbsp oil</span> over medium heat. Add the lardons and render until <strong>golden and lightly crisp</strong>, about 3–4 minutes. Remove to a side bowl with a slotted spoon — leave the fat in the pan. You'll use this flavour-rich fat for the beef.</p>
+          <div class=&quot;timer-pill&quot; style=&quot;margin-top:8px;&quot;>⏱ 3–4 min render</div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class=&quot;cook-mode-step-item&quot;>
+          <div class=&quot;cook-mode-step-num-row&quot;>
+            <div class=&quot;cook-mode-step-num&quot;>3</div>
+            <div class=&quot;cook-mode-step-title&quot;>Brown the beef in batches</div>
+          </div>
+          <p class=&quot;cook-step-text&quot;>Pat every piece of <span class=&quot;ingr-inline&quot;>1.3kg beef</span> completely dry with kitchen paper. Season generously with salt and pepper. Raise heat to high. In batches of 4–5 pieces (never crowding the pan), sear beef on all sides until deeply browned — about <span class=&quot;timer-pill&quot;>⏱ 3 min per batch</span>. Set aside with the lardons. The <span class=&quot;gls&quot;>fond</span> forming on the pan bottom is liquid gold.</p>
+          <div class=&quot;step-important-note&quot;>
+            <span>⚠️</span>
+            <span>Crowded pan = steamed beef = grey, sad, flavourless. Space between pieces is mandatory. Work in batches. The whole process takes 15–20 minutes but it cannot be rushed.</span>
+          </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class=&quot;cook-mode-step-item&quot;>
+          <div class=&quot;cook-mode-step-num-row&quot;>
+            <div class=&quot;cook-mode-step-num&quot;>4</div>
+            <div class=&quot;cook-mode-step-title&quot;>Deglaze the pot</div>
+          </div>
+          <p class=&quot;cook-step-text&quot;>Reduce heat to medium. Add the sliced carrots and onion to the pot. Cook 5 minutes until softened. Add <span class=&quot;ingr-inline&quot;>4 cloves garlic</span> and cook 1 minute. Sprinkle <span class=&quot;ingr-inline&quot;>3 tbsp flour</span> over everything and stir to coat. Now pour in <span class=&quot;ingr-inline&quot;>half the bottle of wine</span> and scrape vigorously with a wooden spoon, releasing every bit of <span class=&quot;gls&quot;>fond</span>. This is the <span class=&quot;gls&quot;>deglaze</span> — watch the pot transform instantly.</p>
+        </div>
+
+        <!-- Step 5 -->
+        <div class=&quot;cook-mode-step-item&quot;>
+          <div class=&quot;cook-mode-step-num-row&quot;>
+            <div class=&quot;cook-mode-step-num&quot;>5</div>
+            <div class=&quot;cook-mode-step-title&quot;>Braise in the oven</div>
+          </div>
+          <p class=&quot;cook-step-text&quot;>Return the browned beef and lardons to the pot. Add the remaining wine, <span class=&quot;ingr-inline&quot;>500ml beef stock</span>, <span class=&quot;ingr-inline&quot;>2 tbsp tomato paste</span>, and the <span class=&quot;ingr-inline&quot;>bouquet garni</span>. The liquid should come about ¾ up the beef. Bring to a bare simmer on the stovetop, then cover and place in the oven at <span class=&quot;ingr-inline&quot;>160°C / 325°F</span>.</p>
+          <div class=&quot;timer-pill&quot; style=&quot;margin-top:8px;&quot;>⏱ 2½–3 hours in oven</div>
+          <div class=&quot;ai-hint&quot; style=&quot;margin-top:10px;&quot;>
+            <span>💡</span>
+            <span>Julia's test: the beef should be easily pierced with a fork with no resistance. Not falling apart — that's overcooked. Tender but intact.</span>
+          </div>
+        </div>
+
+        <!-- Step 6 -->
+        <div class=&quot;cook-mode-step-item&quot;>
+          <div class=&quot;cook-mode-step-num-row&quot;>
+            <div class=&quot;cook-mode-step-num&quot;>6</div>
+            <div class=&quot;cook-mode-step-title&quot;>Sauté the garnitures</div>
+          </div>
+          <p class=&quot;cook-step-text&quot;>Julia's <span class=&quot;gls&quot;>garnitures</span> are cooked separately and added near the end. In a small pan, sauté <span class=&quot;ingr-inline&quot;>18–24 pearl onions</span> in <span class=&quot;ingr-inline&quot;>1 tbsp butter</span> over medium heat until golden, about 8–10 minutes. In the same pan, sauté <span class=&quot;ingr-inline&quot;>450g quartered mushrooms</span> in <span class=&quot;ingr-inline&quot;>1 tbsp butter</span> over high heat until browned, about 5 minutes. Stir both into the casserole during the last 30 minutes of braising.</p>
+          <div class=&quot;timer-pill&quot; style=&quot;margin-top:8px;&quot;>⏱ Add 30 min before end</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 16. SYSTEM MESSAGE — 2 hour wait ===== -->
+    <div class=&quot;system-msg&quot;>
+      <span>— 2 hours later — checking back in —</span>
+    </div>
+
+    <!-- ===== 17. USER ===== -->
+    <div class=&quot;msg-user&quot;>
+      <div class=&quot;msg-user-bubble&quot;>It's been 2 hours. Smells incredible. Beef is very tender but the sauce seems thin — almost watery. Is that normal?</div>
+    </div>
+
+    <!-- ===== 18. RESCUE WIDGET ===== -->
+    <div class=&quot;msg-ai&quot;>
+      <p class=&quot;msg-ai-text&quot;>Completely normal at this stage! The sauce will thin as it cooks because the beef releases moisture. You reduce it at the end — this is actually exactly how Julia intended it. Here's the finish:</p>
+      <div class=&quot;rescue-widget&quot;>
+        <div class=&quot;rescue-head&quot;>
+          <span class=&quot;rescue-icon&quot;>🍷</span>
+          <div class=&quot;rescue-title&quot;>Sauce Recovery — Reduction Finish</div>
+        </div>
+        <div class=&quot;rescue-step&quot;>
+          <div class=&quot;rescue-num&quot;>1</div>
+          <div class=&quot;rescue-text&quot;>Remove beef with a slotted spoon and keep warm in a covered bowl. Leave sauce in the pot over the stove.</div>
+        </div>
+        <div class=&quot;rescue-step&quot;>
+          <div class=&quot;rescue-num&quot;>2</div>
+          <div class=&quot;rescue-text&quot;>Bring to a rapid boil uncovered for 12–15 minutes until reduced by about ⅓ and it coats the back of a spoon. Skim off any fat that rises.</div>
+        </div>
+        <div class=&quot;rescue-step&quot;>
+          <div class=&quot;rescue-num&quot;>3</div>
+          <div class=&quot;rescue-text&quot;>Taste and adjust with salt, a few grinds of pepper, and if you like, a small splash of the remaining wine for brightness.</div>
+        </div>
+        <div class=&quot;rescue-step&quot;>
+          <div class=&quot;rescue-num&quot;>4</div>
+          <div class=&quot;rescue-text&quot;>Finish with cold butter — the <span class=&quot;gls&quot;>monter au beurre</span>: cut 2 tbsp cold butter into cubes, take the pan off heat, and whisk them in one at a time until glossy and thickened. Return beef to sauce.</div>
+        </div>
+      </div>
+
+      <!-- ===== 19. AI post-rescue explanation ===== -->
+      <p class=&quot;msg-ai-text&quot;>This reduction step is actually how Julia specified the finish — many home cooks miss it because they expect the sauce to be perfect straight from the oven. The <span class=&quot;gls&quot;>monter au beurre</span> is a French technique (literally &quot;butter mounting&quot;) where cold butter is whisked into a hot sauce off heat, adding gloss, body and a rounded richness that nothing else can replicate.</p>
+    </div>
+
+    <!-- ===== 20. USER ===== -->
+    <div class=&quot;msg-user&quot;>
+      <div class=&quot;msg-user-bubble&quot;>The sauce is absolutely gorgeous now. Rich, glossy, incredible. How do I serve?</div>
+    </div>
+
+    <!-- ===== 21. AI serving suggestions ===== -->
+    <div class=&quot;msg-ai&quot;>
+      <p class=&quot;msg-ai-text&quot;>You've made something exceptional — serve it properly. Three classic options, each correct in its own way:</p>
+      <div style=&quot;display:flex;flex-direction:column;gap:8px;&quot;>
+        <div style=&quot;display:flex;align-items:flex-start;gap:10px;padding:11px 13px;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-lg);&quot;>
+          <span style=&quot;font-size:20px;flex-shrink:0;&quot;>🥔</span>
+          <div>
+            <div style=&quot;font-size:var(--fs-sm);font-weight:600;color:var(--text);&quot;>Buttery mashed potato</div>
+            <div style=&quot;font-size:var(--fs-xs);color:var(--text-2);margin-top:2px;line-height:var(--lh-snug);&quot;>Julia's choice. The richness of the pommes purée is the perfect foil for the wine-dark sauce. Make it obscenely buttery — this is not the time for restraint.</div>
+          </div>
+        </div>
+        <div style=&quot;display:flex;align-items:flex-start;gap:10px;padding:11px 13px;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-lg);&quot;>
+          <span style=&quot;font-size:20px;flex-shrink:0;&quot;>🍝</span>
+          <div>
+            <div style=&quot;font-size:var(--fs-sm);font-weight:600;color:var(--text);&quot;>Buttered egg noodles</div>
+            <div style=&quot;font-size:var(--fs-xs);color:var(--text-2);margin-top:2px;line-height:var(--lh-snug);&quot;>The classic bistro presentation. Wide pappardelle or egg noodles tossed in butter, with the bourguignon spooned over. The noodles soak up the sauce beautifully.</div>
+          </div>
+        </div>
+        <div style=&quot;display:flex;align-items:flex-start;gap:10px;padding:11px 13px;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-lg);&quot;>
+          <span style=&quot;font-size:20px;flex-shrink:0;&quot;>🥖</span>
+          <div>
+            <div style=&quot;font-size:var(--fs-sm);font-weight:600;color:var(--text);&quot;>Crusty bread only</div>
+            <div style=&quot;font-size:var(--fs-xs);color:var(--text-2);margin-top:2px;line-height:var(--lh-snug);&quot;>If your bread is exceptional, sometimes less is more. Tear it into the sauce. Drink the wine you cooked with.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+
+  <!-- INPUT BAR -->
+  <div class=&quot;input-bar-wrap&quot;>
+    <div class=&quot;input-chips-row&quot;>
+      <div class=&quot;chip&quot;><span class=&quot;chip-emoji&quot;>🍳</span>Cook now</div>
+      <div class=&quot;chip&quot;><span class=&quot;chip-emoji&quot;>🛒</span>Add to list</div>
+      <div class=&quot;chip&quot;><span class=&quot;chip-emoji&quot;>❓</span>Quick question</div>
+    </div>
+    <div class=&quot;input-row&quot;>
+      <button class=&quot;input-action-btn input-icon&quot;>
+        <svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot;><path d=&quot;M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z&quot;/><path d=&quot;M19 10v2a7 7 0 01-14 0v-2&quot;/><line x1=&quot;12&quot; y1=&quot;19&quot; x2=&quot;12&quot; y2=&quot;23&quot;/><line x1=&quot;8&quot; y1=&quot;23&quot; x2=&quot;16&quot; y2=&quot;23&quot;/></svg>
+      </button>
+      <div class=&quot;input-field&quot;><span style=&quot;color:var(--text-3);&quot;>Message mise...</span></div>
+      <button class=&quot;input-action-btn input-icon&quot;>
+        <svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot;><circle cx=&quot;11&quot; cy=&quot;11&quot; r=&quot;8&quot;/><path d=&quot;m21 21-4.35-4.35&quot;/></svg>
+      </button>
+      <button class=&quot;input-action-btn input-send&quot;>
+        <svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot;><line x1=&quot;22&quot; y1=&quot;2&quot; x2=&quot;11&quot; y2=&quot;13&quot;/><polygon points=&quot;22 2 15 22 11 13 2 9 22 2&quot;/></svg>
+      </button>
+    </div>
+  </div>
+
+</div>
+<script>
+  if (location.search.includes('gallery')) {
+    var s = document.createElement('style');
+    s.textContent = '.input-bar-wrap{display:none!important}.chat-feed{padding-bottom:20px!important}';
+    document.head.appendChild(s);
+  }
+  /* Parallax: parent sends scroll offset via postMessage (avoids cross-origin block on file://) */
+  (function () {
+    var feed = null;
+    window.addEventListener('message', function (e) {
+      if (e.data &amp;&amp; e.data.type === 'parallax-scroll') {
+        if (!feed) {
+          feed = document.querySelector('.chat-feed');
+          if (feed) { feed.style.willChange = 'transform'; feed.style.transition = 'none'; }
+        }
+        if (feed) feed.style.transform = 'translateY(-' + e.data.offset + 'px)';
+      }
+    });
+  })();
+</script>
+</body>
+</html>
+"
+            scrolling="no">
+          </iframe>
+        </div>
+      </div>
+
+      <!-- Chapter label + dots -->
+      <div class="chapter-strip">
+        <div class="chapter-block" id="chapterBlock">
+          <div class="chapter-num" id="chapterNum">01 — AI Chat</div>
+          <div class="chapter-title" id="chapterTitle">Ask anything.</div>
+        </div>
+        <div class="chapter-dots">
+          <div class="dot active" id="dot-0"></div>
+          <div class="dot" id="dot-1"></div>
+          <div class="dot" id="dot-2"></div>
+          <div class="dot" id="dot-3"></div>
+          <div class="dot" id="dot-4"></div>
+          <div class="dot" id="dot-5"></div>
+          <div class="dot" id="dot-6"></div>
+        </div>
+      </div>
+
+      <div class="scroll-cue" id="scrollCue">
+        scroll
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="features">
+    <div class="features-header">
+      <h2>Built different.</h2>
+      <p>Every feature designed to make you a better cook — not just a better recipe follower.</p>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <div class="card-num">01 — AI Mentor</div>
+        <div class="card-title">Learn the language of professional cooking</div>
+        <p class="card-text">Understand culinary terms, techniques, and the reasoning behind each step. Ask anything. Mise always explains.</p>
+      </div>
+      <div class="card">
+        <div class="card-num">02 — Variations</div>
+        <div class="card-title">Every recipe has a fast version and a proper version</div>
+        <p class="card-text">Mise surfaces the full spectrum — from 20-minute shortcuts to weekend projects — and explains every difference.</p>
+      </div>
+      <div class="card">
+        <div class="card-num">03 — Chat</div>
+        <div class="card-title">Your AI sous chef is always listening</div>
+        <p class="card-text">Brainstorm meals, substitute ingredients, troubleshoot dishes mid-cook. Do everything through one seamless chat.</p>
+      </div>
+      <div class="card">
+        <div class="card-num">04 — Shopping</div>
+        <div class="card-title">The most ergonomic shopping list you've ever used</div>
+        <p class="card-text">Organized by recipe or aisle. Add from any recipe with a tap. Designed for how you actually move through a store.</p>
+      </div>
+      <div class="card">
+        <div class="card-num">05 — Cook Mode</div>
+        <div class="card-title">Step-by-step guidance right when you need it</div>
+        <p class="card-text">Focused cook mode keeps you on track. And if something goes sideways, Mise helps you rescue it in real time.</p>
+      </div>
+      <div class="card">
+        <div class="card-num">06 — Offline</div>
+        <div class="card-title">Works anywhere, with or without signal</div>
+        <p class="card-text">Your entire library — recipes and shopping lists — works perfectly offline. No bars, no problem.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-logo">mise<span>.</span></div>
+    <div class="footer-copy">© 2026 Mise. All rights reserved.</div>
+  </footer>
+
+  <script>
+    (function () {
+      /*
+        We scroll only .chat-feed inside the iframe via postMessage.
+        This keeps the status bar, app bar, and input bar anchored.
+        postMessage avoids the cross-origin block that file:// imposes
+        on iframe.contentDocument access.
+      */
+      const SCALE = 0.7282;
+
+      /*
+        Visible chat content in content pixels:
+          phone-screen = 608px screen → 608/0.7282 = 835 content px total
+          status bar   = 44px content (sticky, covers top)
+          app bar      = 52px content (sticky, covers below)
+          input bar    ≈ 90px content (fixed, covers bottom)
+          → visible chat window ≈ 835 - 44 - 52 - 90 = 649 content px
+
+        Chat feed total height ≈ 3100px content.
+        MAX_OFFSET = 3100 - 649 ≈ 2451px — tuned to reach crusty bread bubble.
+      */
+      var MAX_OFFSET = 5150;
+
+      var CHAPTERS = [
+        { num: '01 — AI Chat',     title: 'Ask anything.',      threshold: 0.00 },
+        { num: '02 — Recipe',      title: 'View the recipe.',         threshold: 0.05 },
+        { num: '03 — Ingredients', title: 'Check ingredients inline.',     threshold: 0.15 },
+        { num: '04 — Chef Tips', title: 'Know what makes the difference.',     threshold: 0.25 },
+        { num: '05 — Cook Mode',    title: 'Cook mode has <em>not</em> left the chat.',         threshold: 0.38 },
+        { num: '06 — Rescue Mode',      title: 'Real-time rescue.',   threshold: 0.82 },
+        { num: '07 — Follow up',      title: 'Keep the conversation going.',   threshold: 0.9 }
+      ];
+
+      var heroSection  = document.getElementById('heroSection');
+      var iframe       = document.getElementById('phoneIframe');
+      var chapterBlock = document.getElementById('chapterBlock');
+      var chapterNum   = document.getElementById('chapterNum');
+      var chapterTitle = document.getElementById('chapterTitle');
+      var scrollCue    = document.getElementById('scrollCue');
+      var dots         = CHAPTERS.map(function(_, i) { return document.getElementById('dot-' + i); });
+
+      var currentChapterIdx = 0;
+      var fadeTimer = null;
+      var iframeReady = false;
+
+      /* Wait for iframe to load before sending scroll messages */
+      iframe.addEventListener('load', function () {
+        iframeReady = true;
+        onScroll();
+      });
+
+      function setChapter(idx) {
+        if (idx === currentChapterIdx) return;
+        currentChapterIdx = idx;
+        var ch = CHAPTERS[idx];
+        chapterBlock.classList.add('fading');
+        clearTimeout(fadeTimer);
+        fadeTimer = setTimeout(function () {
+          chapterNum.textContent   = ch.num;
+          chapterTitle.innerHTML = ch.title;
+          chapterBlock.classList.remove('fading');
+          dots.forEach(function (d, i) { d.classList.toggle('active', i === idx); });
+        }, 280);
+      }
+
+      function onScroll() {
+        var heroTop       = heroSection.getBoundingClientRect().top;
+        var scrolled      = -heroTop;
+        var totalScroll   = heroSection.offsetHeight - window.innerHeight;
+        var progress      = Math.max(0, Math.min(1, scrolled / totalScroll));
+
+        /* Scroll only the chat feed via postMessage (avoids file:// cross-origin block) */
+        var offset = progress * MAX_OFFSET;
+        if (iframeReady) {
+          iframe.contentWindow.postMessage({ type: 'parallax-scroll', offset: offset.toFixed(1) }, '*');
+        }
+
+        scrollCue.classList.toggle('hidden', scrolled > 40);
+
+        var next = 0;
+        for (var i = 0; i < CHAPTERS.length; i++) {
+          if (progress >= CHAPTERS[i].threshold) next = i;
+        }
+        setChapter(next);
+      }
+
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+    })();
+  </script>
+
+</body>
+</html>
