@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mise — The Chef in Your Pocket</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;1,14..32,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, system-ui, sans-serif;
+      background: #111110;
+      color: #FAFAF8;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { text-decoration: none; color: inherit; }
+
+    /* ── Nav ── */
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 48px;
+      position: fixed; top: 0; left: 0; right: 0;
+      background: rgba(17,17,16,0.92);
+      backdrop-filter: blur(20px);
+      z-index: 100;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .logo { font-size: 21px; font-weight: 800; letter-spacing: -0.8px; }
+    .logo span { color: #C8481C; }
+    .nav-actions { display: flex; align-items: center; gap: 10px; }
+    .btn-store {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: rgba(255,255,255,0.09); border: 1px solid rgba(255,255,255,0.14);
+      color: #FAFAF8; padding: 8px 16px; border-radius: 9999px;
+      font-size: 12px; font-weight: 600; transition: all 0.15s;
+    }
+    .btn-store:hover { background: rgba(255,255,255,0.16); }
+    .btn-see {
+      border: 1px solid rgba(255,255,255,0.14); color: rgba(250,250,248,0.55);
+      padding: 8px 18px; border-radius: 9999px; font-size: 12px; font-weight: 500;
+      transition: all 0.15s;
+    }
+    .btn-see:hover { color: #FAFAF8; border-color: rgba(255,255,255,0.3); }
+
+    /* ── Hero title — scrolls away normally ── */
+    .hero-title {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 120px 48px 80px;
+      position: relative; overflow: hidden;
+    }
+    .hero-title::before {
+      content: '';
+      position: absolute;
+      top: 30%; left: 50%; transform: translate(-50%, -50%);
+      width: 700px; height: 500px;
+      background: radial-gradient(ellipse at center, rgba(200,72,28,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-eyebrow {
+      font-size: 11px; font-weight: 600; letter-spacing: 2px;
+      text-transform: uppercase; color: #C8481C;
+      margin-bottom: 28px; position: relative; z-index: 1;
+    }
+    h1 {
+      font-size: clamp(60px, 9vw, 112px);
+      font-weight: 800; letter-spacing: -4px; line-height: 0.9;
+      margin-bottom: 12px; position: relative; z-index: 1;
+    }
+    h1 .accent { color: #C8481C; }
+    .h1-sub {
+      font-size: clamp(38px, 5vw, 64px);
+      font-weight: 300; letter-spacing: -2px;
+      color: rgba(250,250,248,0.35); line-height: 1;
+      margin-bottom: 28px; position: relative; z-index: 1;
+    }
+    .sub {
+      font-size: 16px; color: rgba(250,250,248,0.42);
+      max-width: 400px; margin: 0 auto 44px;
+      line-height: 1.65; letter-spacing: -0.1px;
+      position: relative; z-index: 1;
+    }
+    .hero-actions {
+      display: flex; gap: 10px; align-items: center; justify-content: center;
+      position: relative; z-index: 1; flex-wrap: wrap;
+    }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: #C8481C; color: #FAFAF8;
+      padding: 12px 24px; border-radius: 9999px;
+      font-size: 13px; font-weight: 600; transition: all 0.15s;
+    }
+    .btn-primary:hover { background: #E05520; transform: translateY(-1px); }
+    .btn-outline {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.14);
+      color: #FAFAF8; padding: 11px 22px; border-radius: 9999px;
+      font-size: 13px; font-weight: 600; transition: all 0.15s;
+    }
+    .btn-outline:hover { background: rgba(255,255,255,0.14); }
+    .btn-dl-wrap { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .btn-disabled { opacity: 0.38; pointer-events: none; cursor: not-allowed; }
+    .dl-soon { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(250,250,248,0.28); }
+
+    /* ── Parallax scroll container — 520vh so there's ample scroll to reach the end ── */
+    .hero-scroll { height: 800vh; position: relative; }
+
+    /* Phone stays in view while page scrolls */
+    .hero-sticky {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      padding: 70px 48px 40px;
+      overflow: hidden;
+    }
+    .hero-sticky::before {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: 600px; height: 700px;
+      background: radial-gradient(ellipse at center, rgba(200,72,28,0.09) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    /* ── Phone shell ── */
+    .phone {
+      width: 310px; height: 640px;
+      background: #1a1a19; border-radius: 50px; padding: 16px 13px;
+      box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.12),
+        0 0 0 1px rgba(0,0,0,0.8),
+        0 60px 120px rgba(0,0,0,0.65),
+        0 0 80px rgba(200,72,28,0.10);
+      position: relative; z-index: 1;
+    }
+    .phone::before {
+      content: ''; position: absolute;
+      right: -2.5px; top: 140px; width: 2.5px; height: 70px;
+      background: #252422; border-radius: 0 2px 2px 0;
+    }
+    .phone::after {
+      content: ''; position: absolute;
+      left: -2.5px; top: 120px; width: 2.5px; height: 38px;
+      background: #252422; border-radius: 2px 0 0 2px;
+      box-shadow: 0 56px 0 #252422;
+    }
+    .phone-screen {
+      width: 284px; height: 608px; border-radius: 36px;
+      overflow: hidden; background: #FAFAF8; position: relative;
+    }
+    .island {
+      position: absolute; top: 13px; left: 50%; transform: translateX(-50%);
+      width: 88px; height: 24px; background: #1a1a19; border-radius: 12px;
+      z-index: 20; pointer-events: none;
+    }
+    /*
+      iframe renders at 390×844 content pixels, scaled to fit the 284×608 phone screen.
+      The scale is 284/390 = 0.7282. Only the chat-feed is scrolled via JS —
+      the status bar, app bar, and input bar stay fixed inside the iframe.
+    */
+    #phoneIframe {
+      width: 390px; height: 844px; border: none;
+      transform: scale(0.7282);
+      transform-origin: top left;
+      pointer-events: none; display: block;
+    }
+
+    /* ── Chapter strip below phone ── */
+    .chapter-strip {
+      margin-top: 20px;
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+      position: relative; z-index: 1;
+    }
+    .chapter-block {
+      text-align: center;
+      transition: opacity 0.35s ease, transform 0.35s ease;
+    }
+    .chapter-block.fading { opacity: 0; transform: translateY(-6px); }
+    .chapter-num {
+      font-size: 10px; font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; color: #C8481C; margin-bottom: 4px;
+    }
+    .chapter-title {
+      font-size: 17px; font-weight: 700; letter-spacing: -0.4px;
+      color: rgba(250,250,248,0.85);
+    }
+    .chapter-dots { display: flex; gap: 7px; justify-content: center; }
+    .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: rgba(255,255,255,0.18);
+      transition: background 0.4s, transform 0.3s;
+    }
+    .dot.active { background: #C8481C; transform: scale(1.3); }
+
+    /* Scroll cue */
+    .scroll-cue {
+      position: absolute;
+      bottom: 28px; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      font-size: 10px; font-weight: 600; letter-spacing: 2px;
+      text-transform: uppercase; color: rgba(250,250,248,0.22);
+      transition: opacity 0.6s; pointer-events: none;
+    }
+    .scroll-cue.hidden { opacity: 0; }
+    .scroll-cue svg { animation: bounce 2s ease-in-out infinite; }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(5px); }
+    }
+
+    /* ── Features ── */
+    .features { max-width: 1100px; margin: 0 auto; padding: 100px 48px 80px; }
+    .features-header { text-align: center; margin-bottom: 52px; }
+    .features-header h2 { font-size: 42px; font-weight: 800; letter-spacing: -1.8px; margin-bottom: 12px; }
+    .features-header p { font-size: 16px; color: rgba(250,250,248,0.4); }
+    .grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
+      background: rgba(255,255,255,0.07); border-radius: 20px; overflow: hidden;
+    }
+    .card { background: #161614; padding: 36px 30px; }
+    .card-num { font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #C8481C; margin-bottom: 20px; }
+    .card-title { font-size: 19px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 10px; line-height: 1.25; }
+    .card-text { font-size: 14px; color: rgba(250,250,248,0.4); line-height: 1.6; }
+
+    /* ── Footer ── */
+    footer {
+      padding: 32px 48px; display: flex; justify-content: space-between; align-items: center;
+      border-top: 1px solid rgba(255,255,255,0.07);
+    }
+    .footer-logo { font-size: 18px; font-weight: 800; letter-spacing: -0.6px; }
+    .footer-logo span { color: #C8481C; }
+    .footer-copy { font-size: 13px; color: rgba(250,250,248,0.25); }
+
+    @media (max-width: 768px) {
+      .btn-store { display: none; }
+      .grid { grid-template-columns: 1fr; }
+      .features { padding: 60px 24px 60px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="logo">mise<span>.</span></div>
+    <div class="nav-actions">
+      <a href="#" class="btn-store btn-disabled">
+        <svg width="13" height="13" viewBox="0 0 814 1000" fill="currentColor"><path d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76 0-103.7 40.8-165.9 40.8s-105-43.4-150.3-109.2C82.3 753.3 0 609.2 0 479.8 0 284.3 121 175.8 240 175.8c60.5 0 111 39.5 148.4 39.5 35.7 0 92.3-41.8 161.4-41.8 26 0 108.2 2.6 168.7 80.8zm-126.7-111.5c30.1-36.7 52-87.7 52-138.8 0-7.1-.6-14.3-1.9-20.1-49.4 1.9-108.5 33.1-143.9 75.1-26.6 30.8-52 80.5-52 132.2 0 8.4 1.3 16.9 1.9 19.5 3.2.6 8.4 1.3 13.6 1.3 43.5 0 97.9-28.7 130.3-69.2z"/></svg>
+        iOS
+      </a>
+      <a href="#" class="btn-store btn-disabled">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.523 15.341c-.356 0-.66-.277-.66-.638 0-.356.304-.633.66-.633.356 0 .66.277.66.633 0 .361-.304.638-.66.638zm-11.046 0c-.356 0-.66-.277-.66-.638 0-.356.304-.633.66-.633.356 0 .66.277.66.633 0 .361-.304.638-.66.638zM17.928 9.52l1.666-2.877a.344.344 0 00-.125-.47.347.347 0 00-.47.125l-1.687 2.917C15.98 8.4 14.1 8.003 12 8.003c-2.1 0-3.98.397-5.312 1.212L5.001 6.298a.347.347 0 00-.47-.125.344.344 0 00-.125.47l1.666 2.877C3.7 10.844 2.066 13.107 2 15.748h20c-.066-2.641-1.7-4.904-4.072-6.228z"/></svg>
+        Android
+      </a>
+      <a href="#" class="btn-see">See features</a>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════════════════
+       HERO TITLE — scrolls away, then phone takes over
+  ═══════════════════════════════════════ -->
+  <section class="hero-title">
+    <p class="hero-eyebrow">AI Cooking Companion</p>
+    <h1>Not a<br><span class="accent">recipe</span><br>app.</h1>
+    <p class="h1-sub">A culinary education.</p>
+    <p class="sub">Mise teaches you to think like a chef — understanding technique, mastering vocabulary, and cooking with intention.</p>
+    <div class="hero-actions">
+      <div class="btn-dl-wrap">
+        <a href="#" class="btn-primary btn-disabled">
+          <svg width="14" height="14" viewBox="0 0 814 1000" fill="currentColor"><path d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76 0-103.7 40.8-165.9 40.8s-105-43.4-150.3-109.2C82.3 753.3 0 609.2 0 479.8 0 284.3 121 175.8 240 175.8c60.5 0 111 39.5 148.4 39.5 35.7 0 92.3-41.8 161.4-41.8 26 0 108.2 2.6 168.7 80.8zm-126.7-111.5c30.1-36.7 52-87.7 52-138.8 0-7.1-.6-14.3-1.9-20.1-49.4 1.9-108.5 33.1-143.9 75.1-26.6 30.8-52 80.5-52 132.2 0 8.4 1.3 16.9 1.9 19.5 3.2.6 8.4 1.3 13.6 1.3 43.5 0 97.9-28.7 130.3-69.2z"/></svg>
+          Download for iOS
+        </a>
+        <span class="dl-soon">Coming soon</span>
+      </div>
+      <div class="btn-dl-wrap">
+        <a href="#" class="btn-outline btn-disabled">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.523 15.341c-.356 0-.66-.277-.66-.638 0-.356.304-.633.66-.633.356 0 .66.277.66.633 0 .361-.304.638-.66.638zm-11.046 0c-.356 0-.66-.277-.66-.638 0-.356.304-.633.66-.633.356 0 .66.277.66.633 0 .361-.304.638-.66.638zM17.928 9.52l1.666-2.877a.344.344 0 00-.125-.47.347.347 0 00-.47.125l-1.687 2.917C15.98 8.4 14.1 8.003 12 8.003c-2.1 0-3.98.397-5.312 1.212L5.001 6.298a.347.347 0 00-.47-.125.344.344 0 00-.125.47l1.666 2.877C3.7 10.844 2.066 13.107 2 15.748h20c-.066-2.641-1.7-4.904-4.072-6.228z"/></svg>
+          Download for Android
+        </a>
+        <span class="dl-soon">Coming soon</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════
+       PARALLAX PHONE — phone is sticky, only chat-feed scrolls
+       Status bar, app bar, and input bar stay fixed inside the frame.
+  ═══════════════════════════════════════════════════ -->
+  <section id="heroSection" class="hero-scroll">
+    <div class="hero-sticky">
+
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <!--
+            iframe at its natural 390×844 size, scaled to 284×608.
+            JS scrolls only the .chat-feed inside — the header and input bar
+            stay sticky/fixed within the iframe as they do in the real app.
+          -->
+          <iframe
+            id="phoneIframe"
+            src="screens/view-17-chat-all-widgets.html"
+            scrolling="no">
+          </iframe>
+        </div>
+      </div>
+
+      <!-- Chapter label + dots -->
+      <div class="chapter-strip">
+        <div class="chapter-block" id="chapterBlock">
+          <div class="chapter-num" id="chapterNum">01 — AI Chat</div>
+          <div class="chapter-title" id="chapterTitle">Ask anything.</div>
+        </div>
+        <div class="chapter-dots">
+          <div class="dot active" id="dot-0"></div>
+          <div class="dot" id="dot-1"></div>
+          <div class="dot" id="dot-2"></div>
+          <div class="dot" id="dot-3"></div>
+          <div class="dot" id="dot-4"></div>
+          <div class="dot" id="dot-5"></div>
+          <div class="dot" id="dot-6"></div>
+        </div>
+      </div>
+
+      <div class="scroll-cue" id="scrollCue">
+        scroll
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="features">
+    <div class="features-header">
+      <h2>Built different.</h2>
+      <p>Every feature designed to make you a better cook — not just a better recipe follower.</p>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <div class="card-num">01 — AI Mentor</div>
+        <div class="card-title">Learn the language of professional cooking</div>
+        <p class="card-text">Understand culinary terms, techniques, and the reasoning behind each step. Ask anything. Mise always explains.</p>
+      </div>
+      <div class="card">
+        <div class="card-num">02 — Variations</div>
+        <div class="card-title">Every recipe has a fast version and a proper version</div>
+        <p class="card-text">Mise surfaces the full spectrum — from 20-minute shortcuts to weekend projects — and explains every difference.</p>
+      </div>
+      <div class="card">
+        <div class="card-num">03 — Chat</div>
+        <div class="card-title">Your AI sous chef is always listening</div>
+        <p class="card-text">Brainstorm meals, substitute ingredients, troubleshoot dishes mid-cook. Do everything through one seamless chat.</p>
+      </div>
+      <div class="card">
+        <div class="card-num">04 — Shopping</div>
+        <div class="card-title">The most ergonomic shopping list you've ever used</div>
+        <p class="card-text">Organized by recipe or aisle. Add from any recipe with a tap. Designed for how you actually move through a store.</p>
+      </div>
+      <div class="card">
+        <div class="card-num">05 — Cook Mode</div>
+        <div class="card-title">Step-by-step guidance right when you need it</div>
+        <p class="card-text">Focused cook mode keeps you on track. And if something goes sideways, Mise helps you rescue it in real time.</p>
+      </div>
+      <div class="card">
+        <div class="card-num">06 — Offline</div>
+        <div class="card-title">Works anywhere, with or without signal</div>
+        <p class="card-text">Your entire library — recipes and shopping lists — works perfectly offline. No bars, no problem.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-logo">mise<span>.</span></div>
+    <div class="footer-copy">© 2026 Mise. All rights reserved.</div>
+  </footer>
+
+  <script>
+    (function () {
+      /*
+        We scroll only .chat-feed inside the iframe via postMessage.
+        This keeps the status bar, app bar, and input bar anchored.
+        postMessage avoids the cross-origin block that file:// imposes
+        on iframe.contentDocument access.
+      */
+      const SCALE = 0.7282;
+
+      /*
+        Visible chat content in content pixels:
+          phone-screen = 608px screen → 608/0.7282 = 835 content px total
+          status bar   = 44px content (sticky, covers top)
+          app bar      = 52px content (sticky, covers below)
+          input bar    ≈ 90px content (fixed, covers bottom)
+          → visible chat window ≈ 835 - 44 - 52 - 90 = 649 content px
+
+        Chat feed total height ≈ 3100px content.
+        MAX_OFFSET = 3100 - 649 ≈ 2451px — tuned to reach crusty bread bubble.
+      */
+      var MAX_OFFSET = 5150;
+
+      var CHAPTERS = [
+        { num: '01 — AI Chat',     title: 'Ask anything.',      threshold: 0.00 },
+        { num: '02 — Recipe',      title: 'View the recipe.',         threshold: 0.05 },
+        { num: '03 — Ingredients', title: 'Check ingredients inline.',     threshold: 0.15 },
+        { num: '04 — Chef Tips', title: 'Know what makes the difference.',     threshold: 0.25 },
+        { num: '05 — Cook Mode',    title: 'Cook mode has <em>not</em> left the chat.',         threshold: 0.38 },
+        { num: '06 — Rescue Mode',      title: 'Real-time rescue.',   threshold: 0.82 },
+        { num: '07 — Follow up',      title: 'Keep the conversation going.',   threshold: 0.9 }
+      ];
+
+      var heroSection  = document.getElementById('heroSection');
+      var iframe       = document.getElementById('phoneIframe');
+      var chapterBlock = document.getElementById('chapterBlock');
+      var chapterNum   = document.getElementById('chapterNum');
+      var chapterTitle = document.getElementById('chapterTitle');
+      var scrollCue    = document.getElementById('scrollCue');
+      var dots         = CHAPTERS.map(function(_, i) { return document.getElementById('dot-' + i); });
+
+      var currentChapterIdx = 0;
+      var fadeTimer = null;
+      var iframeReady = false;
+
+      /* Wait for iframe to load before sending scroll messages */
+      iframe.addEventListener('load', function () {
+        iframeReady = true;
+        onScroll();
+      });
+
+      function setChapter(idx) {
+        if (idx === currentChapterIdx) return;
+        currentChapterIdx = idx;
+        var ch = CHAPTERS[idx];
+        chapterBlock.classList.add('fading');
+        clearTimeout(fadeTimer);
+        fadeTimer = setTimeout(function () {
+          chapterNum.textContent   = ch.num;
+          chapterTitle.innerHTML = ch.title;
+          chapterBlock.classList.remove('fading');
+          dots.forEach(function (d, i) { d.classList.toggle('active', i === idx); });
+        }, 280);
+      }
+
+      function onScroll() {
+        var heroTop       = heroSection.getBoundingClientRect().top;
+        var scrolled      = -heroTop;
+        var totalScroll   = heroSection.offsetHeight - window.innerHeight;
+        var progress      = Math.max(0, Math.min(1, scrolled / totalScroll));
+
+        /* Scroll only the chat feed via postMessage (avoids file:// cross-origin block) */
+        var offset = progress * MAX_OFFSET;
+        if (iframeReady) {
+          iframe.contentWindow.postMessage({ type: 'parallax-scroll', offset: offset.toFixed(1) }, '*');
+        }
+
+        scrollCue.classList.toggle('hidden', scrolled > 40);
+
+        var next = 0;
+        for (var i = 0; i < CHAPTERS.length; i++) {
+          if (progress >= CHAPTERS[i].threshold) next = i;
+        }
+        setChapter(next);
+      }
+
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+    })();
+  </script>
+
+</body>
+</html>
