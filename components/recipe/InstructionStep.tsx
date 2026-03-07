@@ -15,15 +15,15 @@ export function InstructionStep({
   warnings,
 }: InstructionStepProps) {
   return (
-    <View className="mb-5 flex-row px-5">
+    <View className="mb-[22px] flex-row gap-[14px] px-5">
       {/* Step number circle */}
-      <View className="mr-3 h-[30px] w-[30px] items-center justify-center rounded-full border-2 border-border bg-bg-elevated">
-        <Text className="text-xs font-bold text-text-2">{stepNumber}</Text>
+      <View className="mt-0.5 h-[30px] w-[30px] items-center justify-center rounded-full border-2 border-border bg-bg-elevated">
+        <Text className="text-[11px] font-bold text-text-2">{stepNumber}</Text>
       </View>
 
       {/* Step content */}
-      <View className="flex-1 pt-0.5">
-        <Text className="text-[15px] leading-[22px] text-text">{text}</Text>
+      <View className="flex-1 pt-1">
+        <Text className="text-[15px] leading-relaxed text-text">{text}</Text>
 
         {/* Timer pills */}
         {timers && timers.length > 0 ? (
@@ -31,9 +31,9 @@ export function InstructionStep({
             {timers.map((timer) => (
               <View
                 key={`${timer.activity}-${timer.duration}`}
-                className="rounded-full bg-brand-light px-3 py-1"
+                className="rounded-full bg-warning-bg px-2 py-[3px]"
               >
-                <Text className="text-xs font-semibold text-brand">
+                <Text className="text-[11px] font-semibold text-warning">
                   {"\u23F1"} {timer.duration}
                 </Text>
               </View>
@@ -46,10 +46,10 @@ export function InstructionStep({
           ? warnings.map((warning) => (
               <View
                 key={warning.text}
-                className="mt-2.5 flex-row rounded-sm border border-[#FDE68A] bg-warning-bg p-2"
+                className="mt-2.5 flex-row gap-2 rounded-sm border border-[#FDE68A] bg-warning-bg px-2.5 py-2"
               >
-                <Text className="mr-2 text-sm">{warning.icon}</Text>
-                <Text className="flex-1 text-xs leading-[18px] text-warning">
+                <Text className="text-sm">{warning.icon}</Text>
+                <Text className="flex-1 text-[11px] leading-normal text-warning">
                   {warning.text}
                 </Text>
               </View>

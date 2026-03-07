@@ -34,14 +34,14 @@ export function RecipeMetaBar({
   ];
 
   return (
-    <View className="flex-row items-center border-b border-border-subtle py-3">
+    <View className="flex-row items-center border-b border-border-subtle px-2 py-4">
       {columns.map((col, index) => (
         <View
           key={col.label}
           className={`flex-1 items-center ${index < columns.length - 1 ? "border-r border-border-subtle" : ""}`}
         >
-          <Text className="text-lg font-bold text-text">{col.value}</Text>
-          <Text className="mt-0.5 text-[10px] font-semibold uppercase tracking-wider text-text-3">
+          <Text className="text-xl font-extrabold tracking-tight text-text">{col.value}</Text>
+          <Text className="mt-[3px] text-[11px] uppercase tracking-wider text-text-3">
             {col.label}
           </Text>
         </View>

@@ -24,12 +24,11 @@ export default function RecipeScreen() {
 
   return (
     <View className="flex-1 bg-bg">
-      {/* Sticky page header */}
+      {/* Sticky page header — no title for recipe view */}
       <PageHeader
-        title={recipe.title}
         rightAction={
-          <View className="h-9 w-9 items-center justify-center">
-            <CartIcon size={22} color="#3D3329" />
+          <View className="h-[38px] w-[38px] items-center justify-center">
+            <CartIcon size={20} color="#3D3329" />
           </View>
         }
       />
@@ -49,11 +48,8 @@ export default function RecipeScreen() {
         {/* Servings stepper */}
         <ServingsStepper initialServings={recipe.servings} />
 
-        {/* Ingredient sections */}
+        {/* Ingredient sections — no top-level "Ingredients" heading per mock */}
         <View className="pt-5">
-          <Text className="mb-5 px-5 text-lg font-bold text-text">
-            Ingredients
-          </Text>
           {recipe.ingredientSections.map((section, sectionIndex) => (
             <View key={section.name ?? `section-${String(sectionIndex)}`}>
               {/* Section header */}
@@ -61,26 +57,29 @@ export default function RecipeScreen() {
                 <View
                   className={`px-5 ${sectionIndex > 0 ? "border-t border-border-subtle pt-5" : ""} pb-2.5`}
                 >
-                  <Text className="text-xs font-bold uppercase tracking-wider text-text-3">
+                  <Text className="text-[11px] font-bold uppercase tracking-wider text-text-3">
                     {section.name}
                   </Text>
                 </View>
               ) : null}
 
               {/* Ingredient items */}
-              {section.ingredients.map((ingredient) => {
-                const displayAmount = [ingredient.amount, ingredient.unit]
-                  .filter(Boolean)
-                  .join(" ");
-                return (
-                  <IngredientFullItem
-                    key={`${ingredient.name}-${ingredient.amount}`}
-                    amount={displayAmount}
-                    name={ingredient.name}
-                    note={ingredient.notes}
-                  />
-                );
-              })}
+              <View className="px-5">
+                {section.ingredients.map((ingredient, ingredientIndex) => {
+                  const displayAmount = [ingredient.amount, ingredient.unit]
+                    .filter(Boolean)
+                    .join(" ");
+                  return (
+                    <IngredientFullItem
+                      key={`${ingredient.name}-${ingredient.amount}`}
+                      amount={displayAmount}
+                      name={ingredient.name}
+                      note={ingredient.notes}
+                      isLast={ingredientIndex === section.ingredients.length - 1}
+                    />
+                  );
+                })}
+              </View>
             </View>
           ))}
         </View>
@@ -90,7 +89,7 @@ export default function RecipeScreen() {
 
         {/* Instructions */}
         <View className="pb-5">
-          <Text className="mb-5 px-5 text-lg font-bold text-text">
+          <Text className="mb-5 px-5 text-[13px] font-bold uppercase tracking-wider text-text-3">
             Instructions
           </Text>
           {recipe.instructions.map((instruction) => (

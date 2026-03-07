@@ -18,25 +18,25 @@ export function Button({
   disabled = false,
   className = "",
 }: ButtonProps) {
-  const baseClasses = "items-center justify-center rounded-md";
+  const baseClasses = "items-center justify-center rounded-full";
 
   const variantClasses = {
     primary: "bg-brand",
-    outline: "border border-border bg-transparent",
+    outline: "border-[1.5px] border-border bg-transparent",
   };
 
   const sizeClasses = {
-    default: "h-[50px] px-6",
-    sm: "h-9 px-4",
+    default: "px-[18px] py-[10px]",
+    sm: "px-4 py-2",
   };
 
   const textVariantClasses = {
-    primary: "text-text-inv font-bold",
-    outline: "text-text font-semibold",
+    primary: "text-text-inv font-medium",
+    outline: "text-text font-medium",
   };
 
   const textSizeClasses = {
-    default: "text-[15px]",
+    default: "text-[13px]",
     sm: "text-[13px]",
   };
 
