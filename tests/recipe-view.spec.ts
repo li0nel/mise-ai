@@ -2,7 +2,6 @@ import { test, expect } from "@playwright/test";
 
 test.describe("Recipe detail page", () => {
   test.beforeEach(async ({ page }) => {
-    // Navigate to Boeuf Bourguignon recipe
     await page.goto("/(main)/recipe/boeuf-bourguignon");
   });
 
@@ -11,9 +10,10 @@ test.describe("Recipe detail page", () => {
   });
 
   test("shows recipe meta bar with times and servings", async ({ page }) => {
-    // Check for prep time, cook time, servings
-    await expect(page.getByText(/30/)).toBeVisible(); // prep time
-    await expect(page.getByText(/180|3 hr/)).toBeVisible(); // cook time
+    // RecipeMetaBar shows formatted time: 30 for prep, "3h" for cook (180 min)
+    await expect(page.getByText("30")).toBeVisible();
+    await expect(page.getByText("3h")).toBeVisible();
+    // ServingsStepper shows "6 servings"
     await expect(page.getByText(/6 serving/)).toBeVisible();
   });
 
@@ -25,9 +25,8 @@ test.describe("Recipe detail page", () => {
   });
 
   test("shows ingredient sections", async ({ page }) => {
-    // Boeuf Bourguignon has a "Main" section
-    await expect(page.getByText("Main")).toBeVisible();
-    // Check for an ingredient
+    // Boeuf Bourguignon has "Main" and "Garnish" sections
+    await expect(page.getByText("Main", { exact: true })).toBeVisible();
     await expect(page.getByText("Stewing beef")).toBeVisible();
   });
 

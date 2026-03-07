@@ -16,8 +16,8 @@ test.describe("Login page", () => {
   });
 
   test("has field labels", async ({ page }) => {
-    await expect(page.getByText("Email")).toBeVisible();
-    await expect(page.getByText("Password")).toBeVisible();
+    await expect(page.getByText("Email", { exact: true })).toBeVisible();
+    await expect(page.getByText("Password", { exact: true })).toBeVisible();
   });
 
   test("has sign-in button", async ({ page }) => {
@@ -39,7 +39,7 @@ test.describe("Login page", () => {
   });
 
   test("has or divider", async ({ page }) => {
-    await expect(page.getByText("or")).toBeVisible();
+    await expect(page.getByText("or", { exact: true })).toBeVisible();
   });
 
   test("no console errors on load", async ({ page }) => {

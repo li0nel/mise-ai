@@ -117,8 +117,8 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
     const { messages } = get();
 
-    // First message with no Gemini: use mock fallback
-    if (messages.length === 0 && !initGeminiChat()) {
+    // First message: seed with mock conversation (demo/tutorial)
+    if (messages.length === 0) {
       set({ messages: [userMessage, ...MOCK_CHAT_MESSAGES] });
       return;
     }

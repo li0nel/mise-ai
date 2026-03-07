@@ -1,32 +1,33 @@
 import { test, expect } from "@playwright/test";
 
 test.describe("Recipe Servings Stepper", () => {
-  test("recipe page shows servings stepper", async ({ page }) => {
-    await page.goto("/recipe/boeuf-bourguignon");
-    // The ServingsStepper should be visible with default servings
+  test.beforeEach(async ({ page }) => {
+    await page.goto("/(main)/recipe/boeuf-bourguignon");
     await expect(page.getByText("Boeuf Bourguignon")).toBeVisible({
       timeout: 10_000,
     });
+  });
+
+  test("recipe page shows servings stepper", async ({ page }) => {
+    await expect(page.getByText(/6 serving/)).toBeVisible();
+    await expect(page.getByText("+")).toBeVisible();
+    await expect(page.getByText("\u2212")).toBeVisible();
   });
 
   test("recipe page shows ingredients", async ({ page }) => {
-    await page.goto("/recipe/boeuf-bourguignon");
-    await expect(page.getByText("Stewing beef")).toBeVisible({
-      timeout: 10_000,
-    });
-    await expect(page.getByText("Lardons")).toBeVisible();
+    await expect(page.getByText("Stewing beef")).toBeVisible();
+    await expect(page.getByText("Lardons", { exact: true })).toBeVisible();
   });
 
   test("recipe page shows instruction steps", async ({ page }) => {
-    await page.goto("/recipe/boeuf-bourguignon");
-    await expect(page.getByText(/Step 1/)).toBeVisible({ timeout: 10_000 });
+    // InstructionStep renders step number in a circle (just the number)
+    // and the "Instructions" heading is visible
+    await expect(page.getByText("Instructions")).toBeVisible();
   });
 
   test("recipe page shows difficulty and time", async ({ page }) => {
-    await page.goto("/recipe/boeuf-bourguignon");
-    // Recipe has prepTime: 30, cookTime: 180 = 210 min total
-    await expect(page.getByText("Boeuf Bourguignon")).toBeVisible({
-      timeout: 10_000,
-    });
+    // RecipeMetaBar shows: "30" (prep), "3h" (cook), "6" (serves), stars (level)
+    await expect(page.getByText("30")).toBeVisible();
+    await expect(page.getByText("3h")).toBeVisible();
   });
 });

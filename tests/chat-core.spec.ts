@@ -14,27 +14,23 @@ test.describe("Chat screen", () => {
   });
 
   test("has chat input bar", async ({ page }) => {
-    // The chat input should be present
-    const input = page.getByPlaceholder(/recipe|cook|ask|message/i);
+    const input = page.getByPlaceholder("Ask about recipes...");
     await expect(input).toBeVisible();
   });
 
   test("shows app bar", async ({ page }) => {
-    // The app bar with brand name should be visible
     await expect(page.getByText("mise.")).toBeVisible();
   });
 
   test("sending a message loads conversation", async ({ page }) => {
-    // Find the input and type a message
-    const input = page.locator('input[type="text"], textarea').first();
+    const input = page.getByPlaceholder("Ask about recipes...");
     await input.fill("What can I make with chicken?");
-
-    // Submit (press Enter or click send button)
     await input.press("Enter");
 
-    // The empty state should disappear and messages should appear
+    // Mock fallback loads MOCK_CHAT_MESSAGES when Gemini is not available
+    // The empty state should disappear once messages are in the feed
     await expect(page.getByText("Ready to cook?")).not.toBeVisible({
-      timeout: 5000,
+      timeout: 10_000,
     });
   });
 

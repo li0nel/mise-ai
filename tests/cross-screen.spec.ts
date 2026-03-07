@@ -4,7 +4,7 @@ test.describe("Cross-Screen Flows", () => {
   test("chat → recipe: can navigate from chat to recipe detail", async ({
     page,
   }) => {
-    await page.goto("/");
+    await page.goto("/(main)");
     const input = page.getByPlaceholder("Ask about recipes...");
     await input.fill("Show me Beef Bourguignon");
     await input.press("Enter");
@@ -16,13 +16,13 @@ test.describe("Cross-Screen Flows", () => {
 
     // Click View Full Recipe — should navigate to recipe detail
     await page.getByText("View Full Recipe").click();
-    await expect(page.getByText("Boeuf Bourguignon")).toBeVisible({
+    await expect(page.getByText("Boeuf Bourguignon").first()).toBeVisible({
       timeout: 10_000,
     });
   });
 
   test("recipe detail page loads directly", async ({ page }) => {
-    await page.goto("/recipe/boeuf-bourguignon");
+    await page.goto("/(main)/recipe/boeuf-bourguignon");
     await expect(page.getByText("Boeuf Bourguignon")).toBeVisible({
       timeout: 10_000,
     });
@@ -30,37 +30,36 @@ test.describe("Cross-Screen Flows", () => {
   });
 
   test("shopping page loads directly", async ({ page }) => {
-    await page.goto("/shopping");
+    await page.goto("/(main)/shopping");
     await expect(page.getByText("Shopping List")).toBeVisible({
       timeout: 10_000,
     });
   });
 
   test("chat page shows empty state initially", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/(main)");
     await expect(page.getByText("Ready to cook?")).toBeVisible();
   });
 
   test("can navigate between main pages", async ({ page }) => {
     // Start on chat
-    await page.goto("/");
+    await page.goto("/(main)");
     await expect(page.getByText("Ready to cook?")).toBeVisible();
 
     // Navigate to shopping
-    await page.goto("/shopping");
+    await page.goto("/(main)/shopping");
     await expect(page.getByText("Shopping List")).toBeVisible({
       timeout: 10_000,
     });
 
     // Navigate to a recipe
-    await page.goto("/recipe/boeuf-bourguignon");
+    await page.goto("/(main)/recipe/boeuf-bourguignon");
     await expect(page.getByText("Boeuf Bourguignon")).toBeVisible({
       timeout: 10_000,
     });
 
     // Navigate back to chat
-    await page.goto("/");
-    // Chat should still work
+    await page.goto("/(main)");
     await expect(
       page.getByPlaceholder("Ask about recipes..."),
     ).toBeVisible();

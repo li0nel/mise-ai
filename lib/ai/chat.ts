@@ -38,7 +38,7 @@ export function initGeminiChat(): GenerativeModel | null {
 
   try {
     const ai = getAI(app, { backend: new GoogleAIBackend() });
-    _model = getGenerativeModel(ai, { model: "gemini-2.0-flash" });
+    _model = getGenerativeModel(ai, { model: "gemini-2.5-flash" });
     return _model;
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);

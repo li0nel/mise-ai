@@ -23,8 +23,6 @@ app/          expo-router screens and layouts
 components/   shared React Native components
 constants/    Colors, config values
 types/        shared TypeScript types
-specs/        product specs
-docs/         architecture docs and brainstorms
 ```
 
 ## Available Scripts

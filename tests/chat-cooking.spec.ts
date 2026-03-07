@@ -2,29 +2,32 @@ import { test, expect } from "@playwright/test";
 
 test.describe("Cooking Mode Widgets", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/(main)");
     const input = page.getByPlaceholder("Ask about recipes...");
     await input.fill("Let's cook Beef Bourguignon");
     await input.press("Enter");
     // Wait for mock conversation to load
-    await expect(page.getByText("Boeuf Bourguignon")).toBeVisible({
+    await expect(page.getByText("Boeuf Bourguignon").first()).toBeVisible({
       timeout: 10_000,
     });
   });
 
   test("cook-step widget shows step number and total", async ({ page }) => {
-    await expect(page.getByText("Step 1 of 5")).toBeVisible();
+    // Mock data has cook-step with stepNumber: 1, totalSteps: 5, progressPercent: 20
+    await expect(page.getByText(/Step 1 of 5/)).toBeVisible();
     await expect(page.getByText("20%")).toBeVisible();
   });
 
   test("cook-step widget shows instruction text", async ({ page }) => {
+    // Text appears in both cook-step and cook-mode widgets, use .first()
     await expect(
-      page.getByText(/Bring a medium pot of water to a boil/),
+      page.getByText(/Bring a medium pot of water to a boil/).first(),
     ).toBeVisible();
   });
 
   test("cook-step shows timer pill", async ({ page }) => {
-    await expect(page.getByText(/8 min blanch/)).toBeVisible();
+    // Timer pill appears in both cook-step and cook-mode, use .first()
+    await expect(page.getByText(/8 min blanch/).first()).toBeVisible();
   });
 
   test("cook-step shows action buttons", async ({ page }) => {
@@ -43,7 +46,7 @@ test.describe("Cooking Mode Widgets", () => {
 
   test("cook-mode shows warnings", async ({ page }) => {
     await expect(
-      page.getByText(/Crowded pan = steamed beef/),
+      page.getByText(/Crowded pan = steamed beef/).first(),
     ).toBeVisible();
   });
 
@@ -60,10 +63,10 @@ test.describe("Cooking Mode Widgets", () => {
   });
 
   test("timer pill is clickable to start timer", async ({ page }) => {
-    const timerPill = page.getByText(/8 min blanch/);
+    const timerPill = page.getByText(/8 min blanch/).first();
     await expect(timerPill).toBeVisible();
     await timerPill.click();
-    // After clicking, the timer should show a countdown format
-    await expect(page.getByText(/remaining/)).toBeVisible({ timeout: 3_000 });
+    // After clicking, the timer should show countdown format "X:XX remaining"
+    await expect(page.getByText(/\d+:\d+ remaining/)).toBeVisible({ timeout: 3_000 });
   });
 });

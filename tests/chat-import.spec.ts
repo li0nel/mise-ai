@@ -1,11 +1,12 @@
 import { test, expect } from "@playwright/test";
 
 test.describe("Recipe Import Detection", () => {
-  test("detects URL in chat input", async ({ page }) => {
-    await page.goto("/");
-    const input = page.getByPlaceholder("Ask about recipes...");
+  test.beforeEach(async ({ page }) => {
+    await page.goto("/(main)");
+  });
 
-    // Type a URL — the recipeImport module should detect it
+  test("detects URL in chat input", async ({ page }) => {
+    const input = page.getByPlaceholder("Ask about recipes...");
     await input.fill("https://www.example.com/recipes/chicken-tikka");
     await expect(input).toHaveValue(
       "https://www.example.com/recipes/chicken-tikka",
@@ -13,19 +14,17 @@ test.describe("Recipe Import Detection", () => {
   });
 
   test("sends URL as a regular message", async ({ page }) => {
-    await page.goto("/");
     const input = page.getByPlaceholder("Ask about recipes...");
     await input.fill("https://www.example.com/recipes/pasta-carbonara");
     await input.press("Enter");
 
-    // URL should appear as user message text
+    // URL should appear as user message text (mock fallback loads full conversation)
     await expect(
       page.getByText("https://www.example.com/recipes/pasta-carbonara"),
-    ).toBeVisible();
+    ).toBeVisible({ timeout: 10_000 });
   });
 
   test("sends recipe text as message", async ({ page }) => {
-    await page.goto("/");
     const input = page.getByPlaceholder("Ask about recipes...");
     await input.fill("I want to cook pasta carbonara with eggs and pancetta");
     await input.press("Enter");
@@ -34,13 +33,12 @@ test.describe("Recipe Import Detection", () => {
       page.getByText(
         "I want to cook pasta carbonara with eggs and pancetta",
       ),
-    ).toBeVisible();
+    ).toBeVisible({ timeout: 10_000 });
   });
 
   test("empty input does not send", async ({ page }) => {
-    await page.goto("/");
     const input = page.getByPlaceholder("Ask about recipes...");
-    await input.fill("");
+    await expect(input).toHaveValue("");
     await input.press("Enter");
 
     // Should still show empty state

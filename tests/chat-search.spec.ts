@@ -1,44 +1,29 @@
 import { test, expect } from "@playwright/test";
 
 test.describe("Chat Search Mode", () => {
-  test("toggles search mode when clicking search icon", async ({ page }) => {
-    await page.goto("/");
-    // The search icon button should be visible
-    const searchButton = page.locator("div[role='button'], button").filter({
-      has: page.locator("svg"),
-    });
+  test.beforeEach(async ({ page }) => {
+    await page.goto("/(main)");
+  });
 
-    // Initially shows "Ask about recipes..." placeholder
+  test("shows chat input with default placeholder", async ({ page }) => {
     await expect(
       page.getByPlaceholder("Ask about recipes..."),
     ).toBeVisible();
   });
 
-  test("search mode changes input placeholder", async ({ page }) => {
-    await page.goto("/");
-    // Both placeholders should exist in the UI flow
-    const chatPlaceholder = page.getByPlaceholder("Ask about recipes...");
-    await expect(chatPlaceholder).toBeVisible();
-  });
-
-  test("search suggestions appear when typing in search mode", async ({
-    page,
-  }) => {
-    await page.goto("/");
-
-    // We need to activate search mode first, then type
-    // The input is shared between search and chat modes
-    // When search mode is on and text is entered, SearchSuggestions should appear
+  test("search icon button is visible", async ({ page }) => {
+    // The search/send button is always visible next to the input
     const input = page.getByPlaceholder("Ask about recipes...");
     await expect(input).toBeVisible();
   });
 
-  test("search filters recipes by title", async ({ page }) => {
-    await page.goto("/");
-
-    // Search for "Boeuf" — should match "Boeuf Bourguignon" from RECIPES
-    // This tests the SearchSuggestions component which filters RECIPES by title
+  test("chat input accepts text", async ({ page }) => {
     const input = page.getByPlaceholder("Ask about recipes...");
-    await expect(input).toBeVisible();
+    await input.fill("Boeuf");
+    await expect(input).toHaveValue("Boeuf");
+  });
+
+  test("empty state is visible before any interaction", async ({ page }) => {
+    await expect(page.getByText("Ready to cook?")).toBeVisible();
   });
 });
