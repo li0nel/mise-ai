@@ -104,7 +104,7 @@ export const MOCK_CHAT_MESSAGES: ChatMessage[] = [
             { amount: "To taste", name: "Salt and freshly ground black pepper" },
           ],
           actions: [
-            { label: "Add All to Shopping List", type: "primary" },
+            { label: "Add All to Shopping List", type: "primary", actionType: "direct", directAction: "add-to-shopping" },
           ],
         },
       },
