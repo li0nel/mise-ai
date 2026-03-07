@@ -1,17 +1,33 @@
 import { useState } from "react";
 import { View, Text, TextInput, Pressable, ScrollView } from "react-native";
-import { useRouter } from "expo-router";
 import { useAuth } from "../../contexts/AuthContext";
 
 export default function LoginScreen() {
-  const { login } = useAuth();
-  const router = useRouter();
+  const { signIn } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [isPending, setIsPending] = useState(false);
 
-  const handleLogin = () => {
-    login();
-    router.replace("/(main)");
+  const handleLogin = async () => {
+    setError(null);
+    setIsPending(true);
+    try {
+      await signIn(email, password);
+    } catch (e: unknown) {
+      const code = (e as { code?: string }).code ?? "";
+      if (code === "auth/invalid-credential" || code === "auth/user-not-found" || code === "auth/wrong-password") {
+        setError("Invalid email or password.");
+      } else if (code === "auth/invalid-email") {
+        setError("Please enter a valid email address.");
+      } else if (code === "auth/too-many-requests") {
+        setError("Too many attempts. Please try again later.");
+      } else {
+        setError("Sign in failed. Please try again.");
+      }
+    } finally {
+      setIsPending(false);
+    }
   };
 
   return (
@@ -73,12 +89,18 @@ export default function LoginScreen() {
       {/* Sign in button */}
       <Pressable
         onPress={handleLogin}
-        className="w-full h-[50px] bg-brand rounded-md items-center justify-center mb-1"
+        disabled={isPending}
+        className="w-full h-[50px] bg-brand rounded-md items-center justify-center mb-1 opacity-75"
       >
         <Text className="text-base font-bold text-text-inv tracking-tight">
-          Sign in
+          {isPending ? "Signing in…" : "Sign in"}
         </Text>
       </Pressable>
+
+      {/* Error message */}
+      {error && (
+        <Text className="text-red-500 text-sm mt-2 text-center">{error}</Text>
+      )}
 
       {/* Divider */}
       <View className="flex-row items-center my-5 gap-3">
@@ -93,8 +115,8 @@ export default function LoginScreen() {
       <View className="gap-2.5">
         {/* Google */}
         <Pressable
-          onPress={handleLogin}
-          className="w-full h-12 flex-row items-center justify-center gap-2.5 bg-bg-surface border-[1.5px] border-border rounded-md"
+          disabled
+          className="w-full h-12 flex-row items-center justify-center gap-2.5 bg-bg-surface border-[1.5px] border-border rounded-md opacity-50"
         >
           <Text className="text-base font-semibold text-text">G</Text>
           <Text className="text-base font-semibold text-text tracking-tight">
@@ -104,8 +126,8 @@ export default function LoginScreen() {
 
         {/* Apple */}
         <Pressable
-          onPress={handleLogin}
-          className="w-full h-12 flex-row items-center justify-center gap-2.5 bg-bg-surface border-[1.5px] border-border rounded-md"
+          disabled
+          className="w-full h-12 flex-row items-center justify-center gap-2.5 bg-bg-surface border-[1.5px] border-border rounded-md opacity-50"
         >
           <Text className="text-base font-semibold text-text">{"\uF8FF"}</Text>
           <Text className="text-base font-semibold text-text tracking-tight">
