@@ -10,7 +10,6 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "jest",
-    "logout": "playwright-cli goto http://localhost:8081 && playwright-cli localstorage-clear && playwright-cli reload"
   },
   "dependencies": {
     "@expo/metro-runtime": "^55.0.6",
