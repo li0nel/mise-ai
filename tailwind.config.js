@@ -66,15 +66,16 @@ module.exports = {
       boxShadow: {
         xs: "0 1px 2px rgba(28,25,23,0.06)",
         sm: "0 1px 3px rgba(28,25,23,0.08), 0 1px 2px rgba(28,25,23,0.04)",
-        md: "0 4px 6px rgba(28,25,23,0.06), 0 2px 4px rgba(28,25,23,0.04)",
-        lg: "0 10px 15px rgba(28,25,23,0.06), 0 4px 6px rgba(28,25,23,0.03)",
+        md: "0 4px 12px rgba(28,25,23,0.1), 0 2px 4px rgba(28,25,23,0.04)",
+        lg: "0 8px 24px rgba(28,25,23,0.12), 0 4px 8px rgba(28,25,23,0.06)",
       },
       fontFamily: {
         sans: [
           "Inter",
           "-apple-system",
           "BlinkMacSystemFont",
-          "Segoe UI",
+          "SF Pro Text",
+          "system-ui",
           "sans-serif",
         ],
       },
