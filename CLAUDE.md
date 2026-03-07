@@ -75,6 +75,26 @@ KillBash the existing shell, then re-run with run_in_background: true.
 - Verify: `curl -s -o /dev/null -w "%{http_code}" http://localhost:8081` must return 200 before Playwright tests
 - Stop: `TaskStop` the task ID
 
+## Definition of Done (MANDATORY)
+**No work is considered complete until ALL of these pass. Never skip any step.**
+
+1. `npm run typecheck` — zero errors
+2. Start the dev server (`npm run web -- --clear`) and verify Metro bundles without errors in the server logs
+3. Open every changed/new page in Playwright (`playwright-cli open`, `playwright-cli goto`)
+4. Run `playwright-cli console` on every page — **zero errors** required (VERBOSE and INFO are ok)
+5. Verify the page content with `playwright-cli snapshot` — confirm it renders what the bead/task requires
+6. If anything fails in steps 2-5, fix it and re-verify before committing
+7. Only after all checks pass: commit, push
+
+**Subagents implementing beads must also follow this.** QA agents must run the dev server and check with Playwright — `expo export` alone is NOT sufficient.
+
+## Design Fidelity (MANDATORY)
+- The HTML mocks in `mocks/` are the **single source of truth** for all UI
+- **Never invent, substitute, or approximate** icons, colors, spacing, or layout — reproduce the mock exactly
+- If the mock uses an SVG icon, use that exact SVG (install `react-native-svg` if needed) — do NOT replace with emoji or Unicode characters
+- If a design element cannot be implemented exactly (e.g., missing dependency), flag it and ask — do NOT silently substitute
+- Only deviate from the mocks when the user explicitly asks for a change
+
 ## React / Dependency Notes
 - `react`, `react-dom`, and related packages must be pinned to exact same version
 - After `npm install` changes, restart Metro with `--clear` to avoid stale bundle cache
