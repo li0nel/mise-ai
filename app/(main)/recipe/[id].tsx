@@ -105,9 +105,14 @@ export default function RecipeScreen() {
   const recipe = useRecipeStore((state) => state.recipes.find((r) => r.id === id));
   const [servings, setServings] = useState<number | null>(null);
   const [showAddOverlay, setShowAddOverlay] = useState(false);
+  const [addedToShopping, setAddedToShopping] = useState(false);
 
   const handleOpenOverlay = useCallback(() => setShowAddOverlay(true), []);
   const handleCloseOverlay = useCallback(() => setShowAddOverlay(false), []);
+  const handleItemsAdded = useCallback(() => {
+    setShowAddOverlay(false);
+    setAddedToShopping(true);
+  }, []);
 
   if (!recipe) {
     return (
@@ -214,7 +219,7 @@ export default function RecipeScreen() {
       </ScrollView>
 
       {/* Sticky bottom bar */}
-      <RecipeBottomBar onAddToShopping={handleOpenOverlay} recipeName={recipe.title} />
+      <RecipeBottomBar onAddToShopping={handleOpenOverlay} recipeName={recipe.title} addedToShopping={addedToShopping} />
 
       {/* Add to shopping overlay */}
       <AddToShoppingOverlay
@@ -222,6 +227,7 @@ export default function RecipeScreen() {
         recipe={recipe}
         servings={currentServings}
         onClose={handleCloseOverlay}
+        onAdd={handleItemsAdded}
       />
     </View>
   );

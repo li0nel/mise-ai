@@ -10,6 +10,7 @@ interface AddToShoppingOverlayProps {
   recipe: Recipe;
   servings: number;
   onClose: () => void;
+  onAdd?: () => void;
 }
 
 export function AddToShoppingOverlay({
@@ -17,6 +18,7 @@ export function AddToShoppingOverlay({
   recipe,
   servings,
   onClose,
+  onAdd,
 }: AddToShoppingOverlayProps) {
   const addItems = useShoppingStore((state) => state.addItems);
 
@@ -58,8 +60,8 @@ export function AddToShoppingOverlay({
       }));
 
     addItems(selectedItems);
-    onClose();
-  }, [allIngredients, checkedIds, recipe, servings, addItems, onClose]);
+    (onAdd ?? onClose)();
+  }, [allIngredients, checkedIds, recipe, servings, addItems, onClose, onAdd]);
 
   return (
     <Modal

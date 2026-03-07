@@ -1,4 +1,4 @@
-import { View } from "react-native";
+import { View, Text } from "react-native";
 import { useRouter } from "expo-router";
 import { Button } from "../ui/Button";
 import { useChatStore } from "../../lib/stores/chatStore";
@@ -6,9 +6,10 @@ import { useChatStore } from "../../lib/stores/chatStore";
 interface RecipeBottomBarProps {
   onAddToShopping?: () => void;
   recipeName: string;
+  addedToShopping?: boolean;
 }
 
-export function RecipeBottomBar({ onAddToShopping, recipeName }: RecipeBottomBarProps) {
+export function RecipeBottomBar({ onAddToShopping, recipeName, addedToShopping }: RecipeBottomBarProps) {
   const router = useRouter();
 
   function handleCookNow() {
@@ -21,9 +22,15 @@ export function RecipeBottomBar({ onAddToShopping, recipeName }: RecipeBottomBar
       <Button variant="outline" className="flex-1" onPress={handleCookNow}>
         {"Cook Now \uD83D\uDC68\u200D\uD83C\uDF73"}
       </Button>
-      <Button variant="primary" className="flex-1" onPress={onAddToShopping}>
-        Add to Shopping List
-      </Button>
+      {addedToShopping ? (
+        <View className="flex-1 items-center justify-center">
+          <Text className="text-[13px] font-medium text-text-2">{"\u2713"} Added to shopping list</Text>
+        </View>
+      ) : (
+        <Button variant="primary" className="flex-1" onPress={onAddToShopping}>
+          Add to Shopping List
+        </Button>
+      )}
     </View>
   );
 }
