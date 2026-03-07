@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { View, Text, Pressable } from "react-native";
-import type { CookStepBlock } from "../../types";
+import type { CookStepBlock, WidgetAction } from "../../types";
 import { ActionButton } from "./ActionButton";
+import { useChatStore } from "../../lib/stores/chatStore";
 
 interface CookStepProps {
   data: CookStepBlock["data"];
@@ -72,6 +73,12 @@ export function CookStep({ data }: CookStepProps) {
     }, 1000);
   }, [data.timerPill]);
 
+  const handleAction = useCallback((action: WidgetAction) => {
+    if (action.actionType === "chat") {
+      useChatStore.getState().sendMessage(action.chatMessage ?? action.label);
+    }
+  }, []);
+
   const timerPillText =
     timerState === "running"
       ? formatRemaining(remaining)
@@ -130,7 +137,7 @@ export function CookStep({ data }: CookStepProps) {
       {data.actions && data.actions.length > 0 ? (
         <View className="flex-row gap-2 px-4 pb-4">
           {data.actions.map((action) => (
-            <ActionButton key={action.label} action={action} />
+            <ActionButton key={action.label} action={action} onPress={() => handleAction(action)} />
           ))}
         </View>
       ) : null}

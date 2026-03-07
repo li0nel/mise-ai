@@ -1,7 +1,9 @@
+import { useCallback } from "react";
 import { View, Text } from "react-native";
 import { useRouter } from "expo-router";
-import type { RecipeCardBlock } from "../../types";
+import type { RecipeCardBlock, WidgetAction } from "../../types";
 import { ActionButton } from "./ActionButton";
+import { useChatStore } from "../../lib/stores/chatStore";
 
 interface RecipeCardProps {
   data: RecipeCardBlock["data"];
@@ -42,6 +44,17 @@ export function RecipeCard({ data }: RecipeCardProps) {
   function handleNavigate() {
     router.push(`/recipe/${data.id}` as "/recipe/[id]");
   }
+
+  const handleAction = useCallback(
+    (action: WidgetAction) => {
+      if (action.actionType === "chat") {
+        useChatStore.getState().sendMessage(action.chatMessage ?? action.label);
+      } else {
+        handleNavigate();
+      }
+    },
+    [data.id],
+  );
 
   return (
     <View className="overflow-hidden rounded-xl border border-border bg-bg-surface shadow-sm">
@@ -94,7 +107,7 @@ export function RecipeCard({ data }: RecipeCardProps) {
             <ActionButton
               key={action.label}
               action={action}
-              onPress={handleNavigate}
+              onPress={() => handleAction(action)}
             />
           ))}
         </View>

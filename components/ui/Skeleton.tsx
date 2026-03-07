@@ -27,8 +27,7 @@ export function SkeletonRecipeCard() {
   return (
     <View className="overflow-hidden rounded-xl border border-border bg-bg-surface">
       {/* Hero image placeholder */}
-      <SkeletonBox className="w-full" style-aspect="16/9" />
-      <View className="aspect-video w-full animate-pulse bg-bg-elevated" />
+      <View className="aspect-video w-full animate-pulse rounded-t-xl bg-bg-elevated" />
 
       {/* Body */}
       <View className="px-4 pb-4 pt-3.5">

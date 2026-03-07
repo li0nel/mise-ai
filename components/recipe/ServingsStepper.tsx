@@ -1,15 +1,13 @@
-import { useState } from "react";
 import { View, Text, Pressable } from "react-native";
 
 interface ServingsStepperProps {
-  initialServings: number;
+  servings: number;
+  onServingsChange: (servings: number) => void;
 }
 
-export function ServingsStepper({ initialServings }: ServingsStepperProps) {
-  const [servings, setServings] = useState(initialServings);
-
-  const decrement = () => setServings((s) => Math.max(1, s - 1));
-  const increment = () => setServings((s) => Math.min(20, s + 1));
+export function ServingsStepper({ servings, onServingsChange }: ServingsStepperProps) {
+  const decrement = () => onServingsChange(Math.max(1, servings - 1));
+  const increment = () => onServingsChange(Math.min(20, servings + 1));
 
   return (
     <View className="flex-row items-center px-5 py-3">

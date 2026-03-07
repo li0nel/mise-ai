@@ -1,6 +1,8 @@
 import type { Recipe, Ingredient, Instruction } from "../types";
+import { useRecipeStore } from "./stores/recipeStore";
 
-const URL_REGEX = /https?:\/\/[^\s<>"{}|\\^`[\]]+/gi;
+const URL_REGEX = /https?:\/\/[^\s<>"{}|\\^`[\]]+/i;
+const URL_REGEX_GLOBAL = /https?:\/\/[^\s<>"{}|\\^`[\]]+/gi;
 
 const UNIT_PATTERN =
   /\b(?:cups?|tbsp|tablespoons?|tsp|teaspoons?|oz|ounces?|lbs?|pounds?|g|grams?|kg|ml|liters?|litres?|quarts?|pints?|gallons?|cloves?|pinch(?:es)?|dash(?:es)?|bunch(?:es)?|cans?|packages?|slices?|pieces?|whole|large|medium|small|stalks?)\b/i;
@@ -15,7 +17,7 @@ export function isRecipeUrl(text: string): boolean {
 
 /** Extract all URLs from a text string */
 export function extractUrls(text: string): string[] {
-  return text.match(URL_REGEX) ?? [];
+  return text.match(URL_REGEX_GLOBAL) ?? [];
 }
 
 /**
@@ -176,6 +178,23 @@ function parseInstructions(lines: string[]): Instruction[] {
       text,
     };
   });
+}
+
+/** Save a parsed recipe to the recipe store collection */
+export function saveRecipeToCollection(recipe: Recipe): void {
+  useRecipeStore.getState().addRecipe(recipe);
+}
+
+/** Update an existing saved recipe with partial changes */
+export function updateSavedRecipe(recipeId: string, updates: Partial<Recipe>): void {
+  useRecipeStore.getState().updateRecipe(recipeId, updates);
+}
+
+/** Parse text and immediately save to the recipe store. Returns the saved recipe. */
+export function importRecipeFromText(text: string): Recipe {
+  const recipe = parseRecipeFromText(text);
+  saveRecipeToCollection(recipe);
+  return recipe;
 }
 
 /** Best-effort recipe parser from pasted text */

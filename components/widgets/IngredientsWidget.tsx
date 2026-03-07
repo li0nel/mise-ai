@@ -1,12 +1,34 @@
+import { useCallback } from "react";
 import { View, Text } from "react-native";
-import type { IngredientsBlock } from "../../types";
+import type { IngredientsBlock, WidgetAction, ShoppingItem } from "../../types";
 import { ActionButton } from "./ActionButton";
+import { useChatStore } from "../../lib/stores/chatStore";
+import { useShoppingStore } from "../../lib/stores/shoppingStore";
 
 interface IngredientsWidgetProps {
   data: IngredientsBlock["data"];
 }
 
 export function IngredientsWidget({ data }: IngredientsWidgetProps) {
+  const handleAction = useCallback(
+    (action: WidgetAction) => {
+      if (action.actionType === "direct" && action.directAction === "add-to-shopping") {
+        const shoppingItems: ShoppingItem[] = data.items.map((item, index) => ({
+          id: `shop-${data.recipeTitle}-${index}-${Date.now()}`,
+          name: item.name,
+          amount: item.amount,
+          unit: item.unit,
+          recipeName: data.recipeTitle,
+          checked: false,
+        }));
+        useShoppingStore.getState().addItems(shoppingItems);
+      } else if (action.actionType === "chat") {
+        useChatStore.getState().sendMessage(action.chatMessage ?? action.label);
+      }
+    },
+    [data.items, data.recipeTitle],
+  );
+
   return (
     <View className="overflow-hidden rounded-xl border border-border bg-bg-surface shadow-xs">
       {/* Header */}
@@ -82,7 +104,7 @@ export function IngredientsWidget({ data }: IngredientsWidgetProps) {
       {data.actions && data.actions.length > 0 ? (
         <View className="flex-row gap-2 px-4 pb-4 pt-2">
           {data.actions.map((action) => (
-            <ActionButton key={action.label} action={action} />
+            <ActionButton key={action.label} action={action} onPress={() => handleAction(action)} />
           ))}
         </View>
       ) : null}

@@ -1,15 +1,16 @@
-import { useState, useCallback, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { View, ScrollView, Text } from "react-native";
+import { useRouter } from "expo-router";
 import { PageHeader } from "../../components/ui/PageHeader";
 import { ShoppingProgress } from "../../components/shopping/ShoppingProgress";
 import { ShoppingSection } from "../../components/shopping/ShoppingSection";
 import { ShoppingItem } from "../../components/shopping/ShoppingItem";
-import { MOCK_SHOPPING_ITEMS } from "../../data/mockShopping";
+import { Button } from "../../components/ui/Button";
+import { useShoppingStore } from "../../lib/stores/shoppingStore";
 import type {
   ShoppingItem as ShoppingItemType,
   ShoppingAisleGroup,
   ShoppingRecipeGroup,
-  ShoppingSortMode,
 } from "../../types";
 
 /** Aisle icons lookup */
@@ -77,26 +78,52 @@ function groupByRecipe(items: ShoppingItemType[]): ShoppingRecipeGroup[] {
 }
 
 export default function ShoppingScreen() {
-  const [items, setItems] = useState<ShoppingItemType[]>(() =>
-    MOCK_SHOPPING_ITEMS.map((item) => ({ ...item })),
-  );
-  const [sortMode, setSortMode] = useState<ShoppingSortMode>("aisle");
+  const router = useRouter();
+  const items = useShoppingStore((state) => state.items);
+  const sortMode = useShoppingStore((state) => state.sortMode);
+  const setSortMode = useShoppingStore((state) => state.setSortMode);
+  const toggleItem = useShoppingStore((state) => state.toggleItem);
 
   const checkedCount = useMemo(
     () => items.filter((i) => i.checked).length,
     [items],
   );
 
-  const handleToggle = useCallback((id: string) => {
-    setItems((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, checked: !item.checked } : item,
-      ),
-    );
-  }, []);
+  const handleToggle = useCallback(
+    (id: string) => {
+      toggleItem(id);
+    },
+    [toggleItem],
+  );
 
   const aisleGroups = useMemo(() => groupByAisle(items), [items]);
   const recipeGroups = useMemo(() => groupByRecipe(items), [items]);
+
+  // Empty state
+  if (items.length === 0) {
+    return (
+      <View className="flex-1 bg-bg">
+        <PageHeader title="Shopping List" />
+        <View className="flex-1 items-center justify-center px-8">
+          <Text className="text-5xl">{"\uD83D\uDED2"}</Text>
+          <Text className="mt-4 text-lg font-bold text-text">
+            Your list is empty
+          </Text>
+          <Text className="mt-2 text-center text-[13px] text-text-2">
+            Find a recipe to get started
+          </Text>
+          <View className="mt-6">
+            <Button
+              variant="primary"
+              onPress={() => router.push("/" as never)}
+            >
+              Browse Recipes
+            </Button>
+          </View>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View className="flex-1 bg-bg">

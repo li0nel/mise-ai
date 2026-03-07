@@ -1,3 +1,4 @@
+import { useState, useCallback } from "react";
 import { View, Text, ScrollView } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { PageHeader } from "../../../components/ui/PageHeader";
@@ -8,11 +9,104 @@ import { ServingsStepper } from "../../../components/recipe/ServingsStepper";
 import { IngredientFullItem } from "../../../components/recipe/IngredientFullItem";
 import { InstructionStep } from "../../../components/recipe/InstructionStep";
 import { RecipeBottomBar } from "../../../components/recipe/RecipeBottomBar";
-import { RECIPES } from "../../../data/recipes";
+import { AddToShoppingOverlay } from "../../../components/overlays/AddToShoppingOverlay";
+import { useRecipeStore } from "../../../lib/stores/recipeStore";
+
+/** Unicode fraction map */
+const FRACTION_MAP: Record<string, number> = {
+  "\u00BC": 0.25,
+  "\u00BD": 0.5,
+  "\u00BE": 0.75,
+  "\u2153": 1 / 3,
+  "\u2154": 2 / 3,
+  "\u215B": 0.125,
+  "\u215C": 0.375,
+  "\u215D": 0.625,
+  "\u215E": 0.875,
+};
+
+/** Parse a string amount to a number */
+function parseAmount(amount: string): number | null {
+  const trimmed = amount.trim();
+  if (!trimmed) return null;
+
+  for (const [char, value] of Object.entries(FRACTION_MAP)) {
+    if (trimmed.includes(char)) {
+      const prefix = trimmed.replace(char, "").trim();
+      const whole = prefix ? parseFloat(prefix) : 0;
+      if (!isNaN(whole)) return whole + value;
+    }
+  }
+
+  const fractionMatch = trimmed.match(/^(\d+)\s+(\d+)\/(\d+)$/);
+  if (fractionMatch?.[1] && fractionMatch[2] && fractionMatch[3]) {
+    return (
+      parseInt(fractionMatch[1], 10) +
+      parseInt(fractionMatch[2], 10) / parseInt(fractionMatch[3], 10)
+    );
+  }
+
+  const simpleFraction = trimmed.match(/^(\d+)\/(\d+)$/);
+  if (simpleFraction?.[1] && simpleFraction[2]) {
+    return parseInt(simpleFraction[1], 10) / parseInt(simpleFraction[2], 10);
+  }
+
+  const num = parseFloat(trimmed);
+  return isNaN(num) ? null : num;
+}
+
+/** Format a number back to a display string */
+function formatAmount(value: number): string {
+  const rounded = Math.round(value * 100) / 100;
+
+  if (rounded === Math.floor(rounded)) {
+    return String(rounded);
+  }
+
+  const frac = rounded - Math.floor(rounded);
+  const whole = Math.floor(rounded);
+  const threshold = 0.04;
+
+  const fractions: Array<[number, string]> = [
+    [0.25, "\u00BC"],
+    [0.5, "\u00BD"],
+    [0.75, "\u00BE"],
+    [1 / 3, "\u2153"],
+    [2 / 3, "\u2154"],
+  ];
+
+  for (const [fracValue, fracChar] of fractions) {
+    if (Math.abs(frac - fracValue) < threshold) {
+      return whole > 0 ? `${String(whole)} ${fracChar}` : fracChar;
+    }
+  }
+
+  return String(rounded);
+}
+
+/** Scale an amount string proportionally */
+function scaleAmount(
+  amount: string,
+  originalServings: number,
+  newServings: number,
+): string {
+  if (originalServings === newServings) return amount;
+
+  const parsed = parseAmount(amount);
+  if (parsed === null) return amount;
+
+  const scaled = (parsed * newServings) / originalServings;
+  return formatAmount(scaled);
+}
 
 export default function RecipeScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const recipe = RECIPES.find((r) => r.id === id);
+  const recipe = useRecipeStore((state) => state.recipes.find((r) => r.id === id));
+  const [servings, setServings] = useState<number | null>(null);
+  const [showAddOverlay, setShowAddOverlay] = useState(false);
+
+  const handleOpenOverlay = useCallback(() => setShowAddOverlay(true), []);
+  const handleCloseOverlay = useCallback(() => setShowAddOverlay(false), []);
 
   if (!recipe) {
     return (
@@ -21,6 +115,8 @@ export default function RecipeScreen() {
       </View>
     );
   }
+
+  const currentServings = servings ?? recipe.servings;
 
   return (
     <View className="flex-1 bg-bg">
@@ -46,7 +142,10 @@ export default function RecipeScreen() {
         />
 
         {/* Servings stepper */}
-        <ServingsStepper initialServings={recipe.servings} />
+        <ServingsStepper
+          servings={currentServings}
+          onServingsChange={setServings}
+        />
 
         {/* Ingredient sections — no top-level "Ingredients" heading per mock */}
         <View className="pt-5">
@@ -65,8 +164,13 @@ export default function RecipeScreen() {
 
               {/* Ingredient items */}
               <View className="px-5">
-                {section.ingredients.map((ingredient, ingredientIndex) => {
-                  const displayAmount = [ingredient.amount, ingredient.unit]
+                {section.ingredients.map((ingredient) => {
+                  const scaledAmount = scaleAmount(
+                    ingredient.amount,
+                    recipe.servings,
+                    currentServings,
+                  );
+                  const displayAmount = [scaledAmount, ingredient.unit]
                     .filter(Boolean)
                     .join(" ");
                   return (
@@ -75,7 +179,7 @@ export default function RecipeScreen() {
                       amount={displayAmount}
                       name={ingredient.name}
                       note={ingredient.notes}
-                      isLast={ingredientIndex === section.ingredients.length - 1}
+                      isLast={ingredient === section.ingredients[section.ingredients.length - 1]}
                     />
                   );
                 })}
@@ -105,7 +209,15 @@ export default function RecipeScreen() {
       </ScrollView>
 
       {/* Sticky bottom bar */}
-      <RecipeBottomBar />
+      <RecipeBottomBar onAddToShopping={handleOpenOverlay} />
+
+      {/* Add to shopping overlay */}
+      <AddToShoppingOverlay
+        visible={showAddOverlay}
+        recipe={recipe}
+        servings={currentServings}
+        onClose={handleCloseOverlay}
+      />
     </View>
   );
 }

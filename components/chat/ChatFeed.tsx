@@ -3,6 +3,8 @@ import { ScrollView, View } from "react-native";
 import type { ChatMessage } from "../../types";
 import { UserBubble } from "./UserBubble";
 import { AiMessage } from "./AiMessage";
+import { ThinkingIndicator } from "../widgets/ThinkingIndicator";
+import { useChatStore } from "../../lib/stores/chatStore";
 
 interface ChatFeedProps {
   messages: ChatMessage[];
@@ -10,14 +12,15 @@ interface ChatFeedProps {
 
 export function ChatFeed({ messages }: ChatFeedProps) {
   const scrollRef = useRef<ScrollView>(null);
+  const isStreaming = useChatStore((s) => s.isStreaming);
 
   useEffect(() => {
-    // Scroll to bottom when messages change
+    // Scroll to bottom when messages change or streaming starts
     const timer = setTimeout(() => {
       scrollRef.current?.scrollToEnd({ animated: true });
     }, 100);
     return () => clearTimeout(timer);
-  }, [messages.length]);
+  }, [messages.length, isStreaming]);
 
   return (
     <ScrollView
@@ -35,6 +38,11 @@ export function ChatFeed({ messages }: ChatFeedProps) {
           )}
         </View>
       ))}
+      {isStreaming && (
+        <View className="mb-4">
+          <ThinkingIndicator />
+        </View>
+      )}
     </ScrollView>
   );
 }

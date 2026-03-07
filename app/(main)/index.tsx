@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useCallback } from "react";
 import { KeyboardAvoidingView, Platform } from "react-native";
 import { useRouter } from "expo-router";
 import { AppBar } from "../../components/ui/AppBar";
@@ -6,55 +6,41 @@ import { ChatEmptyState } from "../../components/chat/ChatEmptyState";
 import { ChatFeed } from "../../components/chat/ChatFeed";
 import { ChatInputBar } from "../../components/chat/ChatInputBar";
 import { SearchSuggestions } from "../../components/chat/SearchSuggestions";
-import { MOCK_CHAT_MESSAGES } from "../../data/mockChat";
-import type { ChatMessage } from "../../types";
+import { useChatStore } from "../../lib/stores/chatStore";
 
 export default function MainIndex() {
   const router = useRouter();
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [isSearchMode, setIsSearchMode] = useState(false);
-  const [searchText, setSearchText] = useState("");
+  const messages = useChatStore((state) => state.messages);
+  const searchMode = useChatStore((state) => state.searchMode);
+  const searchQuery = useChatStore((state) => state.searchQuery);
+  const sendMessage = useChatStore((state) => state.sendMessage);
+  const toggleSearch = useChatStore((state) => state.toggleSearch);
+  const setSearchQuery = useChatStore((state) => state.setSearchQuery);
 
   const handleSend = useCallback(
     (text: string) => {
-      if (messages.length === 0) {
-        // First message: add user message then load mock conversation
-        const userMessage: ChatMessage = {
-          id: `user-${Date.now()}`,
-          role: "user",
-          content: text,
-          timestamp: Date.now(),
-        };
-        setMessages([userMessage, ...MOCK_CHAT_MESSAGES]);
-      } else {
-        const userMessage: ChatMessage = {
-          id: `user-${Date.now()}`,
-          role: "user",
-          content: text,
-          timestamp: Date.now(),
-        };
-        setMessages((prev) => [...prev, userMessage]);
-      }
+      sendMessage(text);
     },
-    [messages.length]
+    [sendMessage]
   );
 
   const handleSearchToggle = useCallback(() => {
-    setIsSearchMode((prev) => !prev);
-    setSearchText("");
-  }, []);
+    toggleSearch();
+  }, [toggleSearch]);
 
-  const handleSearchTextChange = useCallback((text: string) => {
-    setSearchText(text);
-  }, []);
+  const handleSearchTextChange = useCallback(
+    (text: string) => {
+      setSearchQuery(text);
+    },
+    [setSearchQuery]
+  );
 
   const handleRecipeSelect = useCallback(
     (recipeId: string) => {
-      setIsSearchMode(false);
-      setSearchText("");
+      toggleSearch();
       router.push(`/recipe/${recipeId}` as never);
     },
-    [router]
+    [router, toggleSearch]
   );
 
   return (
@@ -70,9 +56,9 @@ export default function MainIndex() {
         <ChatFeed messages={messages} />
       )}
 
-      {isSearchMode && searchText.trim().length > 0 && (
+      {searchMode && searchQuery.trim().length > 0 && (
         <SearchSuggestions
-          searchText={searchText}
+          searchText={searchQuery}
           onSelect={handleRecipeSelect}
         />
       )}
@@ -80,8 +66,8 @@ export default function MainIndex() {
       <ChatInputBar
         onSend={handleSend}
         onSearchToggle={handleSearchToggle}
-        isSearchMode={isSearchMode}
-        searchText={searchText}
+        isSearchMode={searchMode}
+        searchText={searchQuery}
         onSearchTextChange={handleSearchTextChange}
       />
     </KeyboardAvoidingView>
