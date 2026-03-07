@@ -45,3 +45,20 @@ docs/         architecture docs and brainstorms
 ## Issue Tracking
 - Uses **bd** (beads) — see `AGENTS.md`
 - Do NOT use TodoWrite, markdown TODOs, or other tracking methods
+
+## Dev Server
+
+### Starting
+Run `npm run web` with run_in_background: true. Also tee to log:
+`npm run web 2>&1 | tee ./logs/expo-web.log` (run_in_background: true)
+
+### Checking
+- Use BashOutput with filter "error|warning|ERROR" to check for issues
+- Or read `./logs/expo-web.log` directly (subagents should use this)
+
+### Before Playwright Tests
+Always verify the server is responding: `curl -s -o /dev/null -w "%{http_code}" http://localhost:8081`
+If not 200, restart the server.
+
+### Restarting
+KillBash the existing shell, then re-run with run_in_background: true.
