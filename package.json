@@ -9,7 +9,7 @@
     "web": "expo start --web",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "jest",
+    "test": "jest"
   },
   "dependencies": {
     "@expo/metro-runtime": "^55.0.6",
