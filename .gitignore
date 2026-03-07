@@ -42,3 +42,6 @@ yarn-error.*
 
 /logs/*
 /.playwright-cli/*
+**/.playwright-cli/*
+
+.beads

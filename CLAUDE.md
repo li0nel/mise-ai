@@ -62,3 +62,19 @@ If not 200, restart the server.
 
 ### Restarting
 KillBash the existing shell, then re-run with run_in_background: true.
+
+## Playwright Usage
+- **No screenshots for verification** — use `playwright-cli snapshot` (accessibility tree) + `playwright-cli console` instead. Screenshots are expensive in tokens and only warranted when visual layout needs inspection.
+- **Always check the console** with `playwright-cli console` after every page load.
+
+## Background Task Management
+- When a dev server (or any long-running process) was started via `run_in_background`, stop it using `TaskStop` with its task ID — do NOT use `pkill`. The task ID is returned at launch time.
+
+## Dev Server
+- Start: `npm run web -- --clear 2>&1 | tee ./logs/expo-web.log` (run_in_background: true) — use `--clear` to bust Metro cache when deps change
+- Verify: `curl -s -o /dev/null -w "%{http_code}" http://localhost:8081` must return 200 before Playwright tests
+- Stop: `TaskStop` the task ID
+
+## React / Dependency Notes
+- `react`, `react-dom`, and related packages must be pinned to exact same version
+- After `npm install` changes, restart Metro with `--clear` to avoid stale bundle cache
