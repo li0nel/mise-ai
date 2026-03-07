@@ -1,6 +1,7 @@
-import { View, Text, Pressable } from "react-native";
+import { View, Text } from "react-native";
 import { useRouter } from "expo-router";
 import type { RecipeCardBlock } from "../../types";
+import { ActionButton } from "./ActionButton";
 
 interface RecipeCardProps {
   data: RecipeCardBlock["data"];
@@ -89,34 +90,13 @@ export function RecipeCard({ data }: RecipeCardProps) {
 
         {/* Action buttons */}
         <View className="flex-row gap-2">
-          {data.actions.map((action) => {
-            if (action.type === "primary") {
-              return (
-                <Pressable
-                  key={action.label}
-                  onPress={handleNavigate}
-                  disabled={action.disabled}
-                  className={`flex-1 items-center justify-center rounded-md bg-brand px-4 py-2.5 ${action.disabled ? "opacity-50" : ""}`}
-                >
-                  <Text className="text-[13px] font-bold text-text-inv">
-                    {action.label}
-                  </Text>
-                </Pressable>
-              );
-            }
-            return (
-              <Pressable
-                key={action.label}
-                onPress={handleNavigate}
-                disabled={action.disabled}
-                className={`items-center justify-center rounded-md border border-border bg-transparent px-4 py-2.5 ${action.disabled ? "opacity-50" : ""}`}
-              >
-                <Text className="text-[13px] font-semibold text-text">
-                  {action.label}
-                </Text>
-              </Pressable>
-            );
-          })}
+          {data.actions.map((action) => (
+            <ActionButton
+              key={action.label}
+              action={action}
+              onPress={handleNavigate}
+            />
+          ))}
         </View>
       </View>
     </View>

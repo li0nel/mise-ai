@@ -5,6 +5,12 @@ export interface WidgetAction {
   label: string;
   type: "primary" | "outline" | "ghost";
   disabled?: boolean;
+  /** Whether tapping triggers a chat message or a direct store mutation */
+  actionType?: "chat" | "direct";
+  /** Message to inject into chat (used when actionType is 'chat') */
+  chatMessage?: string;
+  /** Action identifier for direct mutations (e.g. 'add-to-shopping') */
+  directAction?: string;
 }
 
 /** Block 1: Single recipe card */

@@ -1,11 +1,92 @@
+import { useState, useRef, useEffect, useCallback } from "react";
 import { View, Text, Pressable } from "react-native";
 import type { CookStepBlock } from "../../types";
+import { ActionButton } from "./ActionButton";
 
 interface CookStepProps {
   data: CookStepBlock["data"];
 }
 
+/** Parse duration strings like "5 min", "2 minutes", "1 hr", "1.5 hrs" to seconds */
+function parseDurationToSeconds(duration: string): number {
+  const normalized = duration.toLowerCase().trim();
+  let total = 0;
+
+  // Match hours
+  const hrMatch = normalized.match(/([\d.]+)\s*(?:hrs?|hours?)/);
+  if (hrMatch?.[1]) {
+    total += parseFloat(hrMatch[1]) * 3600;
+  }
+
+  // Match minutes
+  const minMatch = normalized.match(/([\d.]+)\s*(?:mins?|minutes?)/);
+  if (minMatch?.[1]) {
+    total += parseFloat(minMatch[1]) * 60;
+  }
+
+  // If nothing matched, try bare number as minutes
+  if (total === 0) {
+    const bareMatch = normalized.match(/^([\d.]+)$/);
+    if (bareMatch?.[1]) {
+      total = parseFloat(bareMatch[1]) * 60;
+    }
+  }
+
+  return Math.round(total);
+}
+
+function formatRemaining(seconds: number): string {
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return `${m}:${s.toString().padStart(2, "0")} remaining`;
+}
+
 export function CookStep({ data }: CookStepProps) {
+  const [timerState, setTimerState] = useState<"idle" | "running" | "done">("idle");
+  const [remaining, setRemaining] = useState(0);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, []);
+
+  const startTimer = useCallback(() => {
+    if (!data.timerPill) return;
+    const totalSeconds = parseDurationToSeconds(data.timerPill);
+    if (totalSeconds <= 0) return;
+
+    setRemaining(totalSeconds);
+    setTimerState("running");
+
+    intervalRef.current = setInterval(() => {
+      setRemaining((prev) => {
+        if (prev <= 1) {
+          if (intervalRef.current) clearInterval(intervalRef.current);
+          setTimerState("done");
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  }, [data.timerPill]);
+
+  const timerPillText =
+    timerState === "running"
+      ? formatRemaining(remaining)
+      : timerState === "done"
+        ? "Timer done!"
+        : data.timerPill;
+
+  const timerPillBgClass =
+    timerState === "done" ? "bg-success-bg" : "bg-warning-bg";
+
+  const timerPillTextClass =
+    timerState === "done"
+      ? "text-[11px] font-semibold text-success"
+      : "text-[11px] font-semibold text-warning";
+
   return (
     <View className="overflow-hidden rounded-xl border border-border bg-bg-surface shadow-sm">
       {/* Header bar with brand background */}
@@ -34,43 +115,23 @@ export function CookStep({ data }: CookStepProps) {
 
         {/* Timer pill */}
         {data.timerPill ? (
-          <View className="mb-3 self-start rounded-full bg-warning-bg px-2 py-[3px]">
-            <Text className="text-[11px] font-semibold text-warning">
-              {"\u23F1"} {data.timerPill}
+          <Pressable
+            onPress={timerState === "idle" ? startTimer : undefined}
+            className={`mb-3 self-start rounded-full px-2 py-[3px] ${timerPillBgClass}`}
+          >
+            <Text className={timerPillTextClass}>
+              {"\u23F1"} {timerPillText}
             </Text>
-          </View>
+          </Pressable>
         ) : null}
       </View>
 
       {/* Action buttons */}
       {data.actions && data.actions.length > 0 ? (
         <View className="flex-row gap-2 px-4 pb-4">
-          {data.actions.map((action) => {
-            if (action.type === "primary") {
-              return (
-                <Pressable
-                  key={action.label}
-                  disabled={action.disabled}
-                  className={`flex-1 items-center justify-center rounded-md bg-brand px-4 py-2.5 ${action.disabled ? "opacity-50" : ""}`}
-                >
-                  <Text className="text-[13px] font-bold text-text-inv">
-                    {action.label}
-                  </Text>
-                </Pressable>
-              );
-            }
-            return (
-              <Pressable
-                key={action.label}
-                disabled={action.disabled}
-                className={`flex-1 items-center justify-center rounded-md border border-border bg-transparent px-4 py-2.5 ${action.disabled ? "opacity-50" : ""}`}
-              >
-                <Text className="text-[13px] font-semibold text-text">
-                  {action.label}
-                </Text>
-              </Pressable>
-            );
-          })}
+          {data.actions.map((action) => (
+            <ActionButton key={action.label} action={action} />
+          ))}
         </View>
       ) : null}
     </View>

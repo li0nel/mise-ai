@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from "react";
-import { View, ScrollView } from "react-native";
+import { View, ScrollView, Text } from "react-native";
 import { PageHeader } from "../../components/ui/PageHeader";
 import { ShoppingProgress } from "../../components/shopping/ShoppingProgress";
 import { ShoppingSection } from "../../components/shopping/ShoppingSection";
@@ -109,6 +109,17 @@ export default function ShoppingScreen() {
           sortMode={sortMode}
           onSortChange={setSortMode}
         />
+
+        {/* Celebration when all items checked */}
+        {checkedCount === items.length && items.length > 0 ? (
+          <View className="items-center px-4 py-10">
+            <Text className="text-4xl">{"\uD83C\uDF89"}</Text>
+            <Text className="mt-3 text-lg font-bold text-text">All done!</Text>
+            <Text className="mt-1 text-[13px] text-text-2">
+              You&apos;ve got everything on your list.
+            </Text>
+          </View>
+        ) : null}
 
         <View className="px-4 pt-3">
           {sortMode === "aisle"

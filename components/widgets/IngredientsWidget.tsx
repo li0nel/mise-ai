@@ -1,5 +1,6 @@
 import { View, Text } from "react-native";
 import type { IngredientsBlock } from "../../types";
+import { ActionButton } from "./ActionButton";
 
 interface IngredientsWidgetProps {
   data: IngredientsBlock["data"];
@@ -76,6 +77,15 @@ export function IngredientsWidget({ data }: IngredientsWidgetProps) {
           );
         })}
       </View>
+
+      {/* Action buttons */}
+      {data.actions && data.actions.length > 0 ? (
+        <View className="flex-row gap-2 px-4 pb-4 pt-2">
+          {data.actions.map((action) => (
+            <ActionButton key={action.label} action={action} />
+          ))}
+        </View>
+      ) : null}
     </View>
   );
 }

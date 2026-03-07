@@ -1,4 +1,5 @@
 import type { Block } from "../../types";
+import { ErrorBoundary } from "../ui/ErrorBoundary";
 import { RecipeCard } from "./RecipeCard";
 import { RecipeCarousel } from "./RecipeCarousel";
 import { IngredientsWidget } from "./IngredientsWidget";
@@ -11,7 +12,7 @@ interface BlockRendererProps {
   block: Block;
 }
 
-export function BlockRenderer({ block }: BlockRendererProps) {
+function BlockContent({ block }: BlockRendererProps) {
   switch (block.type) {
     case "recipe-card":
       return <RecipeCard data={block.data} />;
@@ -28,4 +29,12 @@ export function BlockRenderer({ block }: BlockRendererProps) {
     case "rescue":
       return <RescueWidget data={block.data} />;
   }
+}
+
+export function BlockRenderer({ block }: BlockRendererProps) {
+  return (
+    <ErrorBoundary>
+      <BlockContent block={block} />
+    </ErrorBoundary>
+  );
 }
