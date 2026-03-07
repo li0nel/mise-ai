@@ -54,9 +54,8 @@
       background: var(--bg-elevated);
       margin: 28px -20px 28px;
     }
-    /* Ensure content clears the fixed page-header */
+    .page-header { position: sticky; top: 0; }
     .recipe-content {
-      padding-top: var(--appbar-h);
     }
     /* Simple bottom gradient for hero title legibility */
     .recipe-hero-wrap {
@@ -120,6 +119,18 @@
         <div class="recipe-meta-col"><div class="recipe-meta-val">2h 30</div><div class="recipe-meta-lbl">MIN COOK</div></div>
         <div class="recipe-meta-col"><div class="recipe-meta-val">6</div><div class="recipe-meta-lbl">SERVES</div></div>
         <div class="recipe-meta-col"><div class="recipe-meta-val">⭐⭐</div><div class="recipe-meta-lbl">LEVEL</div></div>
+      </div>
+
+      <!-- SERVINGS STEPPER + CONVERT UNITS -->
+      <div style="display:flex;align-items:center;padding:12px 20px;width:100%;">
+        <div style="display:flex;align-items:center;width:50%;">
+          <button onclick="changeServings(-1)" style="width:32px;height:32px;border-radius:50%;border:1.5px solid var(--border-strong);background:transparent;font-size:18px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text);">−</button>
+          <span id="servingsLabel" style="flex:1;text-align:center;font-size:15px;font-weight:600;color:var(--text);">6 servings</span>
+          <button onclick="changeServings(1)" style="width:32px;height:32px;border-radius:50%;border:none;background:var(--brand);color:#fff;font-size:18px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;">+</button>
+        </div>
+        <div style="width:50%;display:flex;justify-content:flex-end;">
+          <button id="convertBtn" onclick="toggleUnits()" style="padding:6px 14px;border-radius:var(--r-full);border:1.5px solid var(--border-strong);background:transparent;font-size:13px;color:var(--text-2);cursor:pointer;">Convert units</button>
+        </div>
       </div>
     </div>
 
@@ -408,5 +419,28 @@
   </div>
 
 </div>
+<script>
+  var servings = 6;
+  function changeServings(delta) {
+    servings = Math.max(1, Math.min(20, servings + delta));
+    document.getElementById('servingsLabel').textContent = servings + ' servings';
+  }
+  var metricOn = false;
+  function toggleUnits() {
+    metricOn = !metricOn;
+    var btn = document.getElementById('convertBtn');
+    if (metricOn) {
+      btn.textContent = 'Metric \u2713';
+      btn.style.background = 'var(--brand-50)';
+      btn.style.borderColor = 'var(--brand)';
+      btn.style.color = 'var(--brand)';
+    } else {
+      btn.textContent = 'Convert units';
+      btn.style.background = 'transparent';
+      btn.style.borderColor = 'var(--border-strong)';
+      btn.style.color = 'var(--text-2)';
+    }
+  }
+</script>
 </body>
 </html>

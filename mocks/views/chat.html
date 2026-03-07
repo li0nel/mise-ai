@@ -119,9 +119,15 @@
     /* Fixed bottom input bar */
     .chat-input-bar {
       background: var(--bg);
-      border-top: 1px solid var(--border-subtle);
       padding-bottom: var(--safe-bottom);
       flex-shrink: 0;
+    }
+    .input-row.search-mode .input-field {
+      border: 1.5px solid var(--brand);
+    }
+    .input-row.search-mode .input-icon {
+      background: var(--brand);
+      color: #fff;
     }
     .search-suggestions {
       display: none;
@@ -544,37 +550,45 @@
 </div><!-- /mobile-frame -->
 
 <script>
-  var searchVisible = false;
+  var searchMode = false;
+
+  function updateSuggestions() {
+    var input = document.getElementById('chatInput');
+    var suggestions = document.getElementById('searchSuggestions');
+    if (searchMode && input.value.trim().length > 0) {
+      suggestions.classList.add('visible');
+    } else {
+      suggestions.classList.remove('visible');
+    }
+  }
 
   function handleInput() {
     var input = document.getElementById('chatInput');
     var searchBtn = document.getElementById('searchBtn');
     var sendBtn = document.getElementById('sendBtn');
-    var suggestions = document.getElementById('searchSuggestions');
 
-    if (input.value.trim().length > 0) {
+    if (!searchMode && input.value.trim().length > 0) {
       searchBtn.style.display = 'none';
       sendBtn.style.display = 'flex';
-      suggestions.classList.remove('visible');
-      searchVisible = false;
     } else {
       searchBtn.style.display = 'flex';
       sendBtn.style.display = 'none';
     }
+    updateSuggestions();
   }
 
   function toggleSearch() {
     var input = document.getElementById('chatInput');
-    var suggestions = document.getElementById('searchSuggestions');
-
-    if (input.value.trim().length === 0) {
-      searchVisible = !searchVisible;
-      if (searchVisible) {
-        suggestions.classList.add('visible');
-      } else {
-        suggestions.classList.remove('visible');
-      }
+    var inputRow = document.querySelector('.input-row');
+    searchMode = !searchMode;
+    if (searchMode) {
+      inputRow.classList.add('search-mode');
+      input.placeholder = 'Search recipes\u2026';
+    } else {
+      inputRow.classList.remove('search-mode');
+      input.placeholder = 'Ask mise. anything\u2026';
     }
+    updateSuggestions();
   }
 </script>
 </body>

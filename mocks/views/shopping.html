@@ -35,16 +35,15 @@
     <div style="width:38px;flex-shrink:0;"></div>
   </div>
 
-  <!-- Progress Bar -->
-  <div style="padding:10px 16px 0;">
-    <div class="progress-text" id="progressText">11 of 20 items ✓</div>
-    <div class="progress-bar" style="width:130px;margin-top:4px;">
-      <div class="progress-fill" id="progressFill" style="width:55%;background:var(--success);"></div>
+  <!-- Progress Bar + Sort Toggle -->
+  <div style="display:flex;align-items:center;padding:10px 16px 0;">
+    <div style="flex:1;min-width:0;">
+      <div class="progress-text" id="progressText">11 of 20 items ✓</div>
+      <div class="progress-bar" style="margin-top:4px;">
+        <div class="progress-fill" id="progressFill" style="width:55%;background:var(--success);"></div>
+      </div>
     </div>
-  </div>
-
-  <!-- Sort Toggle Header -->
-  <div style="padding:12px 16px 0;display:flex;justify-content:flex-end;align-items:center;">
+    <div style="width:1px;background:var(--border);height:32px;margin:0 12px;"></div>
     <div class="sort-toggle">
       <div class="sort-opt">By Recipe</div>
       <div class="sort-opt active">By Aisle</div>
