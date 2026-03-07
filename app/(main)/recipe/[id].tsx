@@ -1,6 +1,7 @@
 import { View, Text, ScrollView } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { PageHeader } from "../../../components/ui/PageHeader";
+import { CartIcon } from "../../../components/ui/Icons";
 import { RecipeHero } from "../../../components/recipe/RecipeHero";
 import { RecipeMetaBar } from "../../../components/recipe/RecipeMetaBar";
 import { ServingsStepper } from "../../../components/recipe/ServingsStepper";
@@ -25,9 +26,10 @@ export default function RecipeScreen() {
     <View className="flex-1 bg-bg">
       {/* Sticky page header */}
       <PageHeader
+        title={recipe.title}
         rightAction={
           <View className="h-9 w-9 items-center justify-center">
-            <Text className="text-lg text-text">{"\uD83D\uDED2"}</Text>
+            <CartIcon size={22} color="#3D3329" />
           </View>
         }
       />
@@ -49,6 +51,9 @@ export default function RecipeScreen() {
 
         {/* Ingredient sections */}
         <View className="pt-5">
+          <Text className="mb-5 px-5 text-lg font-bold text-text">
+            Ingredients
+          </Text>
           {recipe.ingredientSections.map((section, sectionIndex) => (
             <View key={section.name ?? `section-${String(sectionIndex)}`}>
               {/* Section header */}

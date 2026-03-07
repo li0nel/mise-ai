@@ -1,5 +1,6 @@
 import { View, Text, Pressable } from "react-native";
 import { useRouter } from "expo-router";
+import { CartIcon } from "./Icons";
 
 export function AppBar() {
   const router = useRouter();
@@ -13,7 +14,7 @@ export function AppBar() {
         onPress={() => router.push("/shopping")}
         className="w-9 h-9 rounded-full items-center justify-center"
       >
-        <Text className="text-text text-lg">{"\u{1F6D2}"}</Text>
+        <CartIcon size={22} color="#3D3329" />
       </Pressable>
     </View>
   );

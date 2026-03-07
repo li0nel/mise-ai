@@ -1,4 +1,5 @@
-import { View, TextInput, Pressable, Text } from "react-native";
+import { View, TextInput, Pressable } from "react-native";
+import { SearchIcon, SendIcon } from "../ui/Icons";
 
 interface ChatInputBarProps {
   onSend: (text: string) => void;
@@ -16,7 +17,7 @@ export function ChatInputBar({
   onSearchTextChange,
 }: ChatInputBarProps) {
   const inputText = searchText.trim();
-  const showSend = !isSearchMode && inputText.length > 0;
+  const hasText = !isSearchMode && inputText.length > 0;
 
   function handleSend() {
     if (inputText.length === 0) return;
@@ -42,32 +43,26 @@ export function ChatInputBar({
             onChangeText={onSearchTextChange}
             onSubmitEditing={handleSend}
             returnKeyType={isSearchMode ? "search" : "send"}
+            style={{ outlineStyle: "none" } as Record<string, unknown>}
           />
         </View>
 
-        {/* Search toggle button */}
+        {/* Single icon button: search or send depending on state */}
         <Pressable
-          onPress={onSearchToggle}
+          onPress={hasText ? handleSend : onSearchToggle}
           className={`h-9 w-9 items-center justify-center rounded-full ${
-            isSearchMode ? "bg-brand" : ""
+            isSearchMode || hasText ? "bg-brand" : ""
           }`}
         >
-          <Text className={isSearchMode ? "text-text-inv" : "text-text-3"}>
-            {"\u{1F50D}"}
-          </Text>
+          {hasText ? (
+            <SendIcon size={18} color="#FFFFFF" />
+          ) : (
+            <SearchIcon
+              size={18}
+              color={isSearchMode ? "#FFFFFF" : "#A8A09A"}
+            />
+          )}
         </Pressable>
-
-        {/* Send button — only visible when text entered in chat mode */}
-        {showSend && (
-          <Pressable
-            onPress={handleSend}
-            className="h-9 w-9 items-center justify-center rounded-full bg-brand"
-          >
-            <Text className="text-sm font-bold text-text-inv">
-              {"\u2191"}
-            </Text>
-          </Pressable>
-        )}
       </View>
     </View>
   );

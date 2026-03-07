@@ -1,5 +1,6 @@
 import { View, Text, Pressable } from "react-native";
 import { RECIPES } from "../../data/recipes";
+import { ChevronRightIcon } from "../ui/Icons";
 
 interface SearchSuggestionsProps {
   searchText: string;
@@ -29,7 +30,7 @@ export function SearchSuggestions({ searchText, onSelect }: SearchSuggestionsPro
   if (filtered.length === 0) return null;
 
   return (
-    <View className="mx-4 mb-1 overflow-hidden rounded-t-xl border border-b-0 border-border bg-bg-surface">
+    <View className="mb-1 overflow-hidden rounded-t-xl border border-b-0 border-border bg-bg">
       <Text className="px-4 pb-1.5 pt-2.5 text-[11px] font-bold uppercase tracking-wider text-text-3">
         Recipes — {filtered.length} {filtered.length === 1 ? "match" : "matches"}
       </Text>
@@ -61,7 +62,7 @@ export function SearchSuggestions({ searchText, onSelect }: SearchSuggestionsPro
                 {recipe.cuisines[0]} · {recipe.prepTime + recipe.cookTime} min · Serves {recipe.servings}
               </Text>
             </View>
-            <Text className="text-text-4">{"\u203A"}</Text>
+            <ChevronRightIcon size={16} color="#C4BDB7" />
           </Pressable>
         );
       })}

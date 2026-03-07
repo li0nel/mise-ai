@@ -17,8 +17,8 @@ export function InstructionStep({
   return (
     <View className="mb-5 flex-row px-5">
       {/* Step number circle */}
-      <View className="mr-3 h-[22px] w-[22px] items-center justify-center rounded-full bg-brand">
-        <Text className="text-xs font-bold text-text-inv">{stepNumber}</Text>
+      <View className="mr-3 h-[30px] w-[30px] items-center justify-center rounded-full border-2 border-border bg-bg-elevated">
+        <Text className="text-xs font-bold text-text-2">{stepNumber}</Text>
       </View>
 
       {/* Step content */}
