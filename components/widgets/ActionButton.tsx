@@ -1,5 +1,5 @@
-import { useState, useCallback, useRef, useEffect } from "react";
-import { Text, Pressable } from "react-native";
+import { useState, useCallback } from "react";
+import { Text, Pressable, View } from "react-native";
 import type { WidgetAction } from "../../types";
 
 interface ActionButtonProps {
@@ -11,30 +11,26 @@ interface ActionButtonProps {
 
 /**
  * Reusable action button for widgets.
- * For direct actions, shows "Added!" feedback for 2 seconds after press.
+ * For direct actions, permanently shows "Added to shopping list" after press.
  */
 export function ActionButton({ action, onPress, className }: ActionButtonProps) {
   const [showFeedback, setShowFeedback] = useState(false);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => {
-    return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
-    };
-  }, []);
 
   const handlePress = useCallback(() => {
     onPress?.();
 
     if (action.actionType === "direct") {
       setShowFeedback(true);
-      timerRef.current = setTimeout(() => {
-        setShowFeedback(false);
-      }, 2000);
     }
   }, [action.actionType, onPress]);
 
-  const label = showFeedback ? "Added!" : action.label;
+  if (showFeedback) {
+    return (
+      <View className={`flex-1 items-center justify-center px-4 py-2.5${className ? ` ${className}` : ""}`}>
+        <Text className="text-[13px] font-semibold text-text-2">{"\u2713"} Added to shopping list</Text>
+      </View>
+    );
+  }
 
   const isPrimary = action.type === "primary";
 
@@ -43,19 +39,18 @@ export function ActionButton({ action, onPress, className }: ActionButtonProps) 
     : "flex-1 items-center justify-center rounded-md border border-border bg-transparent px-4 py-2.5";
 
   const disabledClass = action.disabled ? " opacity-50" : "";
-  const feedbackClass = showFeedback ? " bg-success" : "";
 
-  const textClass = isPrimary || showFeedback
+  const textClass = isPrimary
     ? "text-[13px] font-bold text-text-inv"
     : "text-[13px] font-semibold text-text";
 
   return (
     <Pressable
       onPress={handlePress}
-      disabled={action.disabled || showFeedback}
-      className={`${baseClass}${disabledClass}${isPrimary ? feedbackClass : ""}${className ? ` ${className}` : ""}`}
+      disabled={action.disabled}
+      className={`${baseClass}${disabledClass}${className ? ` ${className}` : ""}`}
     >
-      <Text className={textClass}>{label}</Text>
+      <Text className={textClass}>{action.label}</Text>
     </Pressable>
   );
 }

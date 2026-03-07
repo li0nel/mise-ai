@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
-import { View, Text, ScrollView } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import { View, Text, ScrollView, Pressable } from "react-native";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { PageHeader } from "../../../components/ui/PageHeader";
 import { CartIcon } from "../../../components/ui/Icons";
 import { RecipeHero } from "../../../components/recipe/RecipeHero";
@@ -101,6 +101,7 @@ function scaleAmount(
 
 export default function RecipeScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const router = useRouter();
   const recipe = useRecipeStore((state) => state.recipes.find((r) => r.id === id));
   const [servings, setServings] = useState<number | null>(null);
   const [showAddOverlay, setShowAddOverlay] = useState(false);
@@ -123,9 +124,13 @@ export default function RecipeScreen() {
       {/* Sticky page header — no title for recipe view */}
       <PageHeader
         rightAction={
-          <View className="h-[38px] w-[38px] items-center justify-center">
+          <Pressable
+            className="h-[38px] w-[38px] items-center justify-center"
+            onPress={() => router.push("/(main)/shopping")}
+            accessibilityLabel="Shopping list"
+          >
             <CartIcon size={20} color="#3D3329" />
-          </View>
+          </Pressable>
         }
       />
 
@@ -209,7 +214,7 @@ export default function RecipeScreen() {
       </ScrollView>
 
       {/* Sticky bottom bar */}
-      <RecipeBottomBar onAddToShopping={handleOpenOverlay} />
+      <RecipeBottomBar onAddToShopping={handleOpenOverlay} recipeName={recipe.title} />
 
       {/* Add to shopping overlay */}
       <AddToShoppingOverlay

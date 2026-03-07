@@ -10,6 +10,7 @@ interface ShoppingState {
   toggleItem: (id: string) => void;
   setSortMode: (mode: "aisle" | "recipe") => void;
   clearAll: () => void;
+  clearChecked: () => void;
 }
 
 export const useShoppingStore = create<ShoppingState>((set) => ({
@@ -32,4 +33,7 @@ export const useShoppingStore = create<ShoppingState>((set) => ({
   setSortMode: (mode: "aisle" | "recipe") => set({ sortMode: mode }),
 
   clearAll: () => set({ items: [] }),
+
+  clearChecked: () =>
+    set((state) => ({ items: state.items.filter((item) => !item.checked) })),
 }));

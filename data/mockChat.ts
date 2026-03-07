@@ -47,7 +47,7 @@ export const MOCK_CHAT_MESSAGES: ChatMessage[] = [
             emoji: "🥩",
           },
           actions: [
-            { label: "Start Cooking", type: "primary" },
+            { label: "Start Cooking", type: "primary", actionType: "chat", chatMessage: "Cook Boeuf Bourguignon now" },
             { label: "View Full Recipe", type: "outline" },
           ],
         },

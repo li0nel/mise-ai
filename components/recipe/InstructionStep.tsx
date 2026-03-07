@@ -23,7 +23,7 @@ export function InstructionStep({
 
       {/* Step content */}
       <View className="flex-1 pt-1">
-        <Text className="text-[15px] leading-relaxed text-text">{text}</Text>
+        <Text className="text-[13px] leading-relaxed text-text">{text}</Text>
 
         {/* Timer pills */}
         {timers && timers.length > 0 ? (

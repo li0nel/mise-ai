@@ -83,6 +83,7 @@ export default function ShoppingScreen() {
   const sortMode = useShoppingStore((state) => state.sortMode);
   const setSortMode = useShoppingStore((state) => state.setSortMode);
   const toggleItem = useShoppingStore((state) => state.toggleItem);
+  const clearChecked = useShoppingStore((state) => state.clearChecked);
 
   const checkedCount = useMemo(
     () => items.filter((i) => i.checked).length,
@@ -185,6 +186,15 @@ export default function ShoppingScreen() {
               ))}
         </View>
       </ScrollView>
+
+      {/* Clear Checked bottom bar */}
+      {checkedCount > 0 ? (
+        <View className="border-t border-border-subtle bg-bg px-5 pb-[34px] pt-3">
+          <Button variant="outline" onPress={clearChecked}>
+            {`Clear Checked (${String(checkedCount)})`}
+          </Button>
+        </View>
+      ) : null}
     </View>
   );
 }
