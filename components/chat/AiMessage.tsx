@@ -1,5 +1,6 @@
 import { View, Text } from "react-native";
 import type { ChatMessage } from "../../types";
+import { BlockRenderer } from "../widgets/BlockRenderer";
 
 interface AiMessageProps {
   message: ChatMessage;
@@ -8,10 +9,16 @@ interface AiMessageProps {
 export function AiMessage({ message }: AiMessageProps) {
   return (
     <View>
-      <Text className="text-sm leading-relaxed text-text">
-        {message.content}
-      </Text>
-      {/* BlockRenderer will be added by a later bead */}
+      {message.content ? (
+        <Text className="text-sm leading-relaxed text-text">
+          {message.content}
+        </Text>
+      ) : null}
+      {message.blocks?.map((block, index) => (
+        <View key={index} className="mt-3">
+          <BlockRenderer block={block} />
+        </View>
+      ))}
     </View>
   );
 }
