@@ -1,9 +1,12 @@
-import { View, Text } from "react-native";
+import { Redirect } from "expo-router";
+import { useAuth } from "../contexts/AuthContext";
 
-export default function HomeScreen() {
-  return (
-    <View className="flex-1 items-center justify-center bg-bg">
-      <Text className="text-lg font-semibold text-text">Mise AI</Text>
-    </View>
-  );
+export default function Index() {
+  const { isLoggedIn } = useAuth();
+
+  if (!isLoggedIn) {
+    return <Redirect href="/(auth)/login" />;
+  }
+
+  return <Redirect href="/(main)" />;
 }
