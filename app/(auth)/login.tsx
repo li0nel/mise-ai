@@ -1,11 +1,18 @@
 import { useState } from "react";
 import { View, Text, TextInput, Pressable, ScrollView } from "react-native";
+import { useRouter } from "expo-router";
 import { useAuth } from "../../contexts/AuthContext";
 
 export default function LoginScreen() {
   const { login } = useAuth();
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const handleLogin = () => {
+    login();
+    router.replace("/(main)");
+  };
 
   return (
     <ScrollView
@@ -65,7 +72,7 @@ export default function LoginScreen() {
 
       {/* Sign in button */}
       <Pressable
-        onPress={login}
+        onPress={handleLogin}
         className="w-full h-[50px] bg-brand rounded-md items-center justify-center mb-1"
       >
         <Text className="text-base font-bold text-text-inv tracking-tight">
@@ -86,7 +93,7 @@ export default function LoginScreen() {
       <View className="gap-2.5">
         {/* Google */}
         <Pressable
-          onPress={login}
+          onPress={handleLogin}
           className="w-full h-12 flex-row items-center justify-center gap-2.5 bg-bg-surface border-[1.5px] border-border rounded-md"
         >
           <Text className="text-base font-semibold text-text">G</Text>
@@ -97,7 +104,7 @@ export default function LoginScreen() {
 
         {/* Apple */}
         <Pressable
-          onPress={login}
+          onPress={handleLogin}
           className="w-full h-12 flex-row items-center justify-center gap-2.5 bg-bg-surface border-[1.5px] border-border rounded-md"
         >
           <Text className="text-base font-semibold text-text">{"\uF8FF"}</Text>
