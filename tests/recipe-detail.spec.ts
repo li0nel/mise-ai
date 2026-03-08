@@ -23,9 +23,7 @@ test.describe("Recipe detail journey", () => {
 
       await expect(page.getByText("Main", { exact: true })).toBeVisible();
       await expect(page.getByText("Stewing beef")).toBeVisible();
-      await expect(
-        page.getByText("Lardons", { exact: true }),
-      ).toBeVisible();
+      await expect(page.getByText("Lardons", { exact: true })).toBeVisible();
       await expect(page.getByText("Pearl onions")).toBeVisible();
       await expect(page.getByText("Button mushrooms")).toBeVisible();
 
@@ -42,9 +40,9 @@ test.describe("Recipe detail journey", () => {
 
     await test.step("Cook Now navigates to chat with cook message", async () => {
       await page.getByText(/Cook Now/).click();
-      await expect(
-        page.getByText("Cook Boeuf Bourguignon now"),
-      ).toBeVisible({ timeout: 10_000 });
+      await expect(page.getByText("Cook Boeuf Bourguignon now")).toBeVisible({
+        timeout: 10_000,
+      });
     });
 
     expect(errors).toHaveLength(0);
@@ -56,7 +54,7 @@ test.describe("Recipe detail journey", () => {
       if (msg.type() === "error") errors.push(msg.text());
     });
 
-    await page.goto("/(main)/recipe/nonexistent-recipe");
+    await page.goto("/recipe/nonexistent-recipe");
     await expect(page.getByText("Recipe not found")).toBeVisible({
       timeout: 5_000,
     });
