@@ -1,5 +1,7 @@
+import { useEffect, useRef } from "react";
 import { View, TextInput, Pressable } from "react-native";
 import { SearchIcon, SendIcon } from "../ui/Icons";
+import { useUrlPreviewStore } from "../../lib/stores/urlPreviewStore";
 
 interface ChatInputBarProps {
   onSend: (text: string) => void;
@@ -7,6 +9,7 @@ interface ChatInputBarProps {
   isSearchMode: boolean;
   searchText: string;
   onSearchTextChange: (text: string) => void;
+  isSendDisabled?: boolean;
 }
 
 export function ChatInputBar({
@@ -15,12 +18,30 @@ export function ChatInputBar({
   isSearchMode,
   searchText,
   onSearchTextChange,
+  isSendDisabled = false,
 }: ChatInputBarProps) {
   const inputText = searchText.trim();
   const hasText = !isSearchMode && inputText.length > 0;
+  const canSend = hasText && !isSendDisabled;
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Debounced URL detection
+  useEffect(() => {
+    if (isSearchMode) return;
+
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+
+    debounceRef.current = setTimeout(() => {
+      useUrlPreviewStore.getState().detectAndExtract(searchText);
+    }, 500);
+
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [searchText, isSearchMode]);
 
   function handleSend() {
-    if (inputText.length === 0) return;
+    if (!canSend) return;
     onSend(inputText);
     onSearchTextChange("");
   }
@@ -49,9 +70,15 @@ export function ChatInputBar({
 
         {/* Single icon button: search or send depending on state */}
         <Pressable
-          onPress={hasText ? handleSend : onSearchToggle}
+          onPress={canSend ? handleSend : hasText ? undefined : onSearchToggle}
           className={`h-9 w-9 items-center justify-center rounded-full ${
-            isSearchMode || hasText ? "bg-brand" : ""
+            isSearchMode
+              ? "bg-brand"
+              : canSend
+                ? "bg-brand"
+                : hasText
+                  ? "bg-brand/50"
+                  : ""
           }`}
         >
           {hasText ? (

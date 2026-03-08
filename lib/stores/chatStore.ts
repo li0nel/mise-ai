@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { ChatMessage, Block } from "../../types";
+import type { ChatMessage, Block, FullRecipeBlock } from "../../types";
 import { sendMessageToGemini, extractContent } from "../ai/chat";
 import type { LLMContext } from "../ai/chat";
 import { SYSTEM_PROMPT } from "../ai/systemPrompt";
@@ -10,7 +10,10 @@ interface ChatState {
   isStreaming: boolean;
   searchMode: boolean;
   searchQuery: string;
-  sendMessage: (text: string) => void;
+  sendMessage: (
+    text: string,
+    extractedRecipe?: FullRecipeBlock["data"],
+  ) => void;
   setStreaming: (streaming: boolean) => void;
   toggleSearch: () => void;
   setSearchQuery: (query: string) => void;
@@ -104,7 +107,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
   searchMode: false,
   searchQuery: "",
 
-  sendMessage: (text: string) => {
+  sendMessage: (text: string, extractedRecipe?: FullRecipeBlock["data"]) => {
     const userMessage: ChatMessage = {
       id: `user-${Date.now()}`,
       role: "user",
@@ -135,8 +138,13 @@ export const useChatStore = create<ChatState>((set, get) => ({
       recentMessages: updatedMessages.slice(-20),
     };
 
+    // Augment message with extracted recipe data for Pass 2
+    const llmMessage = extractedRecipe
+      ? `${text}\n\n---\n[EXTRACTED RECIPE FROM URL]\n${JSON.stringify(extractedRecipe)}\n---`
+      : text;
+
     // Fire-and-forget the streaming — it updates the store via set()
-    void streamGeminiResponse(context, text, assistantId, set, get);
+    void streamGeminiResponse(context, llmMessage, assistantId, set, get);
   },
 
   setStreaming: (streaming: boolean) => set({ isStreaming: streaming }),

@@ -6,7 +6,9 @@ import { ChatEmptyState } from "../../components/chat/ChatEmptyState";
 import { ChatFeed } from "../../components/chat/ChatFeed";
 import { ChatInputBar } from "../../components/chat/ChatInputBar";
 import { SearchSuggestions } from "../../components/chat/SearchSuggestions";
+import { UrlPreview } from "../../components/chat/UrlPreview";
 import { useChatStore } from "../../lib/stores/chatStore";
+import { useUrlPreviewStore } from "../../lib/stores/urlPreviewStore";
 
 export default function MainIndex() {
   const router = useRouter();
@@ -17,11 +19,19 @@ export default function MainIndex() {
   const toggleSearch = useChatStore((state) => state.toggleSearch);
   const setSearchQuery = useChatStore((state) => state.setSearchQuery);
 
+  const urlPreviewStatus = useUrlPreviewStore((s) => s.status);
+  const urlPreviewUrl = useUrlPreviewStore((s) => s.detectedUrl);
+  const urlPreviewData = useUrlPreviewStore((s) => s.recipeData);
+  const urlPreviewMessage = useUrlPreviewStore((s) => s.message);
+  const urlPreviewClear = useUrlPreviewStore((s) => s.clear);
+
   const handleSend = useCallback(
     (text: string) => {
-      sendMessage(text);
+      const recipeData = useUrlPreviewStore.getState().recipeData;
+      sendMessage(text, recipeData ?? undefined);
+      urlPreviewClear();
     },
-    [sendMessage]
+    [sendMessage, urlPreviewClear],
   );
 
   const handleSearchToggle = useCallback(() => {
@@ -32,7 +42,7 @@ export default function MainIndex() {
     (text: string) => {
       setSearchQuery(text);
     },
-    [setSearchQuery]
+    [setSearchQuery],
   );
 
   const handleRecipeSelect = useCallback(
@@ -40,7 +50,7 @@ export default function MainIndex() {
       toggleSearch();
       router.push(`/recipe/${recipeId}` as never);
     },
-    [router, toggleSearch]
+    [router, toggleSearch],
   );
 
   return (
@@ -63,12 +73,25 @@ export default function MainIndex() {
         />
       )}
 
+      {!searchMode && urlPreviewStatus !== "idle" && urlPreviewUrl && (
+        <UrlPreview
+          url={urlPreviewUrl}
+          status={urlPreviewStatus}
+          recipeTitle={urlPreviewData?.title}
+          recipeDescription={urlPreviewData?.description}
+          recipeEmoji={urlPreviewData?.emoji}
+          message={urlPreviewMessage ?? undefined}
+          onDismiss={urlPreviewClear}
+        />
+      )}
+
       <ChatInputBar
         onSend={handleSend}
         onSearchToggle={handleSearchToggle}
         isSearchMode={searchMode}
         searchText={searchQuery}
         onSearchTextChange={handleSearchTextChange}
+        isSendDisabled={urlPreviewStatus === "loading"}
       />
     </KeyboardAvoidingView>
   );
