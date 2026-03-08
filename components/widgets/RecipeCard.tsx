@@ -41,9 +41,9 @@ export function RecipeCard({ data }: RecipeCardProps) {
   const bgColor = parseGradientMiddleColor(gradient);
   const heroEmoji = data.image?.emoji ?? data.emoji;
 
-  function handleNavigate() {
+  const handleNavigate = useCallback(() => {
     router.push(`/recipe/${data.id}` as "/recipe/[id]");
-  }
+  }, [router, data.id]);
 
   const handleAction = useCallback(
     (action: WidgetAction) => {
@@ -53,7 +53,7 @@ export function RecipeCard({ data }: RecipeCardProps) {
         handleNavigate();
       }
     },
-    [data.id],
+    [handleNavigate],
   );
 
   return (

@@ -67,7 +67,7 @@ function formatAmount(value: number): string {
   const whole = Math.floor(rounded);
   const threshold = 0.04;
 
-  const fractions: Array<[number, string]> = [
+  const fractions: [number, string][] = [
     [0.25, "\u00BC"],
     [0.5, "\u00BD"],
     [0.75, "\u00BE"],

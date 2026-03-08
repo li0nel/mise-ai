@@ -2,8 +2,7 @@ import { useState, useCallback } from "react";
 import { View, Text, Pressable, ScrollView, Modal } from "react-native";
 import { Button } from "../ui/Button";
 import { useShoppingStore } from "../../lib/stores/shoppingStore";
-import type { Recipe } from "../../types";
-import type { ShoppingItem } from "../../types";
+import type { Recipe, ShoppingItem } from "../../types";
 
 interface AddToShoppingOverlayProps {
   visible: boolean;
@@ -211,7 +210,7 @@ function formatAmount(value: number): string {
   const whole = Math.floor(rounded);
   const fractionThreshold = 0.04;
 
-  const fractions: Array<[number, string]> = [
+  const fractions: [number, string][] = [
     [0.25, "\u00BC"],
     [0.5, "\u00BD"],
     [0.75, "\u00BE"],

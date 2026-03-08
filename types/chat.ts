@@ -35,14 +35,14 @@ export interface RecipeCardBlock {
 export interface RecipeCarouselBlock {
   type: "recipe-carousel";
   data: {
-    cards: Array<{
+    cards: {
       id: string;
       title: string;
       emoji: string;
       time: string;
       tag: string;
       image?: { gradient: string; emoji: string };
-    }>;
+    }[];
   };
 }
 
@@ -53,8 +53,8 @@ export interface IngredientsBlock {
     recipeTitle: string;
     servings: number;
     totalItems: number;
-    sections?: Array<{ name: string }>;
-    items: Array<Ingredient & { checked?: boolean }>;
+    sections?: { name: string }[];
+    items: (Ingredient & { checked?: boolean })[];
     actions?: WidgetAction[];
   };
 }
@@ -77,14 +77,14 @@ export interface CookModeBlock {
   type: "cook-mode";
   data: {
     totalSteps: number;
-    steps: Array<{
+    steps: {
       stepNumber: number;
       title: string;
       text: string;
       timerPill?: string;
       tips?: string;
-      warnings?: Array<{ icon: string; text: string }>;
-    }>;
+      warnings?: { icon: string; text: string }[];
+    }[];
   };
 }
 
@@ -92,11 +92,11 @@ export interface CookModeBlock {
 export interface TipsBlock {
   type: "tips";
   data: {
-    tips: Array<{
+    tips: {
       icon: string;
       label: string;
       text: string;
-    }>;
+    }[];
   };
 }
 
@@ -106,10 +106,10 @@ export interface RescueBlock {
   data: {
     icon: string;
     title: string;
-    steps: Array<{
+    steps: {
       number: number;
       text: string;
-    }>;
+    }[];
   };
 }
 
