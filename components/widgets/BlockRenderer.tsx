@@ -3,8 +3,9 @@ import { ErrorBoundary } from "../ui/ErrorBoundary";
 import { RecipeCard } from "./RecipeCard";
 import { RecipeCarousel } from "./RecipeCarousel";
 import { IngredientsWidget } from "./IngredientsWidget";
-import { CookStep } from "./CookStep";
 import { CookMode } from "./CookMode";
+import { FullRecipe } from "./FullRecipe";
+import { QuickAction } from "./QuickAction";
 import { TipsList } from "./TipsList";
 import { RescueWidget } from "./RescueWidget";
 
@@ -20,10 +21,12 @@ function BlockContent({ block }: BlockRendererProps) {
       return <RecipeCarousel data={block.data} />;
     case "ingredients":
       return <IngredientsWidget data={block.data} />;
-    case "cook-step":
-      return <CookStep data={block.data} />;
     case "cook-mode":
       return <CookMode data={block.data} />;
+    case "full-recipe":
+      return <FullRecipe data={block.data} />;
+    case "quick-action":
+      return <QuickAction data={block.data} />;
     case "tips":
       return <TipsList data={block.data} />;
     case "rescue":

@@ -3,6 +3,7 @@ import type { GenerativeModel, Content } from "@firebase/ai";
 import { getApps } from "firebase/app";
 import type { ChatMessage, Block } from "@/types/chat";
 import { buildSystemPrompt } from "./systemPrompt";
+import { getMockResponse } from "./mockResponses";
 
 /** Context passed to the LLM for each request */
 export interface LLMContext {
@@ -26,7 +27,9 @@ export function initGeminiChat(): GenerativeModel | null {
 
   const apps = getApps();
   if (apps.length === 0) {
-    console.warn("[mise] No Firebase app initialized — cannot create Gemini model");
+    console.warn(
+      "[mise] No Firebase app initialized — cannot create Gemini model",
+    );
     return null;
   }
 
@@ -110,7 +113,9 @@ export function extractContent(text: string): string {
   }
 
   // Try extracting from embedded JSON
-  const jsonMatch = text.match(/\{[\s\S]*"content"\s*:\s*"[\s\S]*"\s*[\s\S]*\}/);
+  const jsonMatch = text.match(
+    /\{[\s\S]*"content"\s*:\s*"[\s\S]*"\s*[\s\S]*\}/,
+  );
   if (jsonMatch) {
     try {
       const parsed: unknown = JSON.parse(jsonMatch[0]);
@@ -138,9 +143,18 @@ export async function* sendMessageToGemini(
   context: LLMContext,
   userMessage: string,
 ): AsyncGenerator<StreamChunk> {
+  // Mock AI mode for E2E testing — deterministic responses
+  if (process.env.EXPO_PUBLIC_MOCK_AI === "true") {
+    yield* getMockResponse(userMessage);
+    return;
+  }
+
   const model = initGeminiChat();
   if (!model) {
-    yield { type: "error", error: "Gemini model not initialized. Check Firebase configuration." };
+    yield {
+      type: "error",
+      error: "Gemini model not initialized. Check Firebase configuration.",
+    };
     yield { type: "done" };
     return;
   }

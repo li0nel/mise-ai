@@ -1,10 +1,6 @@
 import { create } from "zustand";
 import type { ChatMessage, Block } from "../../types";
-import { MOCK_CHAT_MESSAGES } from "../../data/mockChat";
-import {
-  sendMessageToGemini,
-  extractContent,
-} from "../ai/chat";
+import { sendMessageToGemini, extractContent } from "../ai/chat";
 import type { LLMContext } from "../ai/chat";
 import { SYSTEM_PROMPT } from "../ai/systemPrompt";
 import { useRecipeStore } from "./recipeStore";
@@ -43,7 +39,9 @@ async function streamGeminiResponse(
   context: LLMContext,
   userMessage: string,
   assistantId: string,
-  set: (partial: Partial<ChatState> | ((state: ChatState) => Partial<ChatState>)) => void,
+  set: (
+    partial: Partial<ChatState> | ((state: ChatState) => Partial<ChatState>),
+  ) => void,
   _get: () => ChatState,
 ): Promise<void> {
   let accumulatedText = "";
@@ -115,12 +113,6 @@ export const useChatStore = create<ChatState>((set, get) => ({
     };
 
     const { messages } = get();
-
-    // First message: seed with mock conversation (demo/tutorial)
-    if (messages.length === 0) {
-      set({ messages: [userMessage, ...MOCK_CHAT_MESSAGES] });
-      return;
-    }
 
     // Add user message and create placeholder assistant message
     const assistantId = `ai-${Date.now()}`;

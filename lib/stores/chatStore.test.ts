@@ -43,18 +43,6 @@ jest.mock("../ai/systemPrompt", () => ({
   SYSTEM_PROMPT: "Test system prompt",
 }));
 
-// Mock the mock data
-jest.mock("../../data/mockChat", () => ({
-  MOCK_CHAT_MESSAGES: [
-    {
-      id: "mock-001",
-      role: "assistant",
-      content: "Welcome to Mise!",
-      timestamp: 1000,
-    },
-  ],
-}));
-
 import { useChatStore } from "./chatStore";
 
 describe("chatStore", () => {
@@ -85,55 +73,31 @@ describe("chatStore", () => {
     });
   });
 
-  describe("sendMessage - first message", () => {
-    it("seeds mock chat messages on first message", () => {
-      useChatStore.getState().sendMessage("Hello");
-
-      const { messages } = useChatStore.getState();
-      // First message should be the user's message, followed by mock messages
-      expect(messages.length).toBeGreaterThanOrEqual(2);
-      expect(messages[0]?.role).toBe("user");
-      expect(messages[0]?.content).toBe("Hello");
-      // Second message is from mocks
-      expect(messages[1]?.id).toBe("mock-001");
-    });
-
-    it("does not set streaming on first message (demo seed path)", () => {
-      useChatStore.getState().sendMessage("Hello");
-      // The first-message path returns early without streaming
-      expect(useChatStore.getState().isStreaming).toBe(false);
-    });
-  });
-
-  describe("sendMessage - subsequent messages", () => {
+  describe("sendMessage", () => {
     it("adds user message and creates placeholder assistant message", () => {
-      // Set up existing messages so it's not the first message
-      useChatStore.setState({
-        messages: [
-          { id: "existing-1", role: "user", content: "Previous", timestamp: 1000 },
-          { id: "existing-2", role: "assistant", content: "Reply", timestamp: 1001 },
-        ],
-      });
-
-      useChatStore.getState().sendMessage("New question");
+      useChatStore.getState().sendMessage("Hello");
 
       const { messages, isStreaming } = useChatStore.getState();
-      // Should have: 2 existing + 1 user + 1 assistant placeholder = 4
-      expect(messages).toHaveLength(4);
-      expect(messages[2]?.role).toBe("user");
-      expect(messages[2]?.content).toBe("New question");
-      expect(messages[3]?.role).toBe("assistant");
-      expect(messages[3]?.content).toBe("");
+      // All messages go through streaming — no mock seeding
+      expect(messages).toHaveLength(2);
+      expect(messages[0]?.role).toBe("user");
+      expect(messages[0]?.content).toBe("Hello");
+      expect(messages[1]?.role).toBe("assistant");
+      expect(messages[1]?.content).toBe("");
+      expect(isStreaming).toBe(true);
+    });
+
+    it("streams all messages through Gemini (no mock seeding)", () => {
+      useChatStore.getState().sendMessage("First message");
+
+      const { messages, isStreaming } = useChatStore.getState();
+      expect(messages).toHaveLength(2);
+      expect(messages[0]?.role).toBe("user");
+      expect(messages[1]?.role).toBe("assistant");
       expect(isStreaming).toBe(true);
     });
 
     it("creates user message with unique ID prefixed with user-", () => {
-      useChatStore.setState({
-        messages: [
-          { id: "existing", role: "user", content: "Existing", timestamp: 1000 },
-        ],
-      });
-
       useChatStore.getState().sendMessage("Test");
 
       const { messages } = useChatStore.getState();
@@ -192,7 +156,12 @@ describe("chatStore", () => {
       useChatStore.setState({
         messages: [
           { id: "msg-1", role: "user", content: "Hello", timestamp: 1000 },
-          { id: "msg-2", role: "assistant", content: "Hi there!", timestamp: 1001 },
+          {
+            id: "msg-2",
+            role: "assistant",
+            content: "Hi there!",
+            timestamp: 1001,
+          },
         ],
       });
 

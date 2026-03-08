@@ -8,7 +8,7 @@ export default defineConfig({
     headless: true,
   },
   webServer: {
-    command: "npm run web",
+    command: "EXPO_PUBLIC_MOCK_AI=true npm run web",
     url: "http://localhost:8081",
     reuseExistingServer: true,
     timeout: 60_000,

@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 test.describe("Navigation journey", () => {
-  test("full cross-screen flow: chat → View Full Recipe → recipe detail → cart icon → shopping list", async ({
+  test("full cross-screen flow: chat → recipe detail → cart icon → shopping list", async ({
     page,
   }) => {
     const errors: string[] = [];
@@ -9,19 +9,12 @@ test.describe("Navigation journey", () => {
       if (msg.type() === "error") errors.push(msg.text());
     });
 
-    // Start on chat — send message to trigger mock conversation
+    // Start on chat — verify it loads
     await page.goto("/(main)");
-    const input = page.getByPlaceholder("Ask about recipes...");
-    await input.fill("Show me Beef Bourguignon");
-    await input.press("Enter");
+    await expect(page.getByText("Ready to cook?")).toBeVisible();
 
-    // Wait for recipe card with View Full Recipe
-    await expect(page.getByText("View Full Recipe")).toBeVisible({
-      timeout: 10_000,
-    });
-
-    // Navigate to recipe detail via View Full Recipe button
-    await page.getByText("View Full Recipe").click();
+    // Navigate to an existing recipe detail page
+    await page.goto("/(main)/recipe/boeuf-bourguignon");
     await expect(page.getByText("Boeuf Bourguignon").first()).toBeVisible({
       timeout: 10_000,
     });
@@ -48,11 +41,9 @@ test.describe("Navigation journey", () => {
     // Chat page
     await page.goto("/(main)");
     await expect(page.getByText("Ready to cook?")).toBeVisible();
-    await expect(
-      page.getByPlaceholder("Ask about recipes..."),
-    ).toBeVisible();
+    await expect(page.getByPlaceholder("Ask about recipes...")).toBeVisible();
 
-    // Recipe detail page
+    // Recipe detail page (pre-existing recipe)
     await page.goto("/(main)/recipe/boeuf-bourguignon");
     await expect(page.getByText("Boeuf Bourguignon")).toBeVisible({
       timeout: 10_000,

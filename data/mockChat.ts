@@ -1,3 +1,7 @@
+/**
+ * Reference-only mock chat data.
+ * NOT imported at runtime — kept for E2E test data and design reference.
+ */
 import type { ChatMessage } from "../types";
 
 const BASE_TIMESTAMP = 1709924400000; // 2024-03-08 19:00:00 UTC
@@ -47,7 +51,12 @@ export const MOCK_CHAT_MESSAGES: ChatMessage[] = [
             emoji: "🥩",
           },
           actions: [
-            { label: "Cook Now 👨‍🍳", type: "primary", actionType: "chat", chatMessage: "Cook Boeuf Bourguignon now" },
+            {
+              label: "Cook Now 👨‍🍳",
+              type: "primary",
+              actionType: "chat",
+              chatMessage: "Cook Boeuf Bourguignon now",
+            },
             { label: "View Full Recipe", type: "outline" },
           ],
         },
@@ -79,7 +88,11 @@ export const MOCK_CHAT_MESSAGES: ChatMessage[] = [
           totalItems: 13,
           sections: [{ name: "Main" }, { name: "Garnish" }],
           items: [
-            { amount: "170", unit: "g", name: "Lardons (thick-cut pancetta or bacon)" },
+            {
+              amount: "170",
+              unit: "g",
+              name: "Lardons (thick-cut pancetta or bacon)",
+            },
             {
               amount: "1.3",
               unit: "kg",
@@ -92,19 +105,35 @@ export const MOCK_CHAT_MESSAGES: ChatMessage[] = [
               name: "Full-bodied red wine",
               notes: "Burgundy, Cotes du Rhone or Chianti — drinkable quality",
             },
-            { amount: "500", unit: "ml", name: "Beef stock, homemade or good quality" },
+            {
+              amount: "500",
+              unit: "ml",
+              name: "Beef stock, homemade or good quality",
+            },
             { amount: "2", unit: "tbsp", name: "Tomato paste" },
             { amount: "4", unit: "cloves", name: "Garlic, smashed" },
             { amount: "1", name: "Bouquet garni (thyme, bay leaf, parsley)" },
             { amount: "18-24", name: "Pearl onions, blanched and peeled" },
             { amount: "450", unit: "g", name: "Button mushrooms, quartered" },
             { amount: "3", unit: "tbsp", name: "Unsalted butter, divided" },
-            { amount: "2", unit: "tbsp", name: "Neutral oil (vegetable or grapeseed)" },
+            {
+              amount: "2",
+              unit: "tbsp",
+              name: "Neutral oil (vegetable or grapeseed)",
+            },
             { amount: "3", unit: "tbsp", name: "Plain flour (for dredging)" },
-            { amount: "To taste", name: "Salt and freshly ground black pepper" },
+            {
+              amount: "To taste",
+              name: "Salt and freshly ground black pepper",
+            },
           ],
           actions: [
-            { label: "Add All to Shopping List", type: "primary", actionType: "direct", directAction: "add-to-shopping" },
+            {
+              label: "Add All to Shopping List",
+              type: "primary",
+              actionType: "direct",
+              directAction: "add-to-shopping",
+            },
           ],
         },
       },
@@ -151,41 +180,17 @@ export const MOCK_CHAT_MESSAGES: ChatMessage[] = [
     timestamp: BASE_TIMESTAMP + 120_000,
   },
 
-  // ── 8. AI — Cook Step widget (step 1 only) ────────────────
+  // ── 8. User asks for all steps ────────────────────────────
   {
     id: "msg-008",
-    role: "assistant",
-    content: "Let's start with step 1:",
-    timestamp: BASE_TIMESTAMP + 125_000,
-    blocks: [
-      {
-        type: "cook-step",
-        data: {
-          stepNumber: 1,
-          totalSteps: 5,
-          text: "Bring a medium pot of water to a boil. Add 170g lardons and blanch for 8 minutes. This removes excess salt and the smoky flavour so it doesn't overwhelm the finished dish. Drain and pat dry with kitchen paper.",
-          timerPill: "8 min blanch",
-          progressPercent: 20,
-          actions: [
-            { label: "Next Step", type: "primary", actionType: "chat", chatMessage: "Show me the next step" },
-            { label: "Show All Steps", type: "outline", actionType: "chat", chatMessage: "Show me all the steps" },
-          ],
-        },
-      },
-    ],
-  },
-
-  // ── 9. User asks for all steps ────────────────────────────
-  {
-    id: "msg-009",
     role: "user",
     content: "Show me all the steps at once please.",
     timestamp: BASE_TIMESTAMP + 180_000,
   },
 
-  // ── 10. AI — Cook Mode widget (all steps) ─────────────────
+  // ── 9. AI — Cook Mode widget (all steps) ─────────────────
   {
-    id: "msg-010",
+    id: "msg-009",
     role: "assistant",
     content: "Here is the full cook mode view:",
     timestamp: BASE_TIMESTAMP + 185_000,
@@ -236,18 +241,18 @@ export const MOCK_CHAT_MESSAGES: ChatMessage[] = [
     ],
   },
 
-  // ── 11. User — 2 hours later ──────────────────────────────
+  // ── 10. User — 2 hours later ──────────────────────────────
   {
-    id: "msg-011",
+    id: "msg-010",
     role: "user",
     content:
       "It's been 2 hours. Smells incredible. Beef is very tender but the sauce seems thin — almost watery. Is that normal?",
     timestamp: BASE_TIMESTAMP + 7_500_000, // ~2 hours later
   },
 
-  // ── 12. AI — Rescue widget ────────────────────────────────
+  // ── 11. AI — Rescue widget ────────────────────────────────
   {
-    id: "msg-012",
+    id: "msg-011",
     role: "assistant",
     content:
       "Completely normal at this stage! The sauce will thin as it cooks because the beef releases moisture. You reduce it at the end — this is actually exactly how Julia intended it. Here's the finish:",
@@ -281,18 +286,18 @@ export const MOCK_CHAT_MESSAGES: ChatMessage[] = [
     ],
   },
 
-  // ── 13. User — sauce is great ─────────────────────────────
+  // ── 12. User — sauce is great ─────────────────────────────
   {
-    id: "msg-013",
+    id: "msg-012",
     role: "user",
     content:
       "The sauce is absolutely gorgeous now. Rich, glossy, incredible. How do I serve?",
     timestamp: BASE_TIMESTAMP + 8_400_000,
   },
 
-  // ── 14. AI — Recipe Carousel (related recipes / serving) ──
+  // ── 13. AI — Recipe Carousel (related recipes / serving) ──
   {
-    id: "msg-014",
+    id: "msg-013",
     role: "assistant",
     content:
       "You've made something exceptional. Here are some classic French dishes that pair beautifully for a full menu:",

@@ -82,23 +82,6 @@ describe("BlockRenderer", () => {
     expect(screen.getByText("Cook")).toBeTruthy();
   });
 
-  it("renders a cook-step block", () => {
-    const block: Block = {
-      type: "cook-step",
-      data: {
-        stepNumber: 1,
-        totalSteps: 3,
-        text: "Boil water in a large pot.",
-        progressPercent: 33,
-      },
-    };
-
-    render(<BlockRenderer block={block} />);
-    expect(screen.getByText("Step 1 of 3")).toBeTruthy();
-    expect(screen.getByText("Boil water in a large pot.")).toBeTruthy();
-    expect(screen.getByText("33%")).toBeTruthy();
-  });
-
   it("renders a recipe-card block", () => {
     const block: Block = {
       type: "recipe-card",
@@ -111,9 +94,7 @@ describe("BlockRenderer", () => {
         servings: 4,
         cuisine: "Italian",
         description: "A simple pasta dish.",
-        actions: [
-          { label: "Cook Now", type: "primary" },
-        ],
+        actions: [{ label: "Cook Now", type: "primary" }],
       },
     };
 

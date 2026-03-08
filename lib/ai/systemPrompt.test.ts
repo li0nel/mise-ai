@@ -11,8 +11,9 @@ describe("SYSTEM_PROMPT", () => {
       "recipe-card",
       "recipe-carousel",
       "ingredients",
-      "cook-step",
+      "full-recipe",
       "cook-mode",
+      "quick-action",
       "tips",
       "rescue",
     ];

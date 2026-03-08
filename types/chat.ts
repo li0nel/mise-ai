@@ -59,20 +59,7 @@ export interface IngredientsBlock {
   };
 }
 
-/** Block 4: Single cook step */
-export interface CookStepBlock {
-  type: "cook-step";
-  data: {
-    stepNumber: number;
-    totalSteps: number;
-    text: string;
-    timerPill?: string;
-    progressPercent: number;
-    actions?: WidgetAction[];
-  };
-}
-
-/** Block 5: All cook steps stacked */
+/** Block 4: All cook steps stacked */
 export interface CookModeBlock {
   type: "cook-mode";
   data: {
@@ -88,7 +75,46 @@ export interface CookModeBlock {
   };
 }
 
-/** Block 6: Tips / suggestions */
+/** Block 5: Full recipe with header, ingredients, steps, and save button */
+export interface FullRecipeBlock {
+  type: "full-recipe";
+  data: {
+    id: string;
+    title: string;
+    emoji: string;
+    time: string;
+    servings: number;
+    cuisine: string;
+    description: string;
+    image?: { gradient: string; emoji: string };
+    ingredients: {
+      sections?: { name: string }[];
+      items: Ingredient[];
+    };
+    steps: {
+      stepNumber: number;
+      title: string;
+      text: string;
+      timerPill?: string;
+      tips?: string;
+      warnings?: { icon: string; text: string }[];
+    }[];
+  };
+}
+
+/** Block 6: Quick action bubble for conversational suggestions */
+export interface QuickActionBlock {
+  type: "quick-action";
+  data: {
+    label: string;
+    icon?: string;
+    actionType: "chat" | "direct";
+    chatMessage?: string;
+    directAction?: string;
+  };
+}
+
+/** Block 7: Tips / suggestions */
 export interface TipsBlock {
   type: "tips";
   data: {
@@ -118,8 +144,9 @@ export type Block =
   | RecipeCardBlock
   | RecipeCarouselBlock
   | IngredientsBlock
-  | CookStepBlock
   | CookModeBlock
+  | FullRecipeBlock
+  | QuickActionBlock
   | TipsBlock
   | RescueBlock;
 

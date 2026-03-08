@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 test.describe("Chat messaging journey", () => {
-  test("empty state → empty submit blocked → send message → mock loads → input clears", async ({
+  test("empty state → empty submit blocked → send message → AI responds → input clears", async ({
     page,
   }) => {
     const errors: string[] = [];
@@ -13,9 +13,7 @@ test.describe("Chat messaging journey", () => {
 
     // Empty state visible
     await expect(page.getByText("Ready to cook?")).toBeVisible();
-    await expect(
-      page.getByText(/Ask me anything about recipes/),
-    ).toBeVisible();
+    await expect(page.getByText(/Ask me anything about recipes/)).toBeVisible();
 
     // App bar branding
     await expect(page.getByText("mise.")).toBeVisible();
@@ -43,8 +41,8 @@ test.describe("Chat messaging journey", () => {
       timeout: 5_000,
     });
 
-    // Mock conversation loads (Boeuf Bourguignon recipe card)
-    await expect(page.getByText("Boeuf Bourguignon").first()).toBeVisible({
+    // AI responds via streaming (mock AI greeting)
+    await expect(page.getByText(/Welcome to Mise/).first()).toBeVisible({
       timeout: 10_000,
     });
 
@@ -70,13 +68,16 @@ test.describe("Chat messaging journey", () => {
       page.getByText("https://www.example.com/recipes/chicken-tikka"),
     ).toBeVisible({ timeout: 10_000 });
 
-    // Send recipe text (second message after mock loads)
+    // AI responds about URL
+    await expect(page.getByText(/recipe URL/).first()).toBeVisible({
+      timeout: 10_000,
+    });
+
+    // Send recipe text
     await input.fill("I want to cook pasta carbonara with eggs and pancetta");
     await input.press("Enter");
     await expect(
-      page.getByText(
-        "I want to cook pasta carbonara with eggs and pancetta",
-      ),
+      page.getByText("I want to cook pasta carbonara with eggs and pancetta"),
     ).toBeVisible({ timeout: 5_000 });
 
     expect(errors).toHaveLength(0);
