@@ -1,5 +1,6 @@
 import { View, Text } from "react-native";
 import type { StepWarning, StepTimer } from "../../types";
+import { RichStepText } from "../shared/RichStepText";
 
 interface InstructionStepProps {
   stepNumber: number;
@@ -23,7 +24,10 @@ export function InstructionStep({
 
       {/* Step content */}
       <View className="flex-1 pt-1">
-        <Text className="text-[13px] leading-relaxed text-text">{text}</Text>
+        <RichStepText
+          text={text}
+          className="text-[13px] leading-relaxed text-text"
+        />
 
         {/* Timer pills */}
         {timers && timers.length > 0 ? (

@@ -1,5 +1,6 @@
 import { View, Text } from "react-native";
 import type { CookModeBlock } from "../../types";
+import { RichStepText } from "../shared/RichStepText";
 
 interface CookModeProps {
   data: CookModeBlock["data"];
@@ -13,9 +14,7 @@ export function CookMode({ data }: CookModeProps) {
         <Text className="text-[11px] font-bold uppercase tracking-wider text-brand">
           Cook Mode
         </Text>
-        <Text className="text-[11px] text-text-3">
-          {data.totalSteps} steps
-        </Text>
+        <Text className="text-[11px] text-text-3">{data.totalSteps} steps</Text>
       </View>
 
       {/* Steps */}
@@ -39,9 +38,10 @@ export function CookMode({ data }: CookModeProps) {
             </View>
 
             {/* Step text */}
-            <Text className="text-[13px] leading-relaxed text-text">
-              {step.text}
-            </Text>
+            <RichStepText
+              text={step.text}
+              className="text-[13px] leading-relaxed text-text"
+            />
 
             {/* Timer pill */}
             {step.timerPill ? (

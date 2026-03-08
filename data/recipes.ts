@@ -8,7 +8,8 @@ export const RECIPES: Recipe[] = [
     emoji: "🥩",
     cuisines: ["French"],
     heroImage: {
-      gradient: "linear-gradient(160deg, #D4B0A8 0%, #8B4838 40%, #4A1818 100%)",
+      gradient:
+        "linear-gradient(160deg, #D4B0A8 0%, #8B4838 40%, #4A1818 100%)",
       emoji: "🥩",
     },
     prepTime: 30,
@@ -21,23 +22,56 @@ export const RECIPES: Recipe[] = [
       {
         name: "Main",
         ingredients: [
-          { amount: "1.3", unit: "kg", name: "Stewing beef", notes: "Chuck, brisket or beef cheek — cut into 5cm cubes" },
-          { amount: "170", unit: "g", name: "Lardons", notes: "Thick-cut pancetta or bacon" },
-          { amount: "1", unit: "bottle", name: "Full-bodied red wine", notes: "Burgundy or Cotes du Rhone" },
+          {
+            amount: "1.3",
+            unit: "kg",
+            name: "Stewing beef",
+            notes: "Chuck, brisket or beef cheek — cut into 5cm cubes",
+          },
+          {
+            amount: "170",
+            unit: "g",
+            name: "Lardons",
+            notes: "Thick-cut pancetta or bacon",
+          },
+          {
+            amount: "1",
+            unit: "bottle",
+            name: "Full-bodied red wine",
+            notes: "Burgundy or Cotes du Rhone",
+          },
           { amount: "500", unit: "ml", name: "Beef stock" },
           { amount: "2", unit: "tbsp", name: "Tomato paste" },
           { amount: "4", unit: "cloves", name: "Garlic", notes: "Smashed" },
-          { amount: "1", name: "Bouquet garni", notes: "Thyme, bay leaf, parsley" },
+          {
+            amount: "1",
+            name: "Bouquet garni",
+            notes: "Thyme, bay leaf, parsley",
+          },
         ],
       },
       {
         name: "Garnish",
         ingredients: [
-          { amount: "18-24", name: "Pearl onions", notes: "Blanched and peeled" },
-          { amount: "450", unit: "g", name: "Button mushrooms", notes: "Quartered" },
+          {
+            amount: "18-24",
+            name: "Pearl onions",
+            notes: "Blanched and peeled",
+          },
+          {
+            amount: "450",
+            unit: "g",
+            name: "Button mushrooms",
+            notes: "Quartered",
+          },
           { amount: "3", unit: "tbsp", name: "Unsalted butter" },
           { amount: "2", unit: "tbsp", name: "Neutral oil" },
-          { amount: "3", unit: "tbsp", name: "Plain flour", notes: "For dredging" },
+          {
+            amount: "3",
+            unit: "tbsp",
+            name: "Plain flour",
+            notes: "For dredging",
+          },
           { amount: "To taste", name: "Salt and black pepper" },
         ],
       },
@@ -46,37 +80,52 @@ export const RECIPES: Recipe[] = [
       {
         stepNumber: 1,
         title: "Blanch the lardons",
-        text: "Bring a medium pot of water to a boil. Add lardons and blanch for 8 minutes. Drain and pat dry.",
+        text: '<b>Blanch the lardons:</b> Bring a medium pot of water to a boil. Add <ingr>lardons</ingr> and blanch for <timer duration="8 min">8 min</timer>. Drain and pat dry.',
         timers: [{ duration: "8 min", activity: "blanch" }],
       },
       {
         stepNumber: 2,
         title: "Render the lardons",
-        text: "In a large casserole, heat 1 tbsp butter and 1 tbsp oil over medium heat. Add lardons and render until golden, about 3-4 minutes. Remove with a slotted spoon.",
+        text: 'In a large casserole, heat <ingr>butter</ingr> and <ingr>oil</ingr> over medium heat. Add <ingr>lardons</ingr> and render until golden, about <timer duration="3 min">3-4 min</timer>. Remove with a slotted spoon.',
         timers: [{ duration: "3-4 min", activity: "render" }],
       },
       {
         stepNumber: 3,
         title: "Brown the beef in batches",
         text: "Pat every piece of beef dry. Season generously. Sear in batches of 4-5 pieces on all sides until deeply browned.",
-        warnings: [{ icon: "⚠️", text: "Never crowd the pan — wet or crowded beef steams instead of browning." }],
+        warnings: [
+          {
+            icon: "⚠️",
+            text: "Never crowd the pan — wet or crowded beef steams instead of browning.",
+          },
+        ],
       },
       {
         stepNumber: 4,
         title: "Deglaze the pot",
-        text: "Add sliced carrots and onion, cook 5 minutes. Add garlic and flour, stir, then pour in half the wine and scrape the fond.",
+        text: "<b>Deglaze:</b> Add sliced <ingr>carrots</ingr> and <ingr>onion</ingr>, cook 5 minutes. Add <ingr>garlic</ingr> and <ingr>flour</ingr>, stir, then pour in half the <ingr>red wine</ingr> and scrape the fond.",
       },
       {
         stepNumber: 5,
         title: "Braise in the oven",
         text: "Return beef and lardons to pot. Add remaining wine, stock, tomato paste, and bouquet garni. Bring to simmer, cover, and braise at 160C for 2.5-3 hours.",
         timers: [{ duration: "2.5-3 hours", activity: "braise" }],
-        tips: ["The beef should be easily pierced with a fork but not falling apart."],
+        tips: [
+          "The beef should be easily pierced with a fork but not falling apart.",
+        ],
       },
     ],
     variations: [
-      { title: "Pressure Cooker", subtitle: "45 minutes instead of 3 hours", emoji: "⏱" },
-      { title: "Slow Cooker", subtitle: "8 hours on low, hands-off", emoji: "🫕" },
+      {
+        title: "Pressure Cooker",
+        subtitle: "45 minutes instead of 3 hours",
+        emoji: "⏱",
+      },
+      {
+        title: "Slow Cooker",
+        subtitle: "8 hours on low, hands-off",
+        emoji: "🫕",
+      },
     ],
   },
 
@@ -87,7 +136,8 @@ export const RECIPES: Recipe[] = [
     emoji: "🍜",
     cuisines: ["Thai"],
     heroImage: {
-      gradient: "linear-gradient(160deg, #F5E0C0 0%, #D4944A 40%, #8B4A18 100%)",
+      gradient:
+        "linear-gradient(160deg, #F5E0C0 0%, #D4944A 40%, #8B4A18 100%)",
       emoji: "🍜",
     },
     prepTime: 15,
@@ -102,7 +152,13 @@ export const RECIPES: Recipe[] = [
           { amount: "200", unit: "g", name: "Flat rice noodles" },
           { amount: "200", unit: "g", name: "Prawns or chicken breast" },
           { amount: "2", name: "Eggs" },
-          { amount: "100", unit: "g", name: "Firm tofu", notes: "Pressed and cubed", optional: true },
+          {
+            amount: "100",
+            unit: "g",
+            name: "Firm tofu",
+            notes: "Pressed and cubed",
+            optional: true,
+          },
         ],
       },
       {
@@ -118,7 +174,12 @@ export const RECIPES: Recipe[] = [
         name: "Garnish",
         ingredients: [
           { amount: "50", unit: "g", name: "Bean sprouts" },
-          { amount: "3", unit: "tbsp", name: "Roasted peanuts", notes: "Crushed" },
+          {
+            amount: "3",
+            unit: "tbsp",
+            name: "Roasted peanuts",
+            notes: "Crushed",
+          },
           { amount: "2", name: "Spring onions", notes: "Cut into 3cm pieces" },
           { amount: "1", name: "Lime", notes: "Cut into wedges" },
         ],
@@ -128,13 +189,13 @@ export const RECIPES: Recipe[] = [
       {
         stepNumber: 1,
         title: "Soak noodles",
-        text: "Soak rice noodles in warm water for 20 minutes until pliable but not soft. Drain well.",
+        text: 'Soak <ingr>rice noodles</ingr> in warm water for <timer duration="20 min">20 min</timer> until pliable but not soft. Drain well.',
         timers: [{ duration: "20 min", activity: "soak" }],
       },
       {
         stepNumber: 2,
         title: "Make the sauce",
-        text: "Mix tamarind paste, fish sauce, palm sugar, and lime juice in a small bowl until sugar dissolves.",
+        text: "<b>Make the sauce:</b> Mix <ingr>tamarind paste</ingr>, <ingr>fish sauce</ingr>, <ingr>palm sugar</ingr>, and <ingr>lime juice</ingr> in a small bowl until sugar dissolves.",
       },
       {
         stepNumber: 3,
@@ -145,7 +206,7 @@ export const RECIPES: Recipe[] = [
       {
         stepNumber: 4,
         title: "Serve",
-        text: "Top with bean sprouts, crushed peanuts, spring onions, and lime wedges.",
+        text: "Top with <ingr>bean sprouts</ingr>, crushed <ingr>peanuts</ingr>, <ingr>spring onions</ingr>, and <ingr>lime</ingr> wedges.",
       },
     ],
   },
@@ -157,7 +218,8 @@ export const RECIPES: Recipe[] = [
     emoji: "🍕",
     cuisines: ["Italian"],
     heroImage: {
-      gradient: "linear-gradient(160deg, #F5E8CC 0%, #D4A040 40%, #8B5020 100%)",
+      gradient:
+        "linear-gradient(160deg, #F5E8CC 0%, #D4A040 40%, #8B5020 100%)",
       emoji: "🍕",
     },
     prepTime: 20,
@@ -179,8 +241,18 @@ export const RECIPES: Recipe[] = [
       {
         name: "Topping",
         ingredients: [
-          { amount: "200", unit: "g", name: "San Marzano tomatoes", notes: "Crushed" },
-          { amount: "250", unit: "g", name: "Fresh mozzarella", notes: "Torn into pieces" },
+          {
+            amount: "200",
+            unit: "g",
+            name: "San Marzano tomatoes",
+            notes: "Crushed",
+          },
+          {
+            amount: "250",
+            unit: "g",
+            name: "Fresh mozzarella",
+            notes: "Torn into pieces",
+          },
           { amount: "8-10", name: "Fresh basil leaves" },
           { amount: "To taste", name: "Sea salt and olive oil" },
         ],
@@ -214,7 +286,8 @@ export const RECIPES: Recipe[] = [
     emoji: "🍗",
     cuisines: ["Indian"],
     heroImage: {
-      gradient: "linear-gradient(160deg, #F5D0A0 0%, #D46A30 40%, #8B2010 100%)",
+      gradient:
+        "linear-gradient(160deg, #F5D0A0 0%, #D46A30 40%, #8B2010 100%)",
       emoji: "🍗",
     },
     prepTime: 20,
@@ -226,7 +299,12 @@ export const RECIPES: Recipe[] = [
       {
         name: "Marinade",
         ingredients: [
-          { amount: "600", unit: "g", name: "Chicken thighs", notes: "Boneless, cubed" },
+          {
+            amount: "600",
+            unit: "g",
+            name: "Chicken thighs",
+            notes: "Boneless, cubed",
+          },
           { amount: "200", unit: "ml", name: "Yogurt" },
           { amount: "2", unit: "tbsp", name: "Tikka masala spice blend" },
           { amount: "1", unit: "tbsp", name: "Lemon juice" },
@@ -279,7 +357,8 @@ export const RECIPES: Recipe[] = [
     emoji: "🍣",
     cuisines: ["Japanese"],
     heroImage: {
-      gradient: "linear-gradient(160deg, #E8F0E0 0%, #5A8A3C 40%, #2D4016 100%)",
+      gradient:
+        "linear-gradient(160deg, #E8F0E0 0%, #5A8A3C 40%, #2D4016 100%)",
       emoji: "🍣",
     },
     prepTime: 45,
@@ -339,7 +418,8 @@ export const RECIPES: Recipe[] = [
     emoji: "🌮",
     cuisines: ["Mexican"],
     heroImage: {
-      gradient: "linear-gradient(160deg, #F5F0CC 0%, #D4B040 40%, #8B7020 100%)",
+      gradient:
+        "linear-gradient(160deg, #F5F0CC 0%, #D4B040 40%, #8B7020 100%)",
       emoji: "🌮",
     },
     prepTime: 10,
@@ -349,7 +429,12 @@ export const RECIPES: Recipe[] = [
     ingredientSections: [
       {
         ingredients: [
-          { amount: "500", unit: "g", name: "White fish fillets", notes: "Mahi-mahi, cod, or tilapia" },
+          {
+            amount: "500",
+            unit: "g",
+            name: "White fish fillets",
+            notes: "Mahi-mahi, cod, or tilapia",
+          },
           { amount: "8", name: "Small corn tortillas" },
           { amount: "1/2", name: "Red cabbage", notes: "Finely shredded" },
           { amount: "1", name: "Avocado", notes: "Sliced" },
@@ -388,7 +473,8 @@ export const RECIPES: Recipe[] = [
     emoji: "🍚",
     cuisines: ["Korean"],
     heroImage: {
-      gradient: "linear-gradient(160deg, #F5E8D0 0%, #D48040 40%, #8B3818 100%)",
+      gradient:
+        "linear-gradient(160deg, #F5E8D0 0%, #D48040 40%, #8B3818 100%)",
       emoji: "🍚",
     },
     prepTime: 20,
@@ -400,7 +486,12 @@ export const RECIPES: Recipe[] = [
       {
         ingredients: [
           { amount: "300", unit: "g", name: "Steamed rice" },
-          { amount: "150", unit: "g", name: "Beef sirloin", notes: "Thinly sliced" },
+          {
+            amount: "150",
+            unit: "g",
+            name: "Beef sirloin",
+            notes: "Thinly sliced",
+          },
           { amount: "1", name: "Carrot", notes: "Julienned" },
           { amount: "100", unit: "g", name: "Spinach", notes: "Blanched" },
           { amount: "100", unit: "g", name: "Bean sprouts" },
@@ -444,7 +535,8 @@ export const RECIPES: Recipe[] = [
     emoji: "🥗",
     cuisines: ["American"],
     heroImage: {
-      gradient: "linear-gradient(160deg, #E8F0D0 0%, #7AA840 40%, #3A5018 100%)",
+      gradient:
+        "linear-gradient(160deg, #E8F0D0 0%, #7AA840 40%, #3A5018 100%)",
       emoji: "🥗",
     },
     prepTime: 15,
@@ -454,7 +546,12 @@ export const RECIPES: Recipe[] = [
     ingredientSections: [
       {
         ingredients: [
-          { amount: "1", unit: "head", name: "Romaine lettuce", notes: "Washed, dried, torn" },
+          {
+            amount: "1",
+            unit: "head",
+            name: "Romaine lettuce",
+            notes: "Washed, dried, torn",
+          },
           { amount: "50", unit: "g", name: "Parmesan", notes: "Shaved" },
           { amount: "1", unit: "cup", name: "Croutons" },
         ],
@@ -498,7 +595,8 @@ export const RECIPES: Recipe[] = [
     emoji: "🍳",
     cuisines: ["Mediterranean", "Middle Eastern"],
     heroImage: {
-      gradient: "linear-gradient(160deg, #F5D0B0 0%, #D45030 40%, #8B1818 100%)",
+      gradient:
+        "linear-gradient(160deg, #F5D0B0 0%, #D45030 40%, #8B1818 100%)",
       emoji: "🍳",
     },
     prepTime: 10,
@@ -510,7 +608,12 @@ export const RECIPES: Recipe[] = [
       {
         ingredients: [
           { amount: "6", name: "Eggs" },
-          { amount: "800", unit: "g", name: "Canned tomatoes", notes: "Chopped" },
+          {
+            amount: "800",
+            unit: "g",
+            name: "Canned tomatoes",
+            notes: "Chopped",
+          },
           { amount: "1", name: "Red bell pepper", notes: "Diced" },
           { amount: "1", name: "Onion", notes: "Diced" },
           { amount: "3", unit: "cloves", name: "Garlic" },
@@ -556,7 +659,8 @@ export const RECIPES: Recipe[] = [
     emoji: "🍜",
     cuisines: ["Japanese"],
     heroImage: {
-      gradient: "linear-gradient(160deg, #F5E8D0 0%, #C4944A 40%, #6B4A18 100%)",
+      gradient:
+        "linear-gradient(160deg, #F5E8D0 0%, #C4944A 40%, #6B4A18 100%)",
       emoji: "🍜",
     },
     prepTime: 30,
@@ -569,7 +673,12 @@ export const RECIPES: Recipe[] = [
       {
         name: "Broth",
         ingredients: [
-          { amount: "1", unit: "kg", name: "Pork bones", notes: "Trotters and neck bones" },
+          {
+            amount: "1",
+            unit: "kg",
+            name: "Pork bones",
+            notes: "Trotters and neck bones",
+          },
           { amount: "500", unit: "g", name: "Chicken carcass" },
           { amount: "1", name: "Onion", notes: "Halved" },
           { amount: "6", unit: "cloves", name: "Garlic" },
@@ -608,7 +717,9 @@ export const RECIPES: Recipe[] = [
         title: "Simmer the broth",
         text: "Return cleaned bones to pot with fresh water, onion, garlic, and ginger. Bring to a rolling boil then reduce to a medium simmer. Cook for 3-4 hours, stirring occasionally.",
         timers: [{ duration: "3-4 hours", activity: "simmer" }],
-        tips: ["For a creamy tonkotsu-style broth, keep it at a rolling boil instead of a gentle simmer."],
+        tips: [
+          "For a creamy tonkotsu-style broth, keep it at a rolling boil instead of a gentle simmer.",
+        ],
       },
       {
         stepNumber: 3,
@@ -623,8 +734,16 @@ export const RECIPES: Recipe[] = [
       },
     ],
     variations: [
-      { title: "Miso Ramen", subtitle: "Add white miso paste to tare", emoji: "🫘" },
-      { title: "Shoyu Ramen", subtitle: "Light soy-based clear broth", emoji: "🍶" },
+      {
+        title: "Miso Ramen",
+        subtitle: "Add white miso paste to tare",
+        emoji: "🫘",
+      },
+      {
+        title: "Shoyu Ramen",
+        subtitle: "Light soy-based clear broth",
+        emoji: "🍶",
+      },
     ],
   },
 
@@ -635,7 +754,8 @@ export const RECIPES: Recipe[] = [
     emoji: "🍝",
     cuisines: ["Italian"],
     heroImage: {
-      gradient: "linear-gradient(160deg, #F5F0D8 0%, #D4C460 40%, #8B8020 100%)",
+      gradient:
+        "linear-gradient(160deg, #F5F0D8 0%, #D4C460 40%, #8B8020 100%)",
       emoji: "🍝",
     },
     prepTime: 5,
@@ -646,11 +766,25 @@ export const RECIPES: Recipe[] = [
       {
         ingredients: [
           { amount: "200", unit: "g", name: "Spaghetti or rigatoni" },
-          { amount: "150", unit: "g", name: "Guanciale", notes: "Cut into small strips" },
+          {
+            amount: "150",
+            unit: "g",
+            name: "Guanciale",
+            notes: "Cut into small strips",
+          },
           { amount: "3", name: "Egg yolks" },
           { amount: "1", name: "Whole egg" },
-          { amount: "80", unit: "g", name: "Pecorino Romano", notes: "Finely grated" },
-          { amount: "To taste", name: "Black pepper", notes: "Freshly cracked, generous" },
+          {
+            amount: "80",
+            unit: "g",
+            name: "Pecorino Romano",
+            notes: "Finely grated",
+          },
+          {
+            amount: "To taste",
+            name: "Black pepper",
+            notes: "Freshly cracked, generous",
+          },
         ],
       },
     ],
@@ -670,7 +804,12 @@ export const RECIPES: Recipe[] = [
         stepNumber: 3,
         title: "Cook and combine",
         text: "Cook pasta in well-salted water until al dente. Reserve 1 cup pasta water. Toss hot pasta with guanciale off heat. Add egg mixture, tossing vigorously. Add pasta water to reach silky consistency.",
-        warnings: [{ icon: "⚠️", text: "Never add egg mixture over direct heat or you will get scrambled eggs." }],
+        warnings: [
+          {
+            icon: "⚠️",
+            text: "Never add egg mixture over direct heat or you will get scrambled eggs.",
+          },
+        ],
       },
     ],
   },
@@ -682,7 +821,8 @@ export const RECIPES: Recipe[] = [
     emoji: "🍛",
     cuisines: ["Thai"],
     heroImage: {
-      gradient: "linear-gradient(160deg, #D0F0C0 0%, #4A9A30 40%, #1A5010 100%)",
+      gradient:
+        "linear-gradient(160deg, #D0F0C0 0%, #4A9A30 40%, #1A5010 100%)",
       emoji: "🍛",
     },
     prepTime: 10,
@@ -732,7 +872,8 @@ export const RECIPES: Recipe[] = [
     emoji: "🍛",
     cuisines: ["Thai"],
     heroImage: {
-      gradient: "linear-gradient(160deg, #F0D5A8 0%, #D4A050 40%, #8B5820 100%)",
+      gradient:
+        "linear-gradient(160deg, #F0D5A8 0%, #D4A050 40%, #8B5820 100%)",
       emoji: "🍛",
     },
     prepTime: 20,
@@ -745,7 +886,12 @@ export const RECIPES: Recipe[] = [
         ingredients: [
           { amount: "800", unit: "ml", name: "Coconut milk", notes: "2 cans" },
           { amount: "3", unit: "tbsp", name: "Massaman curry paste" },
-          { amount: "1", unit: "kg", name: "Beef chuck", notes: "Cut into large cubes" },
+          {
+            amount: "1",
+            unit: "kg",
+            name: "Beef chuck",
+            notes: "Cut into large cubes",
+          },
           { amount: "300", unit: "g", name: "Baby potatoes", notes: "Halved" },
           { amount: "2", name: "Brown onions", notes: "Quartered" },
           { amount: "80", unit: "g", name: "Roasted peanuts" },
@@ -791,7 +937,8 @@ export const RECIPES: Recipe[] = [
     emoji: "🦆",
     cuisines: ["Chinese"],
     heroImage: {
-      gradient: "linear-gradient(160deg, #F5D0A0 0%, #C47030 40%, #6B2810 100%)",
+      gradient:
+        "linear-gradient(160deg, #F5D0A0 0%, #C47030 40%, #6B2810 100%)",
       emoji: "🦆",
     },
     prepTime: 60,
@@ -813,7 +960,12 @@ export const RECIPES: Recipe[] = [
         name: "To Serve",
         ingredients: [
           { amount: "20", name: "Mandarin pancakes" },
-          { amount: "1", unit: "bunch", name: "Spring onions", notes: "Cut into thin strips" },
+          {
+            amount: "1",
+            unit: "bunch",
+            name: "Spring onions",
+            notes: "Cut into thin strips",
+          },
           { amount: "1", name: "Cucumber", notes: "Cut into thin strips" },
           { amount: "60", unit: "ml", name: "Hoisin sauce" },
         ],
@@ -852,7 +1004,8 @@ export const RECIPES: Recipe[] = [
     emoji: "🥘",
     cuisines: ["Spanish"],
     heroImage: {
-      gradient: "linear-gradient(160deg, #F5E8A0 0%, #D4A030 40%, #8B5810 100%)",
+      gradient:
+        "linear-gradient(160deg, #F5E8A0 0%, #D4A030 40%, #8B5810 100%)",
       emoji: "🥘",
     },
     prepTime: 20,
@@ -866,7 +1019,12 @@ export const RECIPES: Recipe[] = [
           { amount: "400", unit: "g", name: "Bomba or Calasparra rice" },
           { amount: "1", unit: "L", name: "Chicken stock", notes: "Hot" },
           { amount: "Large pinch", name: "Saffron threads" },
-          { amount: "300", unit: "g", name: "Chicken thighs", notes: "Bone-in, seasoned" },
+          {
+            amount: "300",
+            unit: "g",
+            name: "Chicken thighs",
+            notes: "Bone-in, seasoned",
+          },
           { amount: "200", unit: "g", name: "Chorizo", notes: "Sliced" },
           { amount: "300", unit: "g", name: "Prawns", notes: "Shell-on" },
           { amount: "200", unit: "g", name: "Mussels", notes: "Cleaned" },
@@ -894,7 +1052,12 @@ export const RECIPES: Recipe[] = [
         title: "Cook the rice",
         text: "Scatter rice evenly across the pan. Do not stir from this point. Return chicken and chorizo. Simmer 18-20 minutes until rice absorbs the liquid.",
         timers: [{ duration: "18-20 min", activity: "simmer" }],
-        warnings: [{ icon: "⚠️", text: "Do not stir the rice once added — this develops the socarrat (crispy bottom)." }],
+        warnings: [
+          {
+            icon: "⚠️",
+            text: "Do not stir the rice once added — this develops the socarrat (crispy bottom).",
+          },
+        ],
       },
       {
         stepNumber: 4,
@@ -912,7 +1075,8 @@ export const RECIPES: Recipe[] = [
     emoji: "🍆",
     cuisines: ["Greek"],
     heroImage: {
-      gradient: "linear-gradient(160deg, #E8D8C8 0%, #A07848 40%, #5A3818 100%)",
+      gradient:
+        "linear-gradient(160deg, #E8D8C8 0%, #A07848 40%, #5A3818 100%)",
       emoji: "🍆",
     },
     prepTime: 30,
@@ -977,7 +1141,8 @@ export const RECIPES: Recipe[] = [
     emoji: "🍗",
     cuisines: ["Indian"],
     heroImage: {
-      gradient: "linear-gradient(160deg, #F5C8A0 0%, #D47830 40%, #8B3018 100%)",
+      gradient:
+        "linear-gradient(160deg, #F5C8A0 0%, #D47830 40%, #8B3018 100%)",
       emoji: "🍗",
     },
     prepTime: 15,
@@ -1036,7 +1201,8 @@ export const RECIPES: Recipe[] = [
     emoji: "🧀",
     cuisines: ["Italian"],
     heroImage: {
-      gradient: "linear-gradient(160deg, #F5F0D0 0%, #D4C870 40%, #8B8530 100%)",
+      gradient:
+        "linear-gradient(160deg, #F5F0D0 0%, #D4C870 40%, #8B8530 100%)",
       emoji: "🧀",
     },
     prepTime: 5,
@@ -1047,8 +1213,18 @@ export const RECIPES: Recipe[] = [
       {
         ingredients: [
           { amount: "200", unit: "g", name: "Tonnarelli or spaghetti" },
-          { amount: "150", unit: "g", name: "Pecorino Romano", notes: "Very finely grated" },
-          { amount: "2", unit: "tsp", name: "Black peppercorns", notes: "Freshly cracked" },
+          {
+            amount: "150",
+            unit: "g",
+            name: "Pecorino Romano",
+            notes: "Very finely grated",
+          },
+          {
+            amount: "2",
+            unit: "tsp",
+            name: "Black peppercorns",
+            notes: "Freshly cracked",
+          },
         ],
       },
     ],
@@ -1067,7 +1243,12 @@ export const RECIPES: Recipe[] = [
         stepNumber: 3,
         title: "Emulsify",
         text: "Transfer pasta to the pepper pan. Add pasta water a splash at a time, tossing vigorously. Off heat, add Pecorino in batches, tossing constantly to form a creamy emulsion. Serve immediately.",
-        warnings: [{ icon: "⚠️", text: "Add cheese off heat to avoid clumping. Toss vigorously for a smooth sauce." }],
+        warnings: [
+          {
+            icon: "⚠️",
+            text: "Add cheese off heat to avoid clumping. Toss vigorously for a smooth sauce.",
+          },
+        ],
       },
     ],
   },
@@ -1079,7 +1260,8 @@ export const RECIPES: Recipe[] = [
     emoji: "🥩",
     cuisines: ["British"],
     heroImage: {
-      gradient: "linear-gradient(160deg, #E8D0B0 0%, #A06838 40%, #5A2818 100%)",
+      gradient:
+        "linear-gradient(160deg, #E8D0B0 0%, #A06838 40%, #5A2818 100%)",
       emoji: "🥩",
     },
     prepTime: 45,
@@ -1090,10 +1272,25 @@ export const RECIPES: Recipe[] = [
       {
         name: "Wellington",
         ingredients: [
-          { amount: "1", unit: "kg", name: "Beef tenderloin", notes: "Centre-cut, trimmed" },
-          { amount: "500", unit: "g", name: "Mushrooms", notes: "Finely chopped — duxelles" },
+          {
+            amount: "1",
+            unit: "kg",
+            name: "Beef tenderloin",
+            notes: "Centre-cut, trimmed",
+          },
+          {
+            amount: "500",
+            unit: "g",
+            name: "Mushrooms",
+            notes: "Finely chopped — duxelles",
+          },
           { amount: "6", unit: "slices", name: "Prosciutto" },
-          { amount: "500", unit: "g", name: "Puff pastry", notes: "Thawed if frozen" },
+          {
+            amount: "500",
+            unit: "g",
+            name: "Puff pastry",
+            notes: "Thawed if frozen",
+          },
           { amount: "2", unit: "tbsp", name: "English mustard" },
           { amount: "2", unit: "tbsp", name: "Dijon mustard" },
           { amount: "1", name: "Egg", notes: "Beaten, for egg wash" },
@@ -1111,7 +1308,9 @@ export const RECIPES: Recipe[] = [
         stepNumber: 2,
         title: "Make the duxelles",
         text: "Cook finely chopped mushrooms in butter until all moisture evaporates and the mixture is dry and concentrated. Season well. Cool completely.",
-        tips: ["The duxelles must be completely dry or the pastry will be soggy."],
+        tips: [
+          "The duxelles must be completely dry or the pastry will be soggy.",
+        ],
       },
       {
         stepNumber: 3,
@@ -1124,11 +1323,20 @@ export const RECIPES: Recipe[] = [
         title: "Bake",
         text: "Bake at 220C for 25-30 minutes until pastry is deep golden and internal temperature reaches 52C for medium-rare. Rest 10 minutes before slicing.",
         timers: [{ duration: "25-30 min", activity: "bake" }],
-        warnings: [{ icon: "⚠️", text: "Use a meat thermometer. 52C for medium-rare, 57C for medium." }],
+        warnings: [
+          {
+            icon: "⚠️",
+            text: "Use a meat thermometer. 52C for medium-rare, 57C for medium.",
+          },
+        ],
       },
     ],
     variations: [
-      { title: "Mushroom Wellington", subtitle: "Vegetarian version with whole portobello", emoji: "🍄" },
+      {
+        title: "Mushroom Wellington",
+        subtitle: "Vegetarian version with whole portobello",
+        emoji: "🍄",
+      },
     ],
   },
 
@@ -1139,7 +1347,8 @@ export const RECIPES: Recipe[] = [
     emoji: "🍲",
     cuisines: ["Thai"],
     heroImage: {
-      gradient: "linear-gradient(160deg, #F5D8B0 0%, #D46830 40%, #8B2818 100%)",
+      gradient:
+        "linear-gradient(160deg, #F5D8B0 0%, #D46830 40%, #8B2818 100%)",
       emoji: "🍲",
     },
     prepTime: 10,
@@ -1150,14 +1359,28 @@ export const RECIPES: Recipe[] = [
       {
         ingredients: [
           { amount: "1", unit: "L", name: "Chicken or prawn stock" },
-          { amount: "300", unit: "g", name: "Prawns", notes: "Peeled and deveined" },
+          {
+            amount: "300",
+            unit: "g",
+            name: "Prawns",
+            notes: "Peeled and deveined",
+          },
           { amount: "200", unit: "g", name: "Mushrooms", notes: "Halved" },
-          { amount: "3", name: "Lemongrass stalks", notes: "Smashed and cut into 5cm pieces" },
+          {
+            amount: "3",
+            name: "Lemongrass stalks",
+            notes: "Smashed and cut into 5cm pieces",
+          },
           { amount: "5", name: "Kaffir lime leaves", notes: "Torn" },
           { amount: "3", unit: "slices", name: "Galangal" },
           { amount: "3", unit: "tbsp", name: "Fish sauce" },
           { amount: "3", unit: "tbsp", name: "Lime juice" },
-          { amount: "2", unit: "tbsp", name: "Chilli paste in oil", notes: "Nam prik pao" },
+          {
+            amount: "2",
+            unit: "tbsp",
+            name: "Chilli paste in oil",
+            notes: "Nam prik pao",
+          },
           { amount: "2", name: "Bird's eye chillies", notes: "Crushed" },
           { amount: "Handful", name: "Fresh coriander" },
         ],

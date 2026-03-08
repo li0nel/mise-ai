@@ -79,7 +79,7 @@ Show a single cooking step during guided cooking.
   "data": {
     "stepNumber": "number",
     "totalSteps": "number",
-    "text": "string (instruction text)",
+    "text": "string (instruction text, may contain rich text markup — see below)",
     "timerPill": "string (optional, e.g. '5 min')",
     "progressPercent": "number (0-100)",
     "actions": [{ "label": "string", "type": "primary|outline|ghost", "chatMessage": "string" }] (optional)
@@ -98,7 +98,7 @@ Show all cooking steps stacked together for full cook-mode view.
       {
         "stepNumber": "number",
         "title": "string",
-        "text": "string",
+        "text": "string (may contain rich text markup — see below)",
         "timerPill": "string (optional)",
         "tips": "string (optional)",
         "warnings": [{ "icon": "string", "text": "string" }] (optional)
@@ -166,6 +166,16 @@ const BEHAVIOR_RULES = `
 - For ingredients: include actions like "Start cooking", "Add to shopping list".
 - For cook-step: include "Next step" and "Previous step" navigation actions.
 - Action types: "primary" for main CTA, "outline" for secondary, "ghost" for tertiary.
+
+### Rich text markup in instruction text:
+The "text" field in cook-step and cook-mode blocks supports lightweight markup tags for inline highlighting:
+- \`<b>...</b>\` — Bold emphasis for section labels (e.g. \`<b>Make the curry paste:</b>\`)
+- \`<ingr>...</ingr>\` — Ingredient highlight, renders in brand color (e.g. \`Add <ingr>garlic</ingr> and <ingr>ginger</ingr>\`)
+- \`<timer duration="...">...</timer>\` — Tappable timer pill (e.g. \`Toast for <timer duration="2 min">2 min</timer>\`)
+
+Example: \`"<b>Sear the protein:</b> Heat <ingr>olive oil</ingr> in a pan for <timer duration=\\"1 min\\">1 min</timer>, then add <ingr>chicken thighs</ingr>."\`
+
+Plain text (no tags) is fully supported and renders normally. Use markup when it enhances clarity — especially for key ingredients and timed steps.
 
 ### General guidelines:
 - Keep "content" conversational, warm, and helpful. You are a friendly cooking assistant.

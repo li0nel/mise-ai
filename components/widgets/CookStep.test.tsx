@@ -19,12 +19,26 @@ const sampleData: CookStepBlock["data"] = {
   timerPill: "5 min",
   progressPercent: 40,
   actions: [
-    { label: "Next Step", type: "primary", actionType: "chat", chatMessage: "Show next step" },
-    { label: "Previous", type: "outline", actionType: "chat", chatMessage: "Show previous step" },
+    {
+      label: "Next Step",
+      type: "primary",
+      actionType: "chat",
+      chatMessage: "Show next step",
+    },
+    {
+      label: "Previous",
+      type: "outline",
+      actionType: "chat",
+      chatMessage: "Show previous step",
+    },
   ],
 };
 
 describe("CookStep", () => {
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   it("displays the step number and total", () => {
     render(<CookStep data={sampleData} />);
     expect(screen.getByText("Step 2 of 5")).toBeTruthy();
@@ -37,7 +51,9 @@ describe("CookStep", () => {
 
   it("renders the instruction text", () => {
     render(<CookStep data={sampleData} />);
-    expect(screen.getByText("Heat oil in a large skillet over medium-high heat.")).toBeTruthy();
+    expect(
+      screen.getByText("Heat oil in a large skillet over medium-high heat."),
+    ).toBeTruthy();
   });
 
   it("renders the timer pill when present", () => {
@@ -89,7 +105,19 @@ describe("CookStep", () => {
 
     // After pressing, it should show remaining time (5 min = 300 seconds => "5:00 remaining")
     expect(screen.getByText(/5:00 remaining/)).toBeTruthy();
+  });
 
-    jest.useRealTimers();
+  it("renders rich text markup in instruction text", () => {
+    const markupData: CookStepBlock["data"] = {
+      stepNumber: 1,
+      totalSteps: 3,
+      text: '<b>Sear:</b> Heat <ingr>olive oil</ingr> for <timer duration="1 min">1 min</timer>.',
+      progressPercent: 33,
+    };
+
+    render(<CookStep data={markupData} />);
+    expect(screen.getByText("Sear:")).toBeTruthy();
+    expect(screen.getByText("olive oil")).toBeTruthy();
+    expect(screen.getByText(/1 min/)).toBeTruthy();
   });
 });

@@ -3,47 +3,17 @@ import { View, Text, Pressable } from "react-native";
 import type { CookStepBlock, WidgetAction } from "../../types";
 import { ActionButton } from "./ActionButton";
 import { useChatStore } from "../../lib/stores/chatStore";
+import { parseDurationToSeconds, formatRemaining } from "../../lib/duration";
+import { RichStepText } from "../shared/RichStepText";
 
 interface CookStepProps {
   data: CookStepBlock["data"];
 }
 
-/** Parse duration strings like "5 min", "2 minutes", "1 hr", "1.5 hrs" to seconds */
-function parseDurationToSeconds(duration: string): number {
-  const normalized = duration.toLowerCase().trim();
-  let total = 0;
-
-  // Match hours
-  const hrMatch = normalized.match(/([\d.]+)\s*(?:hrs?|hours?)/);
-  if (hrMatch?.[1]) {
-    total += parseFloat(hrMatch[1]) * 3600;
-  }
-
-  // Match minutes
-  const minMatch = normalized.match(/([\d.]+)\s*(?:mins?|minutes?)/);
-  if (minMatch?.[1]) {
-    total += parseFloat(minMatch[1]) * 60;
-  }
-
-  // If nothing matched, try bare number as minutes
-  if (total === 0) {
-    const bareMatch = normalized.match(/^([\d.]+)$/);
-    if (bareMatch?.[1]) {
-      total = parseFloat(bareMatch[1]) * 60;
-    }
-  }
-
-  return Math.round(total);
-}
-
-function formatRemaining(seconds: number): string {
-  const m = Math.floor(seconds / 60);
-  const s = seconds % 60;
-  return `${m}:${s.toString().padStart(2, "0")} remaining`;
-}
-
 export function CookStep({ data }: CookStepProps) {
-  const [timerState, setTimerState] = useState<"idle" | "running" | "done">("idle");
+  const [timerState, setTimerState] = useState<"idle" | "running" | "done">(
+    "idle",
+  );
   const [remaining, setRemaining] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -116,9 +86,10 @@ export function CookStep({ data }: CookStepProps) {
 
       {/* Body */}
       <View className="px-4 pb-3.5 pt-4">
-        <Text className="mb-3 text-base leading-relaxed text-text">
-          {data.text}
-        </Text>
+        <RichStepText
+          text={data.text}
+          className="mb-3 text-base leading-relaxed text-text"
+        />
 
         {/* Timer pill */}
         {data.timerPill ? (
@@ -137,7 +108,11 @@ export function CookStep({ data }: CookStepProps) {
       {data.actions && data.actions.length > 0 ? (
         <View className="flex-row gap-2 px-4 pb-4">
           {data.actions.map((action) => (
-            <ActionButton key={action.label} action={action} onPress={() => handleAction(action)} />
+            <ActionButton
+              key={action.label}
+              action={action}
+              onPress={() => handleAction(action)}
+            />
           ))}
         </View>
       ) : null}
