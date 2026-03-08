@@ -3,7 +3,6 @@ import type { ChatMessage, Block } from "../../types";
 import { MOCK_CHAT_MESSAGES } from "../../data/mockChat";
 import {
   sendMessageToGemini,
-  initGeminiChat,
   extractContent,
 } from "../ai/chat";
 import type { LLMContext } from "../ai/chat";
@@ -45,7 +44,7 @@ async function streamGeminiResponse(
   userMessage: string,
   assistantId: string,
   set: (partial: Partial<ChatState> | ((state: ChatState) => Partial<ChatState>)) => void,
-  get: () => ChatState,
+  _get: () => ChatState,
 ): Promise<void> {
   let accumulatedText = "";
 

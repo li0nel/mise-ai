@@ -8,11 +8,11 @@ export function ChatEmptyState() {
         Ready to cook?
       </Text>
       <Text className="mt-1 max-w-[270px] text-center text-base leading-normal text-text-2">
-        Ask me anything about recipes, ingredients, or techniques. I'm your AI
+        Ask me anything about recipes, ingredients, or techniques. I&apos;m your AI
         cooking companion.
       </Text>
       <Text className="mt-2 text-center text-sm text-text-3">
-        I'm here to make you a better chef over time.
+        I&apos;m here to make you a better chef over time.
       </Text>
     </View>
   );

@@ -13,6 +13,6 @@ module.exports = defineConfig([
     },
   },
   {
-    ignores: ["mocks/"],
+    ignores: ["mocks/", "dist/", ".claude/"],
   },
 ]);
