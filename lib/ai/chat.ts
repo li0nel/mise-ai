@@ -166,7 +166,7 @@ export async function* sendMessageToGemini(
 
     const chat = model.startChat({
       history: toContents(context.recentMessages),
-      systemInstruction: systemPrompt,
+      systemInstruction: { role: "system", parts: [{ text: systemPrompt }] },
     });
 
     const result = await chat.sendMessageStream(userMessage);

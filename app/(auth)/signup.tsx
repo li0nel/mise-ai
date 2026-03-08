@@ -10,33 +10,42 @@ import {
 import { useRouter } from "expo-router";
 import { useAuth } from "../../contexts/AuthContext";
 
-export default function LoginScreen() {
-  const { signIn } = useAuth();
+export default function SignUpScreen() {
+  const { signUp } = useAuth();
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
 
-  const handleLogin = async () => {
+  const handleSignUp = async () => {
     setError(null);
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters.");
+      return;
+    }
+
     setIsPending(true);
     try {
-      await signIn(email, password);
+      await signUp(email, password);
     } catch (e: unknown) {
       const code = (e as { code?: string }).code ?? "";
-      if (
-        code === "auth/invalid-credential" ||
-        code === "auth/user-not-found" ||
-        code === "auth/wrong-password"
-      ) {
-        setError("Invalid email or password.");
+      if (code === "auth/email-already-in-use") {
+        setError("An account with this email already exists.");
       } else if (code === "auth/invalid-email") {
         setError("Please enter a valid email address.");
+      } else if (code === "auth/weak-password") {
+        setError("Password must be at least 6 characters.");
       } else if (code === "auth/too-many-requests") {
         setError("Too many attempts. Please try again later.");
       } else {
-        setError("Sign in failed. Please try again.");
+        setError("Sign up failed. Please try again.");
       }
     } finally {
       setIsPending(false);
@@ -55,7 +64,7 @@ export default function LoginScreen() {
           mise<Text className="text-brand">.</Text>
         </Text>
         <Text className="text-sm text-text-3 mt-1.5 tracking-wide">
-          Your AI cooking companion
+          Create your account
         </Text>
       </View>
 
@@ -83,26 +92,34 @@ export default function LoginScreen() {
         </Text>
         <TextInput
           className="w-full h-12 bg-bg-surface border-[1.5px] border-border rounded-md px-4 text-base text-text"
-          placeholder="••••••••"
+          placeholder="At least 6 characters"
           placeholderTextColor="#C4BCB5"
           secureTextEntry
-          autoComplete="current-password"
+          autoComplete="new-password"
           value={password}
           onChangeText={setPassword}
         />
       </View>
 
-      {/* Forgot password */}
-      <Pressable
-        className="self-end mb-4 -mt-1"
-        onPress={() => router.push("/(auth)/forgot-password")}
-      >
-        <Text className="text-xs font-medium text-brand">Forgot password?</Text>
-      </Pressable>
+      {/* Confirm password field */}
+      <View className="mb-5">
+        <Text className="text-xs font-semibold text-text-2 uppercase tracking-wider mb-1.5">
+          Confirm password
+        </Text>
+        <TextInput
+          className="w-full h-12 bg-bg-surface border-[1.5px] border-border rounded-md px-4 text-base text-text"
+          placeholder="Re-enter your password"
+          placeholderTextColor="#C4BCB5"
+          secureTextEntry
+          autoComplete="new-password"
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
+        />
+      </View>
 
-      {/* Sign in button */}
+      {/* Create account button */}
       <Pressable
-        onPress={handleLogin}
+        onPress={handleSignUp}
         disabled={isPending}
         className={`w-full h-[50px] bg-brand rounded-md items-center justify-center mb-1 ${isPending ? "opacity-60" : ""}`}
       >
@@ -110,7 +127,7 @@ export default function LoginScreen() {
           <ActivityIndicator color="#FAFAF8" />
         ) : (
           <Text className="text-base font-bold text-text-inv tracking-tight">
-            Sign in
+            Create account
           </Text>
         )}
       </Pressable>
@@ -120,49 +137,15 @@ export default function LoginScreen() {
         <Text className="text-red-500 text-sm mt-2 text-center">{error}</Text>
       )}
 
-      {/* Divider */}
-      <View className="flex-row items-center my-5 gap-3">
-        <View className="flex-1 h-px bg-border-subtle" />
-        <Text className="text-xs font-medium text-text-3 tracking-wider">
-          or
-        </Text>
-        <View className="flex-1 h-px bg-border-subtle" />
-      </View>
-
-      {/* OAuth buttons */}
-      <View className="gap-2.5">
-        {/* Google */}
-        <Pressable
-          disabled
-          className="w-full h-12 flex-row items-center justify-center gap-2.5 bg-bg-surface border-[1.5px] border-border rounded-md opacity-50"
-        >
-          <Text className="text-base font-semibold text-text">G</Text>
-          <Text className="text-base font-semibold text-text tracking-tight">
-            Continue with Google
-          </Text>
-        </Pressable>
-
-        {/* Apple */}
-        <Pressable
-          disabled
-          className="w-full h-12 flex-row items-center justify-center gap-2.5 bg-bg-surface border-[1.5px] border-border rounded-md opacity-50"
-        >
-          <Text className="text-base font-semibold text-text">{"\uF8FF"}</Text>
-          <Text className="text-base font-semibold text-text tracking-tight">
-            Continue with Apple
-          </Text>
-        </Pressable>
-      </View>
-
-      {/* Sign up footer */}
+      {/* Sign in footer */}
       <View className="mt-8 items-center">
         <Text className="text-sm text-text-3">
-          Don&apos;t have an account?{" "}
+          Already have an account?{" "}
           <Text
             className="text-brand font-semibold"
-            onPress={() => router.push("/(auth)/signup")}
+            onPress={() => router.push("/(auth)/login")}
           >
-            Sign up
+            Sign in
           </Text>
         </Text>
       </View>
