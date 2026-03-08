@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useAuth } from "../../contexts/AuthContext";
+import { EyeIcon, EyeOffIcon } from "../../components/ui/Icons";
 
 export default function SignUpScreen() {
   const { signUp } = useAuth();
@@ -16,6 +17,7 @@ export default function SignUpScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
 
@@ -91,15 +93,27 @@ export default function SignUpScreen() {
         <Text className="text-xs font-semibold text-text-2 uppercase tracking-wider mb-1.5">
           Password
         </Text>
-        <TextInput
-          className="w-full h-12 bg-bg-surface border-[1.5px] border-border rounded-md px-4 text-base text-text"
-          placeholder="At least 6 characters"
-          placeholderTextColor="#C4BCB5"
-          secureTextEntry
-          autoComplete="new-password"
-          value={password}
-          onChangeText={setPassword}
-        />
+        <View className="flex-row items-center bg-bg-surface border-[1.5px] border-border rounded-md">
+          <TextInput
+            className="flex-1 h-12 px-4 text-base text-text"
+            placeholder="At least 6 characters"
+            placeholderTextColor="#C4BCB5"
+            secureTextEntry={!showPassword}
+            autoComplete="new-password"
+            value={password}
+            onChangeText={setPassword}
+          />
+          <Pressable
+            onPress={() => setShowPassword((v) => !v)}
+            className="px-3 h-12 justify-center"
+          >
+            {showPassword ? (
+              <EyeOffIcon size={20} color="#8C857E" />
+            ) : (
+              <EyeIcon size={20} color="#8C857E" />
+            )}
+          </Pressable>
+        </View>
       </View>
 
       {/* Confirm password field */}
@@ -107,15 +121,27 @@ export default function SignUpScreen() {
         <Text className="text-xs font-semibold text-text-2 uppercase tracking-wider mb-1.5">
           Confirm password
         </Text>
-        <TextInput
-          className="w-full h-12 bg-bg-surface border-[1.5px] border-border rounded-md px-4 text-base text-text"
-          placeholder="Re-enter your password"
-          placeholderTextColor="#C4BCB5"
-          secureTextEntry
-          autoComplete="new-password"
-          value={confirmPassword}
-          onChangeText={setConfirmPassword}
-        />
+        <View className="flex-row items-center bg-bg-surface border-[1.5px] border-border rounded-md">
+          <TextInput
+            className="flex-1 h-12 px-4 text-base text-text"
+            placeholder="Re-enter your password"
+            placeholderTextColor="#C4BCB5"
+            secureTextEntry={!showPassword}
+            autoComplete="new-password"
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+          />
+          <Pressable
+            onPress={() => setShowPassword((v) => !v)}
+            className="px-3 h-12 justify-center"
+          >
+            {showPassword ? (
+              <EyeOffIcon size={20} color="#8C857E" />
+            ) : (
+              <EyeIcon size={20} color="#8C857E" />
+            )}
+          </Pressable>
+        </View>
       </View>
 
       {/* Create account button */}
