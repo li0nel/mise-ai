@@ -102,7 +102,9 @@ function scaleAmount(
 export default function RecipeScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
-  const recipe = useRecipeStore((state) => state.recipes.find((r) => r.id === id));
+  const recipe = useRecipeStore((state) =>
+    state.recipes.find((r) => r.id === id),
+  );
   const [servings, setServings] = useState<number | null>(null);
   const [showAddOverlay, setShowAddOverlay] = useState(false);
   const [addedToShopping, setAddedToShopping] = useState(false);
@@ -189,7 +191,10 @@ export default function RecipeScreen() {
                       amount={displayAmount}
                       name={ingredient.name}
                       note={ingredient.notes}
-                      isLast={ingredient === section.ingredients[section.ingredients.length - 1]}
+                      isLast={
+                        ingredient ===
+                        section.ingredients[section.ingredients.length - 1]
+                      }
                     />
                   );
                 })}
@@ -213,13 +218,18 @@ export default function RecipeScreen() {
               text={instruction.text}
               timers={instruction.timers}
               warnings={instruction.warnings}
+              tips={instruction.tips}
             />
           ))}
         </View>
       </ScrollView>
 
       {/* Sticky bottom bar */}
-      <RecipeBottomBar onAddToShopping={handleOpenOverlay} recipeName={recipe.title} addedToShopping={addedToShopping} />
+      <RecipeBottomBar
+        onAddToShopping={handleOpenOverlay}
+        recipeName={recipe.title}
+        addedToShopping={addedToShopping}
+      />
 
       {/* Add to shopping overlay */}
       <AddToShoppingOverlay

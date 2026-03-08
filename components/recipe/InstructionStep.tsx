@@ -7,6 +7,7 @@ interface InstructionStepProps {
   text: string;
   timers?: StepTimer[];
   warnings?: StepWarning[];
+  tips?: string[];
 }
 
 export function InstructionStep({
@@ -14,6 +15,7 @@ export function InstructionStep({
   text,
   timers,
   warnings,
+  tips,
 }: InstructionStepProps) {
   // Skip separate timer pills when inline <timer> tags handle them
   const hasInlineTimers = text.includes("<timer");
@@ -29,7 +31,7 @@ export function InstructionStep({
       <View className="flex-1 pt-1">
         <RichStepText
           text={text}
-          className="text-[13px] leading-relaxed text-text"
+          className="text-[15px] leading-relaxed text-text"
         />
 
         {/* Timer pills — only when text has no inline timers */}
@@ -58,6 +60,21 @@ export function InstructionStep({
                 <Text className="text-sm">{warning.icon}</Text>
                 <Text className="flex-1 text-[11px] leading-normal text-warning">
                   {warning.text}
+                </Text>
+              </View>
+            ))
+          : null}
+
+        {/* Tips / notes */}
+        {tips && tips.length > 0
+          ? tips.map((tip) => (
+              <View
+                key={tip}
+                className="mt-2.5 flex-row items-start gap-2 rounded-sm border border-[#BFDBFE] bg-info-bg px-2.5 py-2"
+              >
+                <Text className="text-[11px]">{"\uD83D\uDCA1"}</Text>
+                <Text className="flex-1 text-[11px] leading-normal text-info">
+                  {tip}
                 </Text>
               </View>
             ))
