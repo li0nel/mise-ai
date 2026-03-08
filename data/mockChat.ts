@@ -47,7 +47,7 @@ export const MOCK_CHAT_MESSAGES: ChatMessage[] = [
             emoji: "🥩",
           },
           actions: [
-            { label: "Start Cooking", type: "primary", actionType: "chat", chatMessage: "Cook Boeuf Bourguignon now" },
+            { label: "Cook Now 👨‍🍳", type: "primary", actionType: "chat", chatMessage: "Cook Boeuf Bourguignon now" },
             { label: "View Full Recipe", type: "outline" },
           ],
         },
@@ -167,8 +167,8 @@ export const MOCK_CHAT_MESSAGES: ChatMessage[] = [
           timerPill: "8 min blanch",
           progressPercent: 20,
           actions: [
-            { label: "Next Step", type: "primary" },
-            { label: "Show All Steps", type: "outline" },
+            { label: "Next Step", type: "primary", actionType: "chat", chatMessage: "Show me the next step" },
+            { label: "Show All Steps", type: "outline", actionType: "chat", chatMessage: "Show me all the steps" },
           ],
         },
       },

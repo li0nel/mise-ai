@@ -42,8 +42,8 @@ test.describe("RecipeCard widget", () => {
     await expect(page.getByText("🥩").first()).toBeVisible();
   });
 
-  test("Start Cooking button sends chat message", async ({ page }) => {
-    await page.getByText("Start Cooking").click();
+  test("Cook Now button sends chat message", async ({ page }) => {
+    await page.getByText(/Cook Now/).click();
 
     // Should inject "Cook Boeuf Bourguignon now" into chat
     await expect(

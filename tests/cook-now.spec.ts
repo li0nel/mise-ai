@@ -30,7 +30,7 @@ test.describe("Cook Now flow", () => {
     ).toBeVisible({ timeout: 10_000 });
   });
 
-  test("chat recipe card Start Cooking button is visible", async ({
+  test("chat recipe card Cook Now button is visible", async ({
     page,
   }) => {
     await page.goto("/(main)");
@@ -38,12 +38,12 @@ test.describe("Cook Now flow", () => {
     await input.fill("Show me Beef Bourguignon");
     await input.press("Enter");
 
-    await expect(page.getByText("Start Cooking")).toBeVisible({
+    await expect(page.getByText(/Cook Now/)).toBeVisible({
       timeout: 10_000,
     });
   });
 
-  test("clicking Start Cooking in chat sends a cook message", async ({
+  test("clicking Cook Now in chat sends a cook message", async ({
     page,
   }) => {
     await page.goto("/(main)");
@@ -51,11 +51,11 @@ test.describe("Cook Now flow", () => {
     await input.fill("Show me Beef Bourguignon");
     await input.press("Enter");
 
-    await expect(page.getByText("Start Cooking")).toBeVisible({
+    await expect(page.getByText(/Cook Now/)).toBeVisible({
       timeout: 10_000,
     });
 
-    await page.getByText("Start Cooking").click();
+    await page.getByText(/Cook Now/).click();
 
     // Should send the cook message into chat
     await expect(

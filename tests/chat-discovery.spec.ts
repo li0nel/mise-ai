@@ -21,7 +21,7 @@ test.describe("Recipe Discovery via Chat", () => {
   });
 
   test("recipe card shows action buttons", async ({ page }) => {
-    await expect(page.getByText("Start Cooking")).toBeVisible();
+    await expect(page.getByText(/Cook Now/)).toBeVisible();
     await expect(page.getByText("View Full Recipe")).toBeVisible();
   });
 

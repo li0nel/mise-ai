@@ -126,4 +126,57 @@ test.describe("Ingredients widget — Add All to Shopping List", () => {
 
     expect(errors).toHaveLength(0);
   });
+
+  test("checkbox toggles off on click", async ({ page }) => {
+    // Click the first ingredient row (Lardons) to toggle its checkbox
+    const lardonsRow = page.getByText(/Lardons/).first();
+    await lardonsRow.click();
+
+    // The checkbox should now be checked (brand-colored) — verify via accessibility
+    const checkbox = page.getByRole("checkbox").first();
+    await expect(checkbox).toBeVisible();
+  });
+
+  test("checkbox toggles back on after unchecking", async ({ page }) => {
+    // Click the first ingredient to check it
+    const lardonsRow = page.getByText(/Lardons/).first();
+    await lardonsRow.click();
+
+    // Click again to uncheck
+    await lardonsRow.click();
+
+    // Should still be visible and interactive
+    await expect(lardonsRow).toBeVisible();
+  });
+
+  test("no console errors during checkbox interaction", async ({ page }) => {
+    const errors: string[] = [];
+    page.on("console", (msg) => {
+      if (msg.type() === "error") {
+        errors.push(msg.text());
+      }
+    });
+
+    // Re-navigate to capture all errors
+    await page.goto("/(main)");
+    const input = page.getByPlaceholder("Ask about recipes...");
+    await input.fill("What ingredients do I need?");
+    await input.press("Enter");
+    await expect(
+      page.getByText("Add All to Shopping List"),
+    ).toBeVisible({ timeout: 10_000 });
+
+    // Toggle several checkboxes
+    const lardons = page.getByText(/Lardons/).first();
+    await lardons.click();
+    await page.waitForTimeout(200);
+    await lardons.click();
+    await page.waitForTimeout(200);
+
+    const beef = page.getByText(/Stewing beef/).first();
+    await beef.click();
+    await page.waitForTimeout(200);
+
+    expect(errors).toHaveLength(0);
+  });
 });

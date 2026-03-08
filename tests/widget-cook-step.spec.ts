@@ -63,4 +63,75 @@ test.describe("CookStep widget", () => {
   test("shows Show All Steps action button", async ({ page }) => {
     await expect(page.getByText("Show All Steps")).toBeVisible();
   });
+
+  test("Next Step button sends chat message", async ({ page }) => {
+    await page.getByText("Next Step").click();
+
+    // Should inject "Show me the next step" into chat
+    await expect(
+      page.getByText("Show me the next step"),
+    ).toBeVisible({ timeout: 10_000 });
+  });
+
+  test("Show All Steps button sends chat message", async ({ page }) => {
+    await page.getByText("Show All Steps").click();
+
+    // Should inject "Show me all the steps" into chat
+    await expect(
+      page.getByText("Show me all the steps", { exact: true }),
+    ).toBeVisible({ timeout: 10_000 });
+  });
+
+  test("timer pill is not re-clickable when running", async ({ page }) => {
+    const timerPill = page.getByText(/8 min blanch/).first();
+    await timerPill.click();
+
+    // Wait for countdown to start
+    await expect(page.getByText(/\d+:\d+ remaining/).first()).toBeVisible({
+      timeout: 3_000,
+    });
+
+    // Record the current time
+    const firstText = await page.getByText(/\d+:\d+ remaining/).first().textContent();
+
+    // Wait 1 second
+    await page.waitForTimeout(1_000);
+
+    // Click the timer again — should not restart
+    await page.getByText(/\d+:\d+ remaining/).first().click();
+
+    // Wait another second
+    await page.waitForTimeout(1_000);
+
+    // Should still be counting down (not reset to 8:00)
+    const laterText = await page.getByText(/\d+:\d+ remaining/).first().textContent();
+    expect(laterText).not.toBe(firstText);
+    // Verify it didn't reset — the remaining time should still be less than the original
+    expect(laterText).not.toContain("8:00");
+  });
+
+  test("no console errors after button clicks", async ({ page }) => {
+    const errors: string[] = [];
+    page.on("console", (msg) => {
+      if (msg.type() === "error") {
+        errors.push(msg.text());
+      }
+    });
+
+    // Re-navigate to capture all errors
+    await page.goto("/(main)");
+    const input = page.getByPlaceholder("Ask about recipes...");
+    await input.fill("Let's cook!");
+    await input.press("Enter");
+    await expect(page.getByText(/Step 1 of 5/)).toBeVisible({
+      timeout: 10_000,
+    });
+
+    await page.getByText("Next Step").click();
+    await page.waitForTimeout(500);
+    await page.getByText("Show All Steps").click();
+    await page.waitForTimeout(500);
+
+    expect(errors).toHaveLength(0);
+  });
 });

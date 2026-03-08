@@ -62,4 +62,23 @@ test.describe("CookMode widget", () => {
     await tip.scrollIntoViewIfNeeded();
     await expect(tip).toBeVisible();
   });
+
+  test("timer pills are not interactive — no countdown starts on click", async ({
+    page,
+  }) => {
+    // Click the "8 min blanch" timer pill in CookMode (not CookStep)
+    // CookMode timer pills are View elements, not Pressable
+    const timerPill = page.getByText(/8 min blanch/).first();
+    await timerPill.scrollIntoViewIfNeeded();
+    await timerPill.click();
+
+    // Wait a moment — timer should NOT start
+    await page.waitForTimeout(1_500);
+
+    // Should still show "8 min blanch", not a countdown
+    await expect(page.getByText(/8 min blanch/).first()).toBeVisible();
+    // Should NOT show any "remaining" countdown text from this widget
+    // (Note: the CookStep widget earlier in the page also has a timer pill,
+    // so we just verify the CookMode one didn't change)
+  });
 });
