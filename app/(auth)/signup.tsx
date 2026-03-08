@@ -34,6 +34,7 @@ export default function SignUpScreen() {
     setIsPending(true);
     try {
       await signUp(email, password);
+      router.replace("/(auth)/verify-email");
     } catch (e: unknown) {
       const code = (e as { code?: string }).code ?? "";
       if (code === "auth/email-already-in-use") {

@@ -9,12 +9,14 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useAuth } from "../../contexts/AuthContext";
+import { EyeIcon, EyeOffIcon } from "../../components/ui/Icons";
 
 export default function LoginScreen() {
   const { signIn } = useAuth();
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
 
@@ -82,15 +84,27 @@ export default function LoginScreen() {
         <Text className="text-xs font-semibold text-text-2 uppercase tracking-wider mb-1.5">
           Password
         </Text>
-        <TextInput
-          className="w-full h-12 bg-bg-surface border-[1.5px] border-border rounded-md px-4 text-base text-text"
-          placeholder="••••••••"
-          placeholderTextColor="#C4BCB5"
-          secureTextEntry
-          autoComplete="current-password"
-          value={password}
-          onChangeText={setPassword}
-        />
+        <View className="flex-row items-center bg-bg-surface border-[1.5px] border-border rounded-md">
+          <TextInput
+            className="flex-1 h-12 px-4 text-base text-text"
+            placeholder="••••••••"
+            placeholderTextColor="#C4BCB5"
+            secureTextEntry={!showPassword}
+            autoComplete="current-password"
+            value={password}
+            onChangeText={setPassword}
+          />
+          <Pressable
+            onPress={() => setShowPassword((v) => !v)}
+            className="px-3 h-12 justify-center"
+          >
+            {showPassword ? (
+              <EyeOffIcon size={20} color="#8C857E" />
+            ) : (
+              <EyeIcon size={20} color="#8C857E" />
+            )}
+          </Pressable>
+        </View>
       </View>
 
       {/* Forgot password */}
