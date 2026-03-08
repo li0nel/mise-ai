@@ -78,7 +78,16 @@ export function RichStepText({ text, className }: RichStepTextProps) {
             );
           case "ingredient":
             return (
-              <Text key={i} className="font-semibold text-brand">
+              <Text
+                key={i}
+                className="font-semibold text-brand"
+                style={{
+                  backgroundColor: "#FCE9E2",
+                  borderRadius: 4,
+                  paddingHorizontal: 6,
+                  paddingVertical: 1,
+                }}
+              >
                 {seg.content}
               </Text>
             );

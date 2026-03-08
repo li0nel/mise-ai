@@ -15,6 +15,9 @@ export function InstructionStep({
   timers,
   warnings,
 }: InstructionStepProps) {
+  // Skip separate timer pills when inline <timer> tags handle them
+  const hasInlineTimers = text.includes("<timer");
+
   return (
     <View className="mb-[22px] flex-row gap-[14px] px-5">
       {/* Step number circle */}
@@ -29,8 +32,8 @@ export function InstructionStep({
           className="text-[13px] leading-relaxed text-text"
         />
 
-        {/* Timer pills */}
-        {timers && timers.length > 0 ? (
+        {/* Timer pills — only when text has no inline timers */}
+        {!hasInlineTimers && timers && timers.length > 0 ? (
           <View className="mt-2 flex-row flex-wrap gap-2">
             {timers.map((timer) => (
               <View
