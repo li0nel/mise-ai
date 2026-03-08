@@ -23,6 +23,7 @@ export default function LoginScreen() {
     setIsPending(true);
     try {
       await signIn(email, password);
+      router.replace("/");
     } catch (e: unknown) {
       const code = (e as { code?: string }).code ?? "";
       if (
