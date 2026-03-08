@@ -100,6 +100,7 @@ export function UrlPreview({
           onPress={onDismiss}
           className="mt-0.5 h-6 w-6 items-center justify-center rounded-full"
           hitSlop={8}
+          accessibilityLabel="Dismiss preview"
         >
           <XIcon size={14} color="#A8A09A" />
         </Pressable>

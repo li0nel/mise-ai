@@ -119,6 +119,55 @@ const MOCK_RESULT: UrlExtractionResult = {
   },
 };
 
+const MOCK_MASSAMAN: UrlExtractionResult = {
+  status: "success",
+  data: {
+    id: "massaman-curry",
+    title: "Massaman Curry",
+    emoji: "🍛",
+    time: "1 hr 30 min",
+    servings: 4,
+    cuisine: "Thai",
+    description:
+      "A rich, mildly spiced Thai curry with tender beef, potatoes, and roasted peanuts in coconut milk.",
+    ingredients: {
+      sections: [{ name: "Main" }],
+      items: [
+        { amount: "400", unit: "ml", name: "Coconut milk" },
+        { amount: "500", unit: "g", name: "Beef chuck", notes: "cubed" },
+        { amount: "3", unit: "tbsp", name: "Massaman curry paste" },
+        { amount: "2", unit: "", name: "Potatoes", notes: "quartered" },
+        { amount: "1/4", unit: "cup", name: "Roasted peanuts" },
+      ],
+    },
+    steps: [
+      {
+        stepNumber: 1,
+        title: "Bloom curry paste",
+        text: "Heat coconut cream in a pot, add <ingr>massaman curry paste</ingr> and fry until fragrant.",
+        timerPill: "3 min",
+      },
+      {
+        stepNumber: 2,
+        title: "Braise beef",
+        text: "Add <ingr>beef chuck</ingr> and <ingr>coconut milk</ingr>. Simmer until tender, then add <ingr>potatoes</ingr> and cook through.",
+        timerPill: "1 hr",
+      },
+    ],
+  },
+};
+
+const MOCK_NOT_RECIPE: UrlExtractionResult = {
+  status: "not_recipe",
+  message: "This page does not contain a recipe.",
+};
+
+function getMockResult(url: string): UrlExtractionResult {
+  if (/hot-thai-kitchen|massaman/i.test(url)) return MOCK_MASSAMAN;
+  if (/example\.com|google\.com/i.test(url)) return MOCK_NOT_RECIPE;
+  return MOCK_RESULT;
+}
+
 /** Extract recipe data from a URL using Gemini's urlContext tool */
 export async function extractRecipeFromUrl(
   url: string,
@@ -131,7 +180,7 @@ export async function extractRecipeFromUrl(
     if (signal?.aborted) {
       return { status: "error", message: "Request was cancelled" };
     }
-    return MOCK_RESULT;
+    return getMockResult(url);
   }
 
   const model = initUrlModel();
@@ -143,11 +192,14 @@ export async function extractRecipeFromUrl(
   }
 
   try {
-    const result = await model.generateContent({
-      contents: [{ role: "user", parts: [{ text: EXTRACTION_PROMPT + url }] }],
-      // @ts-expect-error -- signal supported at runtime but not yet in types
-      signal,
-    });
+    const result = await model.generateContent(
+      {
+        contents: [
+          { role: "user", parts: [{ text: EXTRACTION_PROMPT + url }] },
+        ],
+      },
+      { signal },
+    );
 
     const text = result.response.text();
 
