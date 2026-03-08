@@ -10,20 +10,22 @@ jest.mock("expo-router", () => ({
   }),
 }));
 
-// Mock the chat store
+// Mock the chat store — use module-level refs so assertions are possible
+const mockSendMessage = jest.fn();
 jest.mock("../../lib/stores/chatStore", () => ({
   useChatStore: {
     getState: jest.fn(() => ({
-      sendMessage: jest.fn(),
+      sendMessage: mockSendMessage,
     })),
   },
 }));
 
 // Mock the shopping store
+const mockAddItems = jest.fn();
 jest.mock("../../lib/stores/shoppingStore", () => ({
   useShoppingStore: {
     getState: jest.fn(() => ({
-      addItems: jest.fn(),
+      addItems: mockAddItems,
     })),
   },
 }));

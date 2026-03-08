@@ -221,12 +221,16 @@ describe("parseRecipeFromText", () => {
   });
 
   it("generates different IDs for different calls", () => {
+    let now = 1000000;
+    jest.spyOn(Date, "now").mockImplementation(() => now++);
+
     const recipe1 = parseRecipeFromText("Recipe 1\n\nIngredients\n1 cup flour\n\nInstructions\nMix.");
-    // Small delay to ensure Date.now() differs
     const recipe2 = parseRecipeFromText("Recipe 2\n\nIngredients\n1 cup sugar\n\nInstructions\nStir.");
-    // IDs should be different (they use Date.now which may or may not differ in fast execution)
-    // At minimum, both should be valid recipe IDs
+
     expect(recipe1.id).toMatch(/^recipe-/);
     expect(recipe2.id).toMatch(/^recipe-/);
+    expect(recipe1.id).not.toBe(recipe2.id);
+
+    jest.restoreAllMocks();
   });
 });

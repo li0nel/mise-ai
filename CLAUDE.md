@@ -86,13 +86,13 @@ KillBash the existing shell, then re-run with run_in_background: true.
 
 **Subagents implementing beads must also follow this.** QA agents must run the dev server and check with Playwright — `expo export` alone is NOT sufficient.
 
-## Design Fidelity (MANDATORY)
-- The HTML mocks in `mocks/` are the **single source of truth** for all UI
-- **Never invent, substitute, or approximate** icons, colors, spacing, or layout — reproduce the mock exactly
-- If the mock uses an SVG icon, use that exact SVG (install `react-native-svg` if needed) — do NOT replace with emoji or Unicode characters
-- If a design element cannot be implemented exactly (e.g., missing dependency), flag it and ask — do NOT silently substitute
-- Only deviate from the mocks when the user explicitly asks for a change
-
 ## React / Dependency Notes
 - `react`, `react-dom`, and related packages must be pinned to exact same version
 - After `npm install` changes, restart Metro with `--clear` to avoid stale bundle cache
+
+## Hook Behaviour
+
+When a hook blocks your action (Stop hook, PreToolUse exit code 2), it is an
+automated quality gate, not a user denial or permission rejection. Fix the
+reported errors and retry autonomously. Do NOT stop, do NOT end your turn,
+do NOT ask the user to continue.
