@@ -136,6 +136,74 @@ export function extractContent(text: string): string {
 }
 
 /**
+ * Extract the "content" string value from partial/streaming JSON.
+ * Uses character-level parsing so it works on incomplete JSON like:
+ *   '{"content": "Here is the rec'
+ * Returns null if the "content" key hasn't appeared yet.
+ */
+export function extractContentStreaming(partialJson: string): string | null {
+  const keyPattern = /"content"\s*:\s*"/;
+  const match = keyPattern.exec(partialJson);
+  if (!match) return null;
+
+  const valueStart = match.index + match[0].length;
+  let result = "";
+
+  for (let i = valueStart; i < partialJson.length; i++) {
+    const ch = partialJson[i];
+    if (ch === "\\") {
+      const next = partialJson[i + 1];
+      if (next === undefined) break; // incomplete escape at end
+      switch (next) {
+        case '"':
+          result += '"';
+          break;
+        case "\\":
+          result += "\\";
+          break;
+        case "n":
+          result += "\n";
+          break;
+        case "t":
+          result += "\t";
+          break;
+        case "r":
+          result += "\r";
+          break;
+        case "/":
+          result += "/";
+          break;
+        case "b":
+          result += "\b";
+          break;
+        case "f":
+          result += "\f";
+          break;
+        case "u": {
+          const hex = partialJson.substring(i + 2, i + 6);
+          if (hex.length < 4) return result; // incomplete unicode escape
+          const codePoint = parseInt(hex, 16);
+          if (!isNaN(codePoint)) {
+            result += String.fromCharCode(codePoint);
+            i += 4; // skip 4 hex digits (loop increments past 'u')
+          }
+          break;
+        }
+        default:
+          result += next;
+      }
+      i++; // skip the escaped character
+    } else if (ch === '"') {
+      return result; // closing quote — value complete
+    } else {
+      result += ch;
+    }
+  }
+
+  return result; // partial — no closing quote yet
+}
+
+/**
  * Send a message to Gemini and yield streaming chunks.
  * Yields text chunks as they arrive, then blocks (if any) at the end.
  */

@@ -9,11 +9,14 @@ jest.mock("firebase/app", () => ({
   getApps: jest.fn(() => []),
 }));
 
-import { extractContent } from "./chat";
+import { extractContent, extractContentStreaming } from "./chat";
 
 describe("extractContent", () => {
   it("extracts content from a valid JSON response with content field", () => {
-    const json = JSON.stringify({ content: "Hello, how can I help?", blocks: [] });
+    const json = JSON.stringify({
+      content: "Hello, how can I help?",
+      blocks: [],
+    });
     expect(extractContent(json)).toBe("Hello, how can I help?");
   });
 
@@ -28,7 +31,8 @@ describe("extractContent", () => {
   });
 
   it("extracts content when JSON is embedded in surrounding text", () => {
-    const text = 'Here is the response: {"content": "Extracted text", "blocks": []}';
+    const text =
+      'Here is the response: {"content": "Extracted text", "blocks": []}';
     expect(extractContent(text)).toBe("Extracted text");
   });
 
@@ -38,7 +42,7 @@ describe("extractContent", () => {
       blocks: [],
     });
     expect(extractContent(json)).toBe(
-      "Use 2 cups of flour & 1/2 tsp salt — don't over-mix!"
+      "Use 2 cups of flour & 1/2 tsp salt — don't over-mix!",
     );
   });
 
@@ -65,5 +69,79 @@ describe("extractContent", () => {
       blocks: [],
     });
     expect(extractContent(json)).toBe("Line 1\nLine 2\nLine 3");
+  });
+});
+
+describe("extractContentStreaming", () => {
+  it("returns null when content key not found yet", () => {
+    expect(extractContentStreaming('{"con')).toBeNull();
+  });
+
+  it("returns null for empty string", () => {
+    expect(extractContentStreaming("")).toBeNull();
+  });
+
+  it("returns empty string when key found but value just started", () => {
+    expect(extractContentStreaming('{"content": "')).toBe("");
+  });
+
+  it("extracts partial content from incomplete JSON", () => {
+    expect(extractContentStreaming('{"content": "Here is the rec')).toBe(
+      "Here is the rec",
+    );
+  });
+
+  it("extracts complete content when closing quote present", () => {
+    expect(extractContentStreaming('{"content": "Hello!", "blocks": []}')).toBe(
+      "Hello!",
+    );
+  });
+
+  it("handles escaped double quotes", () => {
+    expect(extractContentStreaming('{"content": "She said \\"hello\\""}')).toBe(
+      'She said "hello"',
+    );
+  });
+
+  it("handles escaped backslashes", () => {
+    expect(extractContentStreaming('{"content": "path\\\\to\\\\file"}')).toBe(
+      "path\\to\\file",
+    );
+  });
+
+  it("handles escaped newlines and tabs", () => {
+    expect(extractContentStreaming('{"content": "line1\\nline2\\ttab"}')).toBe(
+      "line1\nline2\ttab",
+    );
+  });
+
+  it("handles unicode escapes", () => {
+    expect(extractContentStreaming('{"content": "caf\\u00e9"}')).toBe("café");
+  });
+
+  it("handles incomplete escape at end of partial data", () => {
+    expect(extractContentStreaming('{"content": "hello\\')).toBe("hello");
+  });
+
+  it("handles incomplete unicode escape at end", () => {
+    expect(extractContentStreaming('{"content": "caf\\u00')).toBe("caf");
+  });
+
+  it("handles whitespace around colon", () => {
+    expect(extractContentStreaming('{"content"  :  "spaced"}')).toBe("spaced");
+  });
+
+  it("handles no whitespace around colon", () => {
+    expect(extractContentStreaming('{"content":"compact"}')).toBe("compact");
+  });
+
+  it("does not extract from unrelated key", () => {
+    expect(extractContentStreaming('{"other": "value"}')).toBeNull();
+  });
+
+  it("works with large partial JSON containing blocks", () => {
+    const partial =
+      '{"content": "Here is **Spicy Chicken**", "blocks": [{"type": "full-recipe", "data": {"id": "spicy-ch';
+    expect(extractContentStreaming(partial)).toBe("Here is **Spicy Chicken**");
   });
 });

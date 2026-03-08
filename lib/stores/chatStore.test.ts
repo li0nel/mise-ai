@@ -35,6 +35,7 @@ function mockAsyncIterable() {
 jest.mock("../ai/chat", () => ({
   sendMessageToGemini: jest.fn(() => mockAsyncIterable()),
   extractContent: jest.fn((text: string) => text),
+  extractContentStreaming: jest.fn((text: string) => text),
   initGeminiChat: jest.fn(() => null),
 }));
 

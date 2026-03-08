@@ -27,6 +27,28 @@ describe("SYSTEM_PROMPT", () => {
     expect(SYSTEM_PROMPT).toContain('"blocks"');
     expect(SYSTEM_PROMPT).toContain("valid JSON");
   });
+
+  it("includes conversation intelligence section", () => {
+    expect(SYSTEM_PROMPT).toContain("Conversation Intelligence");
+    expect(SYSTEM_PROMPT).toContain("Handling Vague Queries");
+    expect(SYSTEM_PROMPT).toContain("When to Skip Clarification");
+    expect(SYSTEM_PROMPT).toContain("Clarification Limits");
+  });
+
+  it("instructs clarifying questions for vague queries", () => {
+    expect(SYSTEM_PROMPT).toContain("clarifying questions");
+    expect(SYSTEM_PROMPT).toContain("quick-action");
+    expect(SYSTEM_PROMPT).toContain("Surprise me");
+  });
+
+  it("lists skip conditions for specific queries", () => {
+    expect(SYSTEM_PROMPT).toContain("Specific dish named");
+    expect(SYSTEM_PROMPT).toContain("Follow-up context");
+  });
+
+  it("mentions vague queries in Journey C", () => {
+    expect(SYSTEM_PROMPT).toContain("Vague ingredient/cuisine queries");
+  });
 });
 
 describe("buildSystemPrompt", () => {

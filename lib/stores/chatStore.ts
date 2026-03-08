@@ -1,6 +1,10 @@
 import { create } from "zustand";
 import type { ChatMessage, Block, FullRecipeBlock } from "../../types";
-import { sendMessageToGemini, extractContent } from "../ai/chat";
+import {
+  sendMessageToGemini,
+  extractContent,
+  extractContentStreaming,
+} from "../ai/chat";
 import type { LLMContext } from "../ai/chat";
 import { SYSTEM_PROMPT } from "../ai/systemPrompt";
 import { useRecipeStore } from "./recipeStore";
@@ -53,12 +57,14 @@ async function streamGeminiResponse(
     switch (chunk.type) {
       case "text": {
         accumulatedText += chunk.content;
-        const contentSoFar = extractContent(accumulatedText);
-        set((state) => ({
-          messages: state.messages.map((m) =>
-            m.id === assistantId ? { ...m, content: contentSoFar } : m,
-          ),
-        }));
+        const contentSoFar = extractContentStreaming(accumulatedText);
+        if (contentSoFar !== null) {
+          set((state) => ({
+            messages: state.messages.map((m) =>
+              m.id === assistantId ? { ...m, content: contentSoFar } : m,
+            ),
+          }));
+        }
         break;
       }
       case "blocks": {
