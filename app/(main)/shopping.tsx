@@ -179,7 +179,6 @@ export default function ShoppingScreen() {
                       key={item.id}
                       item={item}
                       onToggle={handleToggle}
-                      hideRecipeName={sortMode === "recipe"}
                     />
                   ))}
                 </View>

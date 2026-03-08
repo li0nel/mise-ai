@@ -5,10 +5,9 @@ import type { ShoppingItem as ShoppingItemType } from "../../types";
 interface ShoppingItemProps {
   item: ShoppingItemType;
   onToggle: (id: string) => void;
-  hideRecipeName?: boolean;
 }
 
-export function ShoppingItem({ item, onToggle, hideRecipeName }: ShoppingItemProps) {
+export function ShoppingItem({ item, onToggle }: ShoppingItemProps) {
   const amount = item.unit ? `${item.amount} ${item.unit}` : item.amount;
 
   return (
@@ -29,9 +28,7 @@ export function ShoppingItem({ item, onToggle, hideRecipeName }: ShoppingItemPro
           </Text>
           <Text className="text-sm text-text-2 ml-2">{amount}</Text>
         </View>
-        {!hideRecipeName && item.recipeName ? (
-          <Text className="text-xs text-text-3 mt-0.5">{item.recipeName}</Text>
-        ) : null}
+        {null}
       </View>
 
       {/* Checkbox — right side */}
