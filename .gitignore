@@ -48,3 +48,5 @@ yarn-error.*
 .beads
 
 .claude/worktrees/
+
+test-results/
