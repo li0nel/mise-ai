@@ -1,11 +1,8 @@
 import { create } from "zustand";
 import type { ChatMessage, Block, FullRecipeBlock } from "../../types";
-import {
-  sendMessageToGemini,
-  extractContent,
-  extractContentStreaming,
-} from "../ai/chat";
+import { sendMessageToGemini, extractContent } from "../ai/chat";
 import type { LLMContext } from "../ai/chat";
+import { StreamingBlockParser } from "../ai/streamingBlockParser";
 import { SYSTEM_PROMPT } from "../ai/systemPrompt";
 import { useRecipeStore } from "./recipeStore";
 
@@ -52,16 +49,26 @@ async function streamGeminiResponse(
   _get: () => ChatState,
 ): Promise<void> {
   let accumulatedText = "";
+  const parser = new StreamingBlockParser();
 
   for await (const chunk of sendMessageToGemini(context, userMessage)) {
     switch (chunk.type) {
       case "text": {
         accumulatedText += chunk.content;
-        const contentSoFar = extractContentStreaming(accumulatedText);
-        if (contentSoFar !== null) {
+        const result = parser.update(chunk.content);
+
+        const updates: Partial<ChatMessage> = {};
+        if (result.content !== null) {
+          updates.content = result.content;
+        }
+        if (result.blocksDetected && result.blocks.length > 0) {
+          updates.streamingBlocks = result.blocks;
+        }
+
+        if (Object.keys(updates).length > 0) {
           set((state) => ({
             messages: state.messages.map((m) =>
-              m.id === assistantId ? { ...m, content: contentSoFar } : m,
+              m.id === assistantId ? { ...m, ...updates } : m,
             ),
           }));
         }
@@ -70,33 +77,51 @@ async function streamGeminiResponse(
       case "blocks": {
         set((state) => ({
           messages: state.messages.map((m) =>
-            m.id === assistantId ? { ...m, blocks: chunk.blocks } : m,
+            m.id === assistantId
+              ? {
+                  ...m,
+                  blocks: chunk.blocks,
+                  streamingBlocks: undefined,
+                  isStreaming: false,
+                }
+              : m,
           ),
         }));
-        // Sync recipe-card blocks back to recipeStore if they match a saved recipe
         syncRecipeBlocks(chunk.blocks);
         break;
       }
       case "error": {
-        // Also extract content from whatever we accumulated, or show the error
         const finalContent = accumulatedText
           ? extractContent(accumulatedText)
           : `Sorry, something went wrong: ${chunk.error}`;
         set((state) => ({
           messages: state.messages.map((m) =>
-            m.id === assistantId ? { ...m, content: finalContent } : m,
+            m.id === assistantId
+              ? {
+                  ...m,
+                  content: finalContent,
+                  streamingBlocks: undefined,
+                  isStreaming: false,
+                }
+              : m,
           ),
           isStreaming: false,
         }));
         break;
       }
       case "done": {
-        // Final pass: extract clean content from accumulated JSON response
         if (accumulatedText) {
           const finalContent = extractContent(accumulatedText);
           set((state) => ({
             messages: state.messages.map((m) =>
-              m.id === assistantId ? { ...m, content: finalContent } : m,
+              m.id === assistantId
+                ? {
+                    ...m,
+                    content: finalContent,
+                    streamingBlocks: undefined,
+                    isStreaming: false,
+                  }
+                : m,
             ),
           }));
         }
@@ -130,6 +155,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
       role: "assistant",
       content: "",
       timestamp: Date.now(),
+      isStreaming: true,
     };
 
     const updatedMessages = [...messages, userMessage];

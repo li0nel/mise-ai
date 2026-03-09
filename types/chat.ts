@@ -153,6 +153,13 @@ export type Block =
 /** All valid block type strings */
 export type BlockType = Block["type"];
 
+/** A block that is still being streamed — may have partial data */
+export interface StreamingBlock {
+  type: BlockType;
+  data: Record<string, unknown> | null;
+  complete: boolean;
+}
+
 /** Chat message from user or AI */
 export interface ChatMessage {
   id: string;
@@ -160,4 +167,8 @@ export interface ChatMessage {
   content: string;
   timestamp: number;
   blocks?: Block[];
+  /** Transient — only exists during streaming */
+  streamingBlocks?: StreamingBlock[];
+  /** Whether this message is currently being streamed */
+  isStreaming?: boolean;
 }

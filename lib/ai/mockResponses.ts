@@ -139,8 +139,8 @@ export async function* getMockResponse(
 ): AsyncGenerator<StreamChunk> {
   const response = selectResponse(userMessage);
 
-  // Simulate streaming by yielding the response in chunks
-  const chunkSize = 50;
+  // Small chunks for visible progressive streaming of skeletons
+  const chunkSize = 20;
   for (let i = 0; i < response.length; i += chunkSize) {
     yield { type: "text", content: response.slice(i, i + chunkSize) };
   }

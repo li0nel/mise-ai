@@ -10,6 +10,7 @@ export type {
 } from "./recipe";
 export type {
   ChatMessage,
+  StreamingBlock,
   Block,
   BlockType,
   RecipeCardBlock,
