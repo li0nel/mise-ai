@@ -62,6 +62,8 @@ export interface Recipe {
   bookmarked?: boolean;
   liked?: boolean;
   variations?: RecipeVariation[];
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 /** A recipe variation or related recipe */

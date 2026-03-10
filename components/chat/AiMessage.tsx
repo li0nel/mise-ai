@@ -3,6 +3,7 @@ import type { ChatMessage } from "../../types";
 import { BlockRenderer } from "../widgets/BlockRenderer";
 import { StreamingBlockRenderer } from "../widgets/StreamingBlockRenderer";
 import { SkeletonText } from "../ui/SkeletonWidgets";
+import { ToolCallIndicator } from "./ToolCallIndicator";
 
 interface AiMessageProps {
   message: ChatMessage;
@@ -11,8 +12,18 @@ interface AiMessageProps {
 export function AiMessage({ message }: AiMessageProps) {
   return (
     <View>
+      {/* State 0: Tool call in progress — show activity indicator */}
+      {message.toolCallStatus ? (
+        <ToolCallIndicator
+          name={message.toolCallStatus.name}
+          args={message.toolCallStatus.args}
+        />
+      ) : null}
+
       {/* State 1: Streaming with no content yet — show skeleton text */}
-      {message.isStreaming && !message.content ? <SkeletonText /> : null}
+      {message.isStreaming && !message.content && !message.toolCallStatus ? (
+        <SkeletonText />
+      ) : null}
 
       {/* State 2: Content exists — show real text */}
       {message.content ? (

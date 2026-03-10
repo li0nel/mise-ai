@@ -13,10 +13,14 @@ interface FullRecipeProps {
 export function FullRecipe({ data }: FullRecipeProps) {
   const [saved, setSaved] = useState(false);
 
-  const handleSave = useCallback(() => {
-    const recipe = composeRecipeFromFullBlock(data);
-    useRecipeStore.getState().addRecipe(recipe);
+  const handleSave = useCallback(async () => {
     setSaved(true);
+    try {
+      const recipe = composeRecipeFromFullBlock(data);
+      await useRecipeStore.getState().addRecipe(recipe);
+    } catch {
+      setSaved(false);
+    }
   }, [data]);
 
   return (

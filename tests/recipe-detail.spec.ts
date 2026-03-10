@@ -9,23 +9,25 @@ test.describe("Recipe detail journey", () => {
       if (msg.type() === "error") errors.push(msg.text());
     });
 
-    await page.goto("/(main)/recipe/boeuf-bourguignon");
+    await page.goto("/(main)/recipe/massaman-curry");
 
     await test.step("hero, meta bar, servings stepper, ingredients, instructions, bottom bar", async () => {
-      await expect(page.getByText("Boeuf Bourguignon")).toBeVisible();
+      await expect(page.getByText("Massaman Curry")).toBeVisible();
 
-      await expect(page.getByText("30")).toBeVisible();
-      await expect(page.getByText("3h")).toBeVisible();
-      await expect(page.getByText(/6 serving/)).toBeVisible();
+      await expect(page.getByText("20").first()).toBeVisible();
+      await expect(page.getByText("1h 40").first()).toBeVisible();
+      await expect(page.getByText(/4 serving/)).toBeVisible();
 
       await expect(page.getByText("+")).toBeVisible();
       await expect(page.getByText("\u2212")).toBeVisible();
 
-      await expect(page.getByText("Main", { exact: true })).toBeVisible();
-      await expect(page.getByText("Stewing beef")).toBeVisible();
-      await expect(page.getByText("Lardons", { exact: true })).toBeVisible();
-      await expect(page.getByText("Pearl onions")).toBeVisible();
-      await expect(page.getByText("Button mushrooms")).toBeVisible();
+      await expect(
+        page.getByText("Curry Paste", { exact: true }),
+      ).toBeVisible();
+      await expect(page.getByText("Beef chuck").first()).toBeVisible();
+      await expect(page.getByText("Coconut milk").first()).toBeVisible();
+      await expect(page.getByText("Baby potatoes").first()).toBeVisible();
+      await expect(page.getByText("Roasted peanuts").first()).toBeVisible();
 
       await expect(page.getByText("Instructions")).toBeVisible();
 
@@ -35,12 +37,12 @@ test.describe("Recipe detail journey", () => {
 
     await test.step("servings stepper scales amounts", async () => {
       await page.getByText("+").click();
-      await expect(page.getByText("7 servings")).toBeVisible();
+      await expect(page.getByText("5 servings")).toBeVisible();
     });
 
     await test.step("Cook Now navigates to chat with cook message", async () => {
       await page.getByText(/Cook Now/).click();
-      await expect(page.getByText("Cook Boeuf Bourguignon now")).toBeVisible({
+      await expect(page.getByText("Cook Massaman Curry now")).toBeVisible({
         timeout: 10_000,
       });
     });

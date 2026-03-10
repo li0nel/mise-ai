@@ -1,5 +1,5 @@
 import { View, Text, Pressable } from "react-native";
-import { RECIPES } from "../../data/recipes";
+import { useRecipeStore } from "../../lib/stores/recipeStore";
 import { ChevronRightIcon, SearchIcon } from "../ui/Icons";
 import { parseGradientMiddleColor } from "../../lib/gradient";
 
@@ -14,11 +14,12 @@ export function SearchSuggestions({
   searchText,
   onSelect,
 }: SearchSuggestionsProps) {
+  const recipes = useRecipeStore((s) => s.recipes);
   const query = searchText.trim().toLowerCase();
 
   if (query.length === 0) return null;
 
-  const filtered = RECIPES.filter((recipe) =>
+  const filtered = recipes.filter((recipe) =>
     recipe.title.toLowerCase().includes(query),
   );
 

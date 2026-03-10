@@ -4,6 +4,7 @@ import { getApps } from "firebase/app";
 import type { ChatMessage, Block } from "@/types/chat";
 import { buildSystemPrompt } from "./systemPrompt";
 import { getMockResponse } from "./mockResponses";
+import { recipeTools, executeToolCall } from "./recipeTools";
 
 /** Context passed to the LLM for each request */
 export interface LLMContext {
@@ -16,6 +17,7 @@ export interface LLMContext {
 export type StreamChunk =
   | { type: "text"; content: string }
   | { type: "blocks"; blocks: Block[] }
+  | { type: "toolCall"; name: string; args: Record<string, unknown> }
   | { type: "error"; error: string }
   | { type: "done" };
 
@@ -203,9 +205,14 @@ export function extractContentStreaming(partialJson: string): string | null {
   return result; // partial — no closing quote yet
 }
 
+/** Maximum number of tool call rounds to prevent infinite loops */
+const MAX_TOOL_ROUNDS = 5;
+
 /**
  * Send a message to Gemini and yield streaming chunks.
  * Yields text chunks as they arrive, then blocks (if any) at the end.
+ * Handles function calling: if the model returns functionCall parts,
+ * executes the tool, sends the result back, and continues.
  */
 export async function* sendMessageToGemini(
   context: LLMContext,
@@ -235,8 +242,10 @@ export async function* sendMessageToGemini(
     const chat = model.startChat({
       history: toContents(context.recentMessages),
       systemInstruction: { role: "system", parts: [{ text: systemPrompt }] },
+      tools: recipeTools,
     });
 
+    // First round: stream the initial response
     const result = await chat.sendMessageStream(userMessage);
     let fullText = "";
 
@@ -248,7 +257,62 @@ export async function* sendMessageToGemini(
       }
     }
 
-    // After streaming completes, try to extract blocks from the full response
+    // Check for function calls in the response
+    const response = await result.response;
+    let functionCalls = response.functionCalls();
+
+    // Function calling loop
+    let rounds = 0;
+    while (
+      functionCalls &&
+      functionCalls.length > 0 &&
+      rounds < MAX_TOOL_ROUNDS
+    ) {
+      rounds++;
+
+      // Process each function call
+      const functionResponses: {
+        name: string;
+        response: Record<string, unknown>;
+      }[] = [];
+      for (const fc of functionCalls) {
+        yield {
+          type: "toolCall",
+          name: fc.name,
+          args: (fc.args ?? {}) as Record<string, unknown>,
+        };
+        const toolResult = executeToolCall(
+          fc.name,
+          (fc.args ?? {}) as Record<string, unknown>,
+        );
+        functionResponses.push({ name: fc.name, response: toolResult });
+      }
+
+      // Send function responses back to the model
+      const followUp = await chat.sendMessageStream(
+        functionResponses.map((fr) => ({
+          functionResponse: {
+            name: fr.name,
+            response: fr.response,
+          },
+        })),
+      );
+
+      // Stream the follow-up response
+      for await (const chunk of followUp.stream) {
+        const chunkText = chunk.text();
+        if (chunkText) {
+          fullText += chunkText;
+          yield { type: "text", content: chunkText };
+        }
+      }
+
+      // Check if there are more function calls
+      const followUpResponse = await followUp.response;
+      functionCalls = followUpResponse.functionCalls();
+    }
+
+    // After all rounds complete, try to extract blocks from the full response
     const blocks = parseBlocks(fullText);
     if (blocks && blocks.length > 0) {
       yield { type: "blocks", blocks };

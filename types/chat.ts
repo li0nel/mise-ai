@@ -171,4 +171,6 @@ export interface ChatMessage {
   streamingBlocks?: StreamingBlock[];
   /** Whether this message is currently being streamed */
   isStreaming?: boolean;
+  /** Present during function calling — shows tool call activity indicator */
+  toolCallStatus?: { name: string; args: Record<string, unknown> } | null;
 }

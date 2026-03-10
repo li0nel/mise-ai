@@ -1,22 +1,39 @@
 import { create } from "zustand";
 import type { Recipe } from "../../types";
-import { RECIPES } from "../../data/recipes";
+import {
+  addRecipe as firestoreAddRecipe,
+  deleteRecipe as firestoreDeleteRecipe,
+} from "../firebase/recipes";
+import { auth } from "../firebase";
 
 interface RecipeState {
   recipes: Recipe[];
   currentRecipeId: string | null;
-  addRecipe: (recipe: Recipe) => void;
+  addRecipe: (recipe: Recipe) => Promise<void>;
+  deleteRecipe: (id: string) => Promise<void>;
+  setRecipes: (recipes: Recipe[]) => void;
   updateRecipe: (id: string, updates: Partial<Recipe>) => void;
   setCurrentRecipe: (id: string | null) => void;
   getRecipeById: (id: string) => Recipe | undefined;
 }
 
 export const useRecipeStore = create<RecipeState>((set, get) => ({
-  recipes: RECIPES,
+  recipes: [],
   currentRecipeId: null,
 
-  addRecipe: (recipe: Recipe) =>
-    set((state) => ({ recipes: [...state.recipes, recipe] })),
+  addRecipe: async (recipe: Recipe) => {
+    const uid = auth.currentUser?.uid;
+    if (!uid) return;
+    await firestoreAddRecipe(uid, recipe);
+  },
+
+  deleteRecipe: async (id: string) => {
+    const uid = auth.currentUser?.uid;
+    if (!uid) return;
+    await firestoreDeleteRecipe(uid, id);
+  },
+
+  setRecipes: (recipes: Recipe[]) => set({ recipes }),
 
   updateRecipe: (id: string, updates: Partial<Recipe>) =>
     set((state) => ({

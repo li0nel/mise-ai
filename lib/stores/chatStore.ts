@@ -57,7 +57,9 @@ async function streamGeminiResponse(
         accumulatedText += chunk.content;
         const result = parser.update(chunk.content);
 
-        const updates: Partial<ChatMessage> = {};
+        const updates: Partial<ChatMessage> = {
+          toolCallStatus: null,
+        };
         if (result.content !== null) {
           updates.content = result.content;
         }
@@ -65,13 +67,24 @@ async function streamGeminiResponse(
           updates.streamingBlocks = result.blocks;
         }
 
-        if (Object.keys(updates).length > 0) {
-          set((state) => ({
-            messages: state.messages.map((m) =>
-              m.id === assistantId ? { ...m, ...updates } : m,
-            ),
-          }));
-        }
+        set((state) => ({
+          messages: state.messages.map((m) =>
+            m.id === assistantId ? { ...m, ...updates } : m,
+          ),
+        }));
+        break;
+      }
+      case "toolCall": {
+        set((state) => ({
+          messages: state.messages.map((m) =>
+            m.id === assistantId
+              ? {
+                  ...m,
+                  toolCallStatus: { name: chunk.name, args: chunk.args },
+                }
+              : m,
+          ),
+        }));
         break;
       }
       case "blocks": {

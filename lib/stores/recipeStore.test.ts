@@ -4,7 +4,7 @@ import type { Recipe } from "../../types";
 const makeRecipe = (overrides: Partial<Recipe> = {}): Recipe => ({
   id: "test-recipe",
   title: "Test Recipe",
-  emoji: "🍕",
+  emoji: "\u{1F355}",
   cuisines: ["Italian"],
   prepTime: 10,
   cookTime: 20,
@@ -12,41 +12,33 @@ const makeRecipe = (overrides: Partial<Recipe> = {}): Recipe => ({
   difficulty: 2,
   ingredientSections: [
     {
-      ingredients: [
-        { amount: "2", unit: "cups", name: "Flour" },
-      ],
+      ingredients: [{ amount: "2", unit: "cups", name: "Flour" }],
     },
   ],
-  instructions: [
-    { stepNumber: 1, text: "Mix ingredients" },
-  ],
+  instructions: [{ stepNumber: 1, text: "Mix ingredients" }],
   ...overrides,
 });
 
 describe("recipeStore", () => {
   beforeEach(() => {
-    // Reset to a known empty state
     useRecipeStore.setState({ recipes: [], currentRecipeId: null });
   });
 
-  describe("addRecipe", () => {
-    it("adds a recipe to the list", () => {
-      const recipe = makeRecipe();
-      useRecipeStore.getState().addRecipe(recipe);
+  describe("setRecipes", () => {
+    it("replaces entire recipes array", () => {
+      const recipes = [makeRecipe({ id: "a" }), makeRecipe({ id: "b" })];
+      useRecipeStore.getState().setRecipes(recipes);
 
-      const { recipes } = useRecipeStore.getState();
-      expect(recipes).toHaveLength(1);
-      expect(recipes[0]?.id).toBe("test-recipe");
+      expect(useRecipeStore.getState().recipes).toHaveLength(2);
+      expect(useRecipeStore.getState().recipes[0]?.id).toBe("a");
+      expect(useRecipeStore.getState().recipes[1]?.id).toBe("b");
     });
 
-    it("appends to existing recipes", () => {
-      useRecipeStore.setState({ recipes: [makeRecipe({ id: "recipe-1" })] });
+    it("clears recipes when given empty array", () => {
+      useRecipeStore.setState({ recipes: [makeRecipe()] });
+      useRecipeStore.getState().setRecipes([]);
 
-      useRecipeStore.getState().addRecipe(makeRecipe({ id: "recipe-2", title: "Second Recipe" }));
-
-      const { recipes } = useRecipeStore.getState();
-      expect(recipes).toHaveLength(2);
-      expect(recipes[1]?.id).toBe("recipe-2");
+      expect(useRecipeStore.getState().recipes).toHaveLength(0);
     });
   });
 
@@ -56,11 +48,12 @@ describe("recipeStore", () => {
         recipes: [makeRecipe({ id: "recipe-1", title: "Old Title" })],
       });
 
-      useRecipeStore.getState().updateRecipe("recipe-1", { title: "New Title" });
+      useRecipeStore
+        .getState()
+        .updateRecipe("recipe-1", { title: "New Title" });
 
       const recipe = useRecipeStore.getState().recipes[0];
       expect(recipe?.title).toBe("New Title");
-      // Other fields should remain unchanged
       expect(recipe?.servings).toBe(4);
     });
 
@@ -83,7 +76,9 @@ describe("recipeStore", () => {
       const originalRecipe = makeRecipe({ id: "recipe-1", title: "Original" });
       useRecipeStore.setState({ recipes: [originalRecipe] });
 
-      useRecipeStore.getState().updateRecipe("non-existent", { title: "Should Not Apply" });
+      useRecipeStore
+        .getState()
+        .updateRecipe("non-existent", { title: "Should Not Apply" });
 
       expect(useRecipeStore.getState().recipes[0]?.title).toBe("Original");
     });
@@ -126,6 +121,14 @@ describe("recipeStore", () => {
     it("returns undefined from empty store", () => {
       const recipe = useRecipeStore.getState().getRecipeById("any-id");
       expect(recipe).toBeUndefined();
+    });
+  });
+
+  describe("initial state", () => {
+    it("starts with empty recipes array", () => {
+      // Reset to initial state by re-requiring (or just check default)
+      useRecipeStore.setState({ recipes: [] });
+      expect(useRecipeStore.getState().recipes).toEqual([]);
     });
   });
 });

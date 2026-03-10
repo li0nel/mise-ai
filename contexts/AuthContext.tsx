@@ -3,6 +3,7 @@ import {
   useContext,
   useState,
   useEffect,
+  useRef,
   type ReactNode,
 } from "react";
 import {
@@ -15,8 +16,12 @@ import {
   signOut as fbSignOut,
 } from "firebase/auth";
 import type { User } from "firebase/auth";
+import type { Unsubscribe } from "firebase/firestore";
 import { auth } from "@/lib/firebase";
 import { isFirebaseError, type AuthContextType } from "@/types/auth";
+import { subscribeToRecipes, addRecipe } from "@/lib/firebase/recipes";
+import { useRecipeStore } from "@/lib/stores/recipeStore";
+import { SEED_RECIPE } from "@/data/seedRecipe";
 
 const isMockAI = process.env.EXPO_PUBLIC_MOCK_AI === "true";
 
@@ -28,6 +33,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(isMockAI ? MOCK_USER : null);
   const [isLoading, setIsLoading] = useState(!isMockAI);
 
+  const recipeUnsubRef = useRef<Unsubscribe | null>(null);
+  const seededRef = useRef(false);
+
   useEffect(() => {
     if (isMockAI) return;
     const unsubscribe = onAuthStateChanged(auth, (u) => {
@@ -36,6 +44,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
     return unsubscribe;
   }, []);
+
+  // Subscribe to Firestore recipes when user is signed in
+  useEffect(() => {
+    if (!user) {
+      // Signed out — unsubscribe and clear
+      recipeUnsubRef.current?.();
+      recipeUnsubRef.current = null;
+      useRecipeStore.getState().setRecipes([]);
+      seededRef.current = false;
+      return;
+    }
+
+    // In mock AI mode, seed the store directly (no Firestore)
+    if (isMockAI) {
+      useRecipeStore
+        .getState()
+        .setRecipes([{ ...SEED_RECIPE, id: SEED_RECIPE.id }]);
+      return;
+    }
+
+    let isFirst = true;
+    recipeUnsubRef.current = subscribeToRecipes(user.uid, (recipes) => {
+      useRecipeStore.getState().setRecipes(recipes);
+
+      // Seed Massaman Curry on first login when collection is empty
+      if (isFirst && recipes.length === 0 && !seededRef.current) {
+        seededRef.current = true;
+        addRecipe(user.uid, SEED_RECIPE).catch(() => {
+          // Seed write failed — not critical
+        });
+      }
+      isFirst = false;
+    });
+
+    return () => {
+      recipeUnsubRef.current?.();
+      recipeUnsubRef.current = null;
+    };
+  }, [user]);
 
   const isVerified = user?.emailVerified ?? false;
 

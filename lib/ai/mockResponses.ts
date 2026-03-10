@@ -104,14 +104,24 @@ const GREETING_RESPONSE = JSON.stringify({
   blocks: [],
 });
 
+const MY_RECIPES_RESPONSE = JSON.stringify({
+  content:
+    "Here are your saved recipes! You have a Massaman Curry in your collection.",
+  blocks: [],
+});
+
 const FALLBACK_RESPONSE = JSON.stringify({
   content:
     "That's a great question! I'm here to help with anything cooking-related — from finding recipes to technique tips. What would you like to explore?",
   blocks: [],
 });
 
-function selectResponse(userMessage: string): string {
+function selectResponse(userMessage: string): string | "MY_RECIPES" {
   const lower = userMessage.toLowerCase();
+
+  if (/my recipes|saved|what.*saved|recipes.*saved/i.test(lower)) {
+    return "MY_RECIPES";
+  }
 
   if (/https?:\/\//.test(lower)) {
     return URL_RESPONSE;
@@ -130,22 +140,15 @@ function selectResponse(userMessage: string): string {
   return FALLBACK_RESPONSE;
 }
 
-/**
- * Mock AI response generator for deterministic E2E testing.
- * Simulates Gemini streaming by yielding text in chunks, then blocks.
- */
-export async function* getMockResponse(
-  userMessage: string,
-): AsyncGenerator<StreamChunk> {
-  const response = selectResponse(userMessage);
-
-  // Small chunks for visible progressive streaming of skeletons
+/** Yield a JSON response as streamed text chunks, then parsed blocks */
+function* yieldJsonResponse(
+  response: string,
+): Generator<StreamChunk, void, unknown> {
   const chunkSize = 20;
   for (let i = 0; i < response.length; i += chunkSize) {
     yield { type: "text", content: response.slice(i, i + chunkSize) };
   }
 
-  // Parse blocks from the full response
   try {
     const parsed: unknown = JSON.parse(response);
     if (
@@ -163,6 +166,25 @@ export async function* getMockResponse(
   } catch {
     // No blocks
   }
+}
 
+/**
+ * Mock AI response generator for deterministic E2E testing.
+ * Simulates Gemini streaming by yielding text in chunks, then blocks.
+ */
+export async function* getMockResponse(
+  userMessage: string,
+): AsyncGenerator<StreamChunk> {
+  const response = selectResponse(userMessage);
+
+  // Special case: simulate tool call flow for "my recipes" queries
+  if (response === "MY_RECIPES") {
+    yield { type: "toolCall", name: "listMyRecipes", args: {} };
+    yield* yieldJsonResponse(MY_RECIPES_RESPONSE);
+    yield { type: "done" };
+    return;
+  }
+
+  yield* yieldJsonResponse(response);
   yield { type: "done" };
 }
