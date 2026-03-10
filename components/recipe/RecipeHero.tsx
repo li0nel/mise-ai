@@ -1,21 +1,9 @@
 import { View, Text } from "react-native";
 import type { Recipe } from "../../types";
+import { parseGradientMiddleColor } from "../../lib/gradient";
 
 interface RecipeHeroProps {
   recipe: Recipe;
-}
-
-/**
- * Parse a CSS linear-gradient string and return the middle hex color
- * for use as a solid background approximation.
- * Handles formats like "linear-gradient(160deg, #F5D76E 0%, #E89228 40%, #C8481C 100%)".
- */
-function parseGradientMiddleColor(gradient: string): string {
-  const hexMatches = gradient.match(/#[0-9A-Fa-f]{6}/g);
-  if (!hexMatches || hexMatches.length === 0) return "#888888";
-  // Pick the middle color for a balanced look
-  const midIndex = Math.floor(hexMatches.length / 2);
-  return hexMatches[midIndex] ?? "#888888";
 }
 
 export function RecipeHero({ recipe }: RecipeHeroProps) {
@@ -52,7 +40,10 @@ export function RecipeHero({ recipe }: RecipeHeroProps) {
                 borderColor: "rgba(255,255,255,0.25)",
               }}
             >
-              <Text className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.9)" }}>
+              <Text
+                className="text-[11px] font-medium"
+                style={{ color: "rgba(255,255,255,0.9)" }}
+              >
                 {cuisineLabel}
               </Text>
             </View>
@@ -60,7 +51,12 @@ export function RecipeHero({ recipe }: RecipeHeroProps) {
         ) : null}
         <Text
           className="text-[26px] font-extrabold tracking-[-0.8px] text-white"
-          style={{ lineHeight: 31, textShadow: "0 2px 8px rgba(0,0,0,0.3)" } as Record<string, unknown>}
+          style={
+            {
+              lineHeight: 31,
+              textShadow: "0 2px 8px rgba(0,0,0,0.3)",
+            } as Record<string, unknown>
+          }
         >
           {recipe.title}
         </Text>

@@ -4,20 +4,10 @@ import { useRouter } from "expo-router";
 import type { RecipeCardBlock, WidgetAction } from "../../types";
 import { ActionButton } from "./ActionButton";
 import { useChatStore } from "../../lib/stores/chatStore";
+import { parseGradientMiddleColor } from "../../lib/gradient";
 
 interface RecipeCardProps {
   data: RecipeCardBlock["data"];
-}
-
-/**
- * Parse a CSS linear-gradient string and return the middle hex color
- * for use as a solid background approximation in React Native.
- */
-function parseGradientMiddleColor(gradient: string): string {
-  const hexMatches = gradient.match(/#[0-9A-Fa-f]{6}/g);
-  if (!hexMatches || hexMatches.length === 0) return "#888888";
-  const midIndex = Math.floor(hexMatches.length / 2);
-  return hexMatches[midIndex] ?? "#888888";
 }
 
 function StarRating({ rating }: { rating: number }) {
@@ -26,10 +16,14 @@ function StarRating({ rating }: { rating: number }) {
     stars.push(
       <Text
         key={i}
-        className={i <= rating ? "text-[15px] text-[#F59E0B]" : "text-[15px] text-border-strong"}
+        className={
+          i <= rating
+            ? "text-[15px] text-[#F59E0B]"
+            : "text-[15px] text-border-strong"
+        }
       >
         {"\u2605"}
-      </Text>
+      </Text>,
     );
   }
   return <View className="flex-row gap-[3px]">{stars}</View>;

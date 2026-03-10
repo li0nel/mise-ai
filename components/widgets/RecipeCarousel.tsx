@@ -1,19 +1,10 @@
 import { View, Text, ScrollView, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 import type { RecipeCarouselBlock } from "../../types";
+import { parseGradientMiddleColor } from "../../lib/gradient";
 
 interface RecipeCarouselProps {
   data: RecipeCarouselBlock["data"];
-}
-
-/**
- * Parse a CSS linear-gradient string and return the middle hex color.
- */
-function parseGradientMiddleColor(gradient: string): string {
-  const hexMatches = gradient.match(/#[0-9A-Fa-f]{6}/g);
-  if (!hexMatches || hexMatches.length === 0) return "#888888";
-  const midIndex = Math.floor(hexMatches.length / 2);
-  return hexMatches[midIndex] ?? "#888888";
 }
 
 export function RecipeCarousel({ data }: RecipeCarouselProps) {
@@ -35,7 +26,9 @@ export function RecipeCarousel({ data }: RecipeCarouselProps) {
           return (
             <Pressable
               key={card.id}
-              onPress={() => router.push(`/recipe/${card.id}` as "/recipe/[id]")}
+              onPress={() =>
+                router.push(`/recipe/${card.id}` as "/recipe/[id]")
+              }
               className="w-[158px] overflow-hidden rounded-lg border border-border bg-bg-surface"
             >
               {/* Card image */}
@@ -54,9 +47,7 @@ export function RecipeCarousel({ data }: RecipeCarouselProps) {
                 >
                   {card.title}
                 </Text>
-                <Text className="text-[11px] text-text-3">
-                  {card.time}
-                </Text>
+                <Text className="text-[11px] text-text-3">{card.time}</Text>
                 {/* Tag pill */}
                 <View className="mt-1.5 self-start rounded-full bg-bg-elevated px-[7px] py-[2px]">
                   <Text className="text-[10px] font-medium text-text-2">
