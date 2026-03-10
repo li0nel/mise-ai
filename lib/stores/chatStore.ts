@@ -140,7 +140,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
   sendMessage: (text: string, extractedRecipe?: FullRecipeBlock["data"]) => {
     const userMessage: ChatMessage = {
-      id: `user-${Date.now()}`,
+      id: `user-${crypto.randomUUID()}`,
       role: "user",
       content: text,
       timestamp: Date.now(),
@@ -149,7 +149,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
     const { messages } = get();
 
     // Add user message and create placeholder assistant message
-    const assistantId = `ai-${Date.now()}`;
+    const assistantId = `ai-${crypto.randomUUID()}`;
     const assistantMessage: ChatMessage = {
       id: assistantId,
       role: "assistant",
