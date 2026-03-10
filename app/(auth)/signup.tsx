@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useAuth } from "../../contexts/AuthContext";
+import { isFirebaseError } from "../../types/auth";
 import { EyeIcon, EyeOffIcon } from "../../components/ui/Icons";
 
 export default function SignUpScreen() {
@@ -38,7 +39,7 @@ export default function SignUpScreen() {
       await signUp(email, password);
       router.replace("/(auth)/verify-email");
     } catch (e: unknown) {
-      const code = (e as { code?: string }).code ?? "";
+      const code = isFirebaseError(e) ? e.code : "";
       if (code === "auth/email-already-in-use") {
         setError("An account with this email already exists.");
       } else if (code === "auth/invalid-email") {

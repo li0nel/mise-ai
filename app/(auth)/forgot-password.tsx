@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useAuth } from "../../contexts/AuthContext";
+import { isFirebaseError } from "../../types/auth";
 
 export default function ForgotPasswordScreen() {
   const { sendPasswordReset } = useAuth();
@@ -31,7 +32,7 @@ export default function ForgotPasswordScreen() {
       await sendPasswordReset(email.trim());
       setSubmitted(true);
     } catch (e: unknown) {
-      const code = (e as { code?: string }).code ?? "";
+      const code = isFirebaseError(e) ? e.code : "";
       if (code === "auth/invalid-email") {
         setError("Please enter a valid email address.");
       } else if (code === "auth/too-many-requests") {

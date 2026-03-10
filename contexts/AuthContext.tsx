@@ -16,7 +16,7 @@ import {
 } from "firebase/auth";
 import type { User } from "firebase/auth";
 import { auth } from "@/lib/firebase";
-import type { AuthContextType } from "@/types/auth";
+import { isFirebaseError, type AuthContextType } from "@/types/auth";
 
 const isMockAI = process.env.EXPO_PUBLIC_MOCK_AI === "true";
 
@@ -51,11 +51,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     );
     try {
       await sendEmailVerification(credential.user);
-    } catch (verifyErr) {
+    } catch (verifyErr: unknown) {
       // Account created but verification email failed — sign out so user
       // can retry from a clean state rather than being stuck unverified.
       await fbSignOut(auth);
-      throw verifyErr;
+      if (isFirebaseError(verifyErr)) {
+        throw verifyErr;
+      }
+      throw new Error("Failed to send verification email");
     }
   };
 

@@ -9,6 +9,7 @@ import {
 import { useRouter } from "expo-router";
 import { auth } from "@/lib/firebase";
 import { useAuth } from "../../contexts/AuthContext";
+import { isFirebaseError } from "../../types/auth";
 
 const RESEND_COOLDOWN_SECONDS = 30;
 
@@ -67,7 +68,7 @@ export default function VerifyEmailScreen() {
       setResendSuccess(true);
       setResendCooldown(RESEND_COOLDOWN_SECONDS);
     } catch (e: unknown) {
-      const code = (e as { code?: string }).code ?? "";
+      const code = isFirebaseError(e) ? e.code : "";
       if (code === "auth/too-many-requests") {
         setResendError("Too many attempts. Please wait before resending.");
       } else {

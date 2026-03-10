@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useAuth } from "../../contexts/AuthContext";
+import { isFirebaseError } from "../../types/auth";
 import { EyeIcon, EyeOffIcon } from "../../components/ui/Icons";
 
 export default function LoginScreen() {
@@ -27,7 +28,7 @@ export default function LoginScreen() {
       await signIn(email, password);
       router.replace("/");
     } catch (e: unknown) {
-      const code = (e as { code?: string }).code ?? "";
+      const code = isFirebaseError(e) ? e.code : "";
       if (
         code === "auth/invalid-credential" ||
         code === "auth/user-not-found" ||

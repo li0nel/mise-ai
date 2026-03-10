@@ -11,3 +11,15 @@ export interface AuthContextType {
   resendVerification: () => Promise<void>;
   sendPasswordReset: (email: string) => Promise<void>;
 }
+
+/** Structural shape of a Firebase error (has a `code` string on an Error). */
+interface FirebaseErrorLike extends Error {
+  readonly code: string;
+}
+
+/** Type guard that narrows an unknown caught value to a Firebase error with a `code` property. */
+export function isFirebaseError(error: unknown): error is FirebaseErrorLike {
+  return (
+    error instanceof Error && "code" in error && typeof error.code === "string"
+  );
+}
