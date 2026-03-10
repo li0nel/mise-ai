@@ -1,5 +1,6 @@
 import { View, Text, ScrollView } from "react-native";
 import { SkeletonBox, SkeletonLine, SkeletonRecipeCard } from "./Skeleton";
+import { RichStepText } from "../shared/RichStepText";
 
 interface SkeletonWidgetProps {
   partialData?: Record<string, unknown> | null;
@@ -155,9 +156,10 @@ export function SkeletonFullRecipe({ partialData }: SkeletonWidgetProps) {
                 )}
               </View>
               {step?.text ? (
-                <Text className="text-[13px] leading-relaxed text-text">
-                  {step.text}
-                </Text>
+                <RichStepText
+                  text={step.text}
+                  className="text-[13px] leading-relaxed text-text"
+                />
               ) : (
                 <View className="gap-1">
                   <SkeletonLine className="w-full" />
@@ -373,9 +375,10 @@ export function SkeletonCookMode({ partialData }: SkeletonWidgetProps) {
               )}
             </View>
             {step?.text ? (
-              <Text className="text-[13px] leading-relaxed text-text">
-                {step.text}
-              </Text>
+              <RichStepText
+                text={step.text}
+                className="text-[13px] leading-relaxed text-text"
+              />
             ) : (
               <View className="gap-1">
                 <SkeletonLine className="w-full" />
