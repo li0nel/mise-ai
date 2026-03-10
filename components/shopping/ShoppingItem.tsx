@@ -13,8 +13,7 @@ export function ShoppingItem({ item, onToggle }: ShoppingItemProps) {
   return (
     <Pressable
       onPress={() => onToggle(item.id)}
-      className="flex-row items-center gap-3 py-3 border-b border-border-subtle"
-      style={item.checked ? { opacity: 0.55 } : undefined}
+      className={`flex-row items-center gap-3 py-3 border-b border-border-subtle ${item.checked ? "opacity-55" : ""}`}
     >
       {/* Info — name left, quantity right */}
       <View className="flex-1 min-w-0">
@@ -39,7 +38,9 @@ export function ShoppingItem({ item, onToggle }: ShoppingItemProps) {
             : "border-2 border-border-strong rounded-full"
         }`}
       >
-        {item.checked && <CheckIcon size={12} color="#FFFFFF" strokeWidth={3} />}
+        {item.checked && (
+          <CheckIcon size={12} color="#FFFFFF" strokeWidth={3} />
+        )}
       </View>
     </Pressable>
   );

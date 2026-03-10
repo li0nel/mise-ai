@@ -80,13 +80,7 @@ export function RichStepText({ text, className }: RichStepTextProps) {
             return (
               <Text
                 key={i}
-                className="font-semibold text-brand"
-                style={{
-                  backgroundColor: "#FCE9E2",
-                  borderRadius: 4,
-                  paddingHorizontal: 6,
-                  paddingVertical: 1,
-                }}
+                className="font-semibold text-brand bg-brand-light rounded-xs px-1.5 py-px"
               >
                 {seg.content}
               </Text>

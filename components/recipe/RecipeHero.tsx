@@ -23,27 +23,14 @@ export function RecipeHero({ recipe }: RecipeHeroProps) {
       </View>
 
       {/* Bottom gradient overlay for text legibility */}
-      <View
-        className="absolute bottom-0 left-0 right-0"
-        style={{ height: 120, backgroundColor: "rgba(0,0,0,0.35)" }}
-      />
+      <View className="absolute bottom-0 left-0 right-0 h-[120px] bg-black/35" />
 
       {/* Title block at bottom */}
       <View className="absolute bottom-0 left-0 right-0 px-5 pb-4">
         {cuisineLabel ? (
           <View className="mb-2 flex-row">
-            <View
-              className="rounded-full px-[9px] py-[3px]"
-              style={{
-                backgroundColor: "rgba(255,255,255,0.18)",
-                borderWidth: 1,
-                borderColor: "rgba(255,255,255,0.25)",
-              }}
-            >
-              <Text
-                className="text-[11px] font-medium"
-                style={{ color: "rgba(255,255,255,0.9)" }}
-              >
+            <View className="rounded-full px-[9px] py-[3px] bg-white/[0.18] border border-white/25">
+              <Text className="text-[11px] font-medium text-white/90">
                 {cuisineLabel}
               </Text>
             </View>

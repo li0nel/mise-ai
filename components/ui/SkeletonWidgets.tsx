@@ -208,17 +208,11 @@ export function SkeletonRecipeCarousel({ partialData }: SkeletonWidgetProps) {
               className="w-[158px] overflow-hidden rounded-lg border border-border bg-bg-surface"
             >
               {card?.emoji ? (
-                <View
-                  className="w-full items-center justify-center bg-bg-elevated"
-                  style={{ aspectRatio: 1 }}
-                >
+                <View className="w-full aspect-square items-center justify-center bg-bg-elevated">
                   <Text style={{ fontSize: 36 }}>{card.emoji}</Text>
                 </View>
               ) : (
-                <View
-                  className="w-full animate-pulse rounded-lg bg-bg-elevated"
-                  style={{ aspectRatio: 1 }}
-                />
+                <View className="w-full aspect-square animate-pulse rounded-lg bg-bg-elevated" />
               )}
               <View className="px-[11px] pb-3 pt-2.5">
                 {card?.title ? (
