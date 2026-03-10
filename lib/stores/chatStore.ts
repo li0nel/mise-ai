@@ -176,7 +176,11 @@ export const useChatStore = create<ChatState>((set, get) => ({
       : text;
 
     // Fire-and-forget the streaming — it updates the store via set()
-    void streamGeminiResponse(context, llmMessage, assistantId, set, get);
+    streamGeminiResponse(context, llmMessage, assistantId, set, get).catch(
+      () => {
+        set({ isStreaming: false });
+      },
+    );
   },
 
   setStreaming: (streaming: boolean) => set({ isStreaming: streaming }),
