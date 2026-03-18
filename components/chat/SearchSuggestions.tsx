@@ -1,4 +1,11 @@
-import { View, Text, ScrollView, Pressable, TextInput } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  Pressable,
+  TextInput,
+  Platform,
+} from "react-native";
 import { useRecipeStore } from "../../lib/stores/recipeStore";
 import { ChevronRightIcon, SearchIcon } from "../ui/Icons";
 import { parseGradientMiddleColor } from "../../lib/gradient";
@@ -43,7 +50,14 @@ export function SearchSuggestions({
     <View className="absolute inset-0 z-10 bg-bg">
       {/* Search bar with cancel */}
       <View className="flex-row items-center gap-3 px-4 pt-3 pb-2">
-        <View className="h-12 flex-1 flex-row items-center gap-3 rounded-2xl border border-brand px-4">
+        <View
+          className="h-12 flex-1 flex-row items-center gap-3 rounded-2xl border border-brand px-4"
+          style={
+            Platform.OS === "web"
+              ? ({ boxShadow: "0 0 0 3px #FCE9E2" } as Record<string, unknown>)
+              : undefined
+          }
+        >
           <SearchIcon size={18} color="#C8481C" />
           <TextInput
             className="flex-1 text-sm text-text"
@@ -122,7 +136,7 @@ export function SearchSuggestions({
                         </Text>
                       </View>
                       <Text className="text-xs text-text-3">
-                        {"\u2605"} Saved
+                        {"\uD83D\uDD16"} Saved
                       </Text>
                       <ChevronRightIcon size={16} color="#C4BDB7" />
                     </Pressable>
@@ -137,30 +151,50 @@ export function SearchSuggestions({
                 <Text className="px-4 pb-1.5 pt-2.5 text-[11px] font-bold uppercase tracking-wider text-text-3">
                   Discover
                 </Text>
-                {discoverMatches.map((dish, index) => (
-                  <Pressable
-                    key={dish.name}
-                    onPress={() => onDishSelect(dish.name)}
-                    className={`flex-row items-center gap-3 px-4 py-3 ${
-                      index < discoverMatches.length - 1
-                        ? "border-b border-border-subtle"
-                        : ""
-                    }`}
-                  >
-                    <View className="h-[46px] w-[46px] items-center justify-center rounded-lg bg-bg-elevated">
-                      <Text className="text-[22px]">{dish.emoji}</Text>
-                    </View>
-                    <View className="flex-1">
-                      <Text className="text-sm font-semibold text-text">
-                        {dish.name}
-                      </Text>
-                      <Text className="mt-0.5 text-xs text-text-2">
-                        {dish.cuisine}
-                      </Text>
-                    </View>
-                    <ChevronRightIcon size={16} color="#C4BDB7" />
-                  </Pressable>
-                ))}
+                {discoverMatches.map((dish, index) => {
+                  const isFirst = index === 0;
+                  return (
+                    <Pressable
+                      key={dish.name}
+                      onPress={() => onDishSelect(dish.name)}
+                      className={`flex-row items-center gap-3 px-4 py-3 ${
+                        isFirst ? "bg-brand-50" : ""
+                      } ${
+                        index < discoverMatches.length - 1
+                          ? "border-b border-border-subtle"
+                          : ""
+                      }`}
+                    >
+                      <View className="h-[46px] w-[46px] items-center justify-center rounded-lg bg-bg-elevated">
+                        <Text className="text-[22px]">{dish.emoji}</Text>
+                      </View>
+                      <View className="flex-1">
+                        <Text
+                          className={`text-sm text-text ${isFirst ? "font-bold" : "font-semibold"}`}
+                        >
+                          {dish.name}
+                        </Text>
+                        <Text className="mt-0.5 text-xs text-text-2">
+                          {dish.cuisine}
+                        </Text>
+                      </View>
+                      {isFirst ? (
+                        <View className="rounded-full bg-brand-light px-2 py-0.5">
+                          <Text className="text-[11px] font-semibold text-brand">
+                            47 variations
+                          </Text>
+                        </View>
+                      ) : (
+                        <View className="rounded-full bg-bg-elevated px-2 py-0.5">
+                          <Text className="text-[11px] text-text-2">
+                            {dish.cuisine}
+                          </Text>
+                        </View>
+                      )}
+                      <ChevronRightIcon size={16} color="#C4BDB7" />
+                    </Pressable>
+                  );
+                })}
               </View>
             ) : null}
           </>

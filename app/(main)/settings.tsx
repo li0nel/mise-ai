@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native";
 import { PageHeader } from "../../components/ui/PageHeader";
+import { PaywallModal } from "../../components/PaywallModal";
 import { useAuth } from "../../contexts/AuthContext";
 
 // ---------------------------------------------------------------------------
@@ -93,6 +94,7 @@ type DietaryKey = (typeof DIETARY_OPTIONS)[number];
 
 export default function SettingsScreen() {
   const { user, signOut } = useAuth();
+  const [showPaywall, setShowPaywall] = useState(false);
 
   const [dietary, setDietary] = useState<Record<DietaryKey, boolean>>({
     "Gluten-free": false,
@@ -143,7 +145,18 @@ export default function SettingsScreen() {
         <SectionHeader title="ABOUT" />
         <Row label="Version" right="1.0.0" />
         <Row label="Send Feedback" labelClassName="text-sm text-brand" />
+        <Row
+          label="Preview Paywall"
+          labelClassName="text-sm text-brand"
+          onPress={() => setShowPaywall(true)}
+        />
       </ScrollView>
+
+      <PaywallModal
+        visible={showPaywall}
+        onDismiss={() => setShowPaywall(false)}
+        onSubscribe={() => setShowPaywall(false)}
+      />
     </View>
   );
 }

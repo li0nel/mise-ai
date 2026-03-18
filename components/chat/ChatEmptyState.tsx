@@ -8,6 +8,7 @@ interface ChatEmptyStateProps {
   onSearchChange: (text: string) => void;
   onSearchSubmit: (query: string) => void;
   onDishSelect: (dishName: string) => void;
+  onSearchFocus?: () => void;
 }
 
 export function ChatEmptyState({
@@ -15,6 +16,7 @@ export function ChatEmptyState({
   onSearchChange,
   onSearchSubmit,
   onDishSelect,
+  onSearchFocus,
 }: ChatEmptyStateProps) {
   const quickPicks = useMemo(() => getQuickPicks(5), []);
 
@@ -40,16 +42,12 @@ export function ChatEmptyState({
             value={searchQuery}
             onChangeText={onSearchChange}
             onSubmitEditing={handleSubmit}
+            onFocus={onSearchFocus}
             returnKeyType="search"
             style={{ outlineStyle: "none" } as Record<string, unknown>}
           />
         </View>
       </View>
-
-      {/* Tagline */}
-      <Text className="mt-4 text-center text-[15px] text-text-2">
-        Find any dish. Make it yours.
-      </Text>
 
       {/* Quick pick chips */}
       <ScrollView
@@ -70,6 +68,18 @@ export function ChatEmptyState({
           </Pressable>
         ))}
       </ScrollView>
+
+      {/* Hero section */}
+      <View className="items-center px-6 py-8">
+        <Text className="text-[52px] leading-none">{"\uD83C\uDF73"}</Text>
+        <Text className="mt-2.5 text-center text-[22px] font-extrabold tracking-tight text-text">
+          Search anything.{"\n"}Cook it your way.
+        </Text>
+        <Text className="mt-2 max-w-[260px] text-center text-sm text-text-2">
+          Mise reads hundreds of recipes so you get one perfect version
+          {" \u2014 "}tailored to you.
+        </Text>
+      </View>
 
       {/* Recent searches */}
       <View className="mt-8 px-4">

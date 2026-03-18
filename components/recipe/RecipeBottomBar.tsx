@@ -7,14 +7,33 @@ interface RecipeBottomBarProps {
   onAddToShopping?: () => void;
   recipeName: string;
   addedToShopping?: boolean;
+  isSaved?: boolean;
+  onSaveRecipe?: () => void;
 }
 
-export function RecipeBottomBar({ onAddToShopping, recipeName, addedToShopping }: RecipeBottomBarProps) {
+export function RecipeBottomBar({
+  onAddToShopping,
+  recipeName,
+  addedToShopping,
+  isSaved,
+  onSaveRecipe,
+}: RecipeBottomBarProps) {
   const router = useRouter();
 
   function handleCookNow() {
     useChatStore.getState().sendMessage(`Cook ${recipeName} now`);
     router.push("/");
+  }
+
+  // Unsaved recipe — show full-width Save button
+  if (isSaved === false) {
+    return (
+      <View className="border-t border-border-subtle bg-bg px-5 pb-[34px] pt-3">
+        <Button variant="primary" onPress={onSaveRecipe}>
+          Save Recipe
+        </Button>
+      </View>
+    );
   }
 
   return (
@@ -24,7 +43,9 @@ export function RecipeBottomBar({ onAddToShopping, recipeName, addedToShopping }
       </Button>
       {addedToShopping ? (
         <View className="flex-1 items-center justify-center">
-          <Text className="text-[13px] font-medium text-text-2">{"\u2713"} Added to shopping list</Text>
+          <Text className="text-[13px] font-medium text-text-2">
+            {"\u2713"} Added to shopping list
+          </Text>
         </View>
       ) : (
         <Button variant="primary" className="flex-1" onPress={onAddToShopping}>

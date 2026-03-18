@@ -25,6 +25,16 @@ export default function RecipeScreen() {
   const [servings, setServings] = useState<number | null>(null);
   const [showAddOverlay, setShowAddOverlay] = useState(false);
   const [addedToShopping, setAddedToShopping] = useState(false);
+  const isSaved = recipe?.bookmarked === true;
+
+  const handleSaveRecipe = useCallback(() => {
+    if (!recipe) return;
+    const store = useRecipeStore.getState();
+    store.updateRecipe(recipe.id, { bookmarked: true });
+    void store.addRecipe({ ...recipe, bookmarked: true }).catch(() => {
+      // Firestore write may fail for mock recipes — local update is sufficient
+    });
+  }, [recipe]);
 
   const handleOpenOverlay = useCallback(() => setShowAddOverlay(true), []);
   const handleCloseOverlay = useCallback(() => setShowAddOverlay(false), []);
@@ -162,6 +172,8 @@ export default function RecipeScreen() {
         onAddToShopping={handleOpenOverlay}
         recipeName={recipe.title}
         addedToShopping={addedToShopping}
+        isSaved={isSaved}
+        onSaveRecipe={handleSaveRecipe}
       />
 
       {/* Add to shopping overlay */}
