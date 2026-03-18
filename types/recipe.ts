@@ -62,6 +62,10 @@ export interface Recipe {
   bookmarked?: boolean;
   liked?: boolean;
   variations?: RecipeVariation[];
+  tags?: RecipeTag[];
+  aiBlurb?: string;
+  sources?: RecipeSource[];
+  analysisStats?: AnalysisStats;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -71,4 +75,26 @@ export interface RecipeVariation {
   title: string;
   subtitle: string;
   emoji: string;
+}
+
+/** A tag applied to a recipe (dietary or recipe choice) */
+export interface RecipeTag {
+  label: string;
+  detail?: string;
+  tier: "dietary" | "recipe";
+}
+
+/** A source referenced during recipe analysis */
+export interface RecipeSource {
+  domain: string;
+  title: string;
+  url: string;
+}
+
+/** Stats from AI recipe analysis */
+export interface AnalysisStats {
+  sourceCount: number;
+  recipeCount: number;
+  tokenCount: number;
+  durationMs: number;
 }

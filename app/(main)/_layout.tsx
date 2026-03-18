@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import { View } from "react-native";
-import { Slot, useRouter } from "expo-router";
+import { Tabs, useRouter } from "expo-router";
 import { useAuth } from "../../contexts/AuthContext";
+import { TabBar } from "../../components/ui/TabBar";
 
 export default function MainLayout() {
   const { user, isLoading, isVerified } = useAuth();
@@ -20,7 +21,16 @@ export default function MainLayout() {
 
   return (
     <View className="flex-1 bg-bg">
-      <Slot />
+      <Tabs
+        tabBar={(props) => <TabBar {...props} />}
+        screenOptions={{ headerShown: false }}
+      >
+        <Tabs.Screen name="index" />
+        <Tabs.Screen name="recipes" />
+        <Tabs.Screen name="shopping" />
+        <Tabs.Screen name="settings" options={{ href: null }} />
+        <Tabs.Screen name="recipe" options={{ href: null }} />
+      </Tabs>
     </View>
   );
 }

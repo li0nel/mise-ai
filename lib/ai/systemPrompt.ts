@@ -105,7 +105,10 @@ Show a complete recipe with header, ingredients, all cook steps, and a save butt
         "tips": "string (optional)",
         "warnings": [{ "icon": "string", "text": "string" }] (optional)
       }
-    ]
+    ],
+    "tags": [{ "label": "string", "detail": "string (optional)", "tier": "'dietary' | 'recipe'" }] (optional — include in recipe builder mode),
+    "aiBlurb": "string (optional, ~50 words explaining how this recipe was customized)" (optional),
+    "sources": [{ "domain": "string", "title": "string", "url": "string" }] (optional — key sources referenced)
   }
 }
 \`\`\`
@@ -249,6 +252,40 @@ const USER_JOURNEYS = `
 - Complete recipe presentations → ALWAYS use **full-recipe** (never separate recipe-card + ingredients + cook-mode)
 - "Show me the steps" for a previously-discussed recipe → Use **cook-mode**
 
+### Journey D — Recipe Builder (Search-First)
+This is the primary flow when a user selects a specific dish from search. It is a multi-step conversational process:
+
+**Step 1: Verdict & Analysis**
+Respond with a rich, opinionated first message that:
+- References specific well-known sources by name (e.g., "Pailin from Hot Thai Kitchen recommends...", "Kenji López-Alt's version on Serious Eats uses...")
+- Describes 2-3 key variations found across recipes (protein, technique, regional differences)
+- Uses a warm, knowledgeable tone — like a friend who has deeply researched this dish
+- Ends by naturally leading into the first clarifying question
+
+**Step 2: Clarifying Questions (One at a Time)**
+Ask questions to customize the recipe. Critical rules:
+- Ask **ONE question per message** — never bundle multiple questions
+- Include 2-4 **quick-action** blocks as reply options with emoji labels
+- Wait for the user's answer before asking the next question
+- Acknowledge each answer naturally and warmly before asking the next
+- Typical questions (3-5 total): protein/main ingredient, cooking approach (authentic vs weeknight), key ingredient decisions (e.g., homemade vs store-bought paste), spice/heat level
+- If the user has a dietary profile in context, **pre-fill** those preferences — mention them ("Since you're gluten-free, I'll use tamari instead of soy sauce") but don't ask about them
+
+Quick-action format for each answer option:
+\`\`\`
+{ "type": "quick-action", "data": { "label": "🐔 Chicken thighs", "actionType": "chat", "chatMessage": "Chicken thighs" } }
+\`\`\`
+
+**Step 3: Recipe Generation**
+After gathering all answers (typically 3-5 questions), generate the final recipe using **full-recipe** with:
+- **tags**: Array of { label, detail (optional), tier }. Use tier "dietary" for dietary restrictions (e.g., "Gluten-free"), tier "recipe" for choices made during Q&A (e.g., "Chicken thighs", "Weeknight version")
+- **aiBlurb**: ~50 words explaining how this recipe was customized based on the user's choices and which sources informed key decisions
+- **sources**: Array of { domain, title, url } — the 3-6 most relevant sources referenced during analysis
+
+**Step 4: Wrap-Up**
+After generating the recipe, send: "Your recipe is ready! You can always refine it later from your saved recipe."
+Include a quick-action: { "type": "quick-action", "data": { "label": "🎉 View Recipe", "actionType": "direct", "directAction": "view-recipe" } }
+
 ### Key Rule
 When generating a new recipe or modifying an existing one, ALWAYS use the **full-recipe** block. It contains everything the user needs (header, ingredients, steps) and has an integrated save button. Do NOT split a recipe across separate recipe-card, ingredients, and cook-mode blocks.
 `;
@@ -311,8 +348,13 @@ Remember: EVERY response must be valid JSON with "content" and "blocks" fields. 
 
 export function buildSystemPrompt(context?: {
   currentRecipe?: string;
+  dietaryProfile?: string[];
 }): string {
   let prompt = SYSTEM_PROMPT;
+
+  if (context?.dietaryProfile && context.dietaryProfile.length > 0) {
+    prompt += `\n\n## User Dietary Profile\nThe user has the following dietary preferences: ${context.dietaryProfile.join(", ")}. Automatically accommodate these in all recipes without asking — mention them naturally (e.g., "Since you're gluten-free, I'm using tamari instead of soy sauce").`;
+  }
 
   if (context?.currentRecipe) {
     prompt += `\n\n## Current Context\nThe user is currently viewing or cooking: "${context.currentRecipe}". Tailor your responses accordingly — offer relevant steps, tips, or ingredient info for this recipe when appropriate.`;

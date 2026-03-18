@@ -53,5 +53,8 @@ export function composeRecipeFromFullBlock(
         ? [{ duration: step.timerPill, activity: step.title }]
         : undefined,
     })),
+    tags: data.tags,
+    aiBlurb: data.aiBlurb,
+    sources: data.sources,
   };
 }

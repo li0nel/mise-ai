@@ -1,6 +1,6 @@
 import { View, Text, Pressable } from "react-native";
 import { useRouter } from "expo-router";
-import { CartIcon } from "./Icons";
+import { CogIcon } from "./Icons";
 
 export function AppBar() {
   const router = useRouter();
@@ -11,10 +11,10 @@ export function AppBar() {
         mise<Text className="text-brand">.</Text>
       </Text>
       <Pressable
-        onPress={() => router.push("/shopping")}
+        onPress={() => router.push("/settings" as never)}
         className="w-9 h-9 rounded-full items-center justify-center"
       >
-        <CartIcon size={22} color="#3D3329" />
+        <CogIcon size={22} color="#3D3329" />
       </Pressable>
     </View>
   );

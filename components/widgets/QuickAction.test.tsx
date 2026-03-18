@@ -3,6 +3,11 @@ import { render, screen, fireEvent } from "@testing-library/react-native";
 import { QuickAction } from "./QuickAction";
 import type { QuickActionBlock } from "../../types";
 
+const mockPush = jest.fn();
+jest.mock("expo-router", () => ({
+  useRouter: () => ({ push: mockPush }),
+}));
+
 const mockSendMessage = jest.fn();
 jest.mock("../../lib/stores/chatStore", () => ({
   useChatStore: {
@@ -12,9 +17,18 @@ jest.mock("../../lib/stores/chatStore", () => ({
   },
 }));
 
+jest.mock("../../lib/stores/recipeStore", () => ({
+  useRecipeStore: {
+    getState: jest.fn(() => ({
+      recipes: [],
+    })),
+  },
+}));
+
 describe("QuickAction", () => {
   beforeEach(() => {
     mockSendMessage.mockClear();
+    mockPush.mockClear();
   });
 
   it("renders label and arrow", () => {

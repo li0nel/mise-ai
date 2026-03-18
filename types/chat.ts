@@ -1,4 +1,4 @@
-import type { Ingredient } from "./recipe";
+import type { Ingredient, RecipeTag, RecipeSource } from "./recipe";
 
 /** Action button in widgets */
 export interface WidgetAction {
@@ -99,6 +99,10 @@ export interface FullRecipeBlock {
       tips?: string;
       warnings?: { icon: string; text: string }[];
     }[];
+    /** Recipe builder fields — present when generated via clarification flow */
+    tags?: RecipeTag[];
+    aiBlurb?: string;
+    sources?: RecipeSource[];
   };
 }
 

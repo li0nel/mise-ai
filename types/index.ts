@@ -7,6 +7,9 @@ export type {
   StepWarning,
   StepTimer,
   RecipeVariation,
+  RecipeTag,
+  RecipeSource,
+  AnalysisStats,
 } from "./recipe";
 export type {
   ChatMessage,

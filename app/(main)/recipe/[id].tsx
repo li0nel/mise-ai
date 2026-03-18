@@ -9,6 +9,9 @@ import { ServingsStepper } from "../../../components/recipe/ServingsStepper";
 import { IngredientFullItem } from "../../../components/recipe/IngredientFullItem";
 import { InstructionStep } from "../../../components/recipe/InstructionStep";
 import { RecipeBottomBar } from "../../../components/recipe/RecipeBottomBar";
+import { RecipeTags } from "../../../components/recipe/RecipeTags";
+import { AiBlurb } from "../../../components/recipe/AiBlurb";
+import { RecipeSources } from "../../../components/recipe/RecipeSources";
 import { AddToShoppingOverlay } from "../../../components/overlays/AddToShoppingOverlay";
 import { useRecipeStore } from "../../../lib/stores/recipeStore";
 import { scaleAmount } from "../../../lib/amounts";
@@ -66,6 +69,14 @@ export default function RecipeScreen() {
           servings={recipe.servings}
           difficulty={recipe.difficulty}
         />
+
+        {/* Tags */}
+        {recipe.tags && recipe.tags.length > 0 ? (
+          <RecipeTags tags={recipe.tags} />
+        ) : null}
+
+        {/* AI blurb */}
+        {recipe.aiBlurb ? <AiBlurb blurb={recipe.aiBlurb} /> : null}
 
         {/* Servings stepper */}
         <ServingsStepper
@@ -136,6 +147,14 @@ export default function RecipeScreen() {
             />
           ))}
         </View>
+
+        {/* Sources */}
+        {recipe.sources && recipe.sources.length > 0 ? (
+          <RecipeSources
+            sources={recipe.sources}
+            analysisStats={recipe.analysisStats}
+          />
+        ) : null}
       </ScrollView>
 
       {/* Sticky bottom bar */}
