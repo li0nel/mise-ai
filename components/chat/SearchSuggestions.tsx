@@ -8,11 +8,24 @@ import {
 } from "react-native";
 import { useRecipeStore } from "../../lib/stores/recipeStore";
 import { ChevronRightIcon, SearchIcon } from "../ui/Icons";
-import { parseGradientMiddleColor } from "../../lib/gradient";
 import { searchDishes } from "../../lib/search/dishCatalogue";
 
 const MAX_SAVED_RESULTS = 5;
 const MAX_DISCOVER_RESULTS = 10;
+
+/** Return a human-readable relative timestamp. */
+function formatSavedAgo(createdAt: Date | undefined): string {
+  if (!createdAt) return "Saved";
+  const now = Date.now();
+  const then =
+    createdAt instanceof Date
+      ? createdAt.getTime()
+      : new Date(createdAt as unknown as string).getTime();
+  const diffDays = Math.floor((now - then) / (1000 * 60 * 60 * 24));
+  if (diffDays < 1) return "Saved today";
+  if (diffDays < 2) return "Saved yesterday";
+  return `Saved ${String(diffDays)} days ago`;
+}
 
 interface SearchSuggestionsProps {
   searchText: string;
@@ -48,20 +61,22 @@ export function SearchSuggestions({
 
   return (
     <View className="absolute inset-0 z-10 bg-bg">
-      {/* Search bar with cancel */}
-      <View className="flex-row items-center gap-3 px-4 pt-3 pb-2">
+      {/* Search bar — matches State 2: rounded-md, brand border, brand-light glow */}
+      <View className="flex-row items-center gap-2.5 px-4 pt-2.5 pb-2">
         <View
-          className="h-12 flex-1 flex-row items-center gap-3 rounded-2xl border border-brand px-4"
+          className="h-[42px] flex-1 flex-row items-center gap-2.5 rounded-xl border-[1.5px] border-brand bg-bg-surface px-3.5"
           style={
             Platform.OS === "web"
-              ? ({ boxShadow: "0 0 0 3px #FCE9E2" } as Record<string, unknown>)
+              ? ({
+                  boxShadow: "0 0 0 3px #FCE9E2",
+                } as Record<string, unknown>)
               : undefined
           }
         >
-          <SearchIcon size={18} color="#C8481C" />
+          <SearchIcon size={16} color="#C8481C" />
           <TextInput
-            className="flex-1 text-sm text-text"
-            placeholder="Search a recipe or paste a URL..."
+            className="flex-1 text-[15px] font-medium text-text"
+            placeholder="Search a recipe or paste a URL\u2026"
             placeholderTextColor="#A8A09A"
             value={searchText}
             onChangeText={onSearchChange}
@@ -101,54 +116,45 @@ export function SearchSuggestions({
           </View>
         ) : (
           <>
-            {/* YOUR RECIPES section */}
+            {/* YOUR RECIPES — matches State 2: 🔖 icon, "Saved X days ago", chevron */}
             {savedMatches.length > 0 ? (
-              <View className="mt-2">
-                <Text className="px-4 pb-1.5 pt-2.5 text-[11px] font-bold uppercase tracking-wider text-text-3">
+              <View>
+                <Text className="px-4 pb-1.5 pt-3.5 text-[11px] font-bold uppercase tracking-wider text-brand">
                   Your Recipes
                 </Text>
-                {savedMatches.map((recipe, index) => {
-                  const gradient = recipe.heroImage?.gradient ?? "";
-                  const thumbBg = parseGradientMiddleColor(gradient);
-                  return (
-                    <Pressable
-                      key={recipe.id}
-                      onPress={() => onRecipeSelect(recipe.id)}
-                      className={`flex-row items-center gap-3 px-4 py-3 ${
-                        index < savedMatches.length - 1
-                          ? "border-b border-border-subtle"
-                          : ""
-                      }`}
-                    >
-                      <View
-                        className="h-[46px] w-[46px] items-center justify-center rounded-lg"
-                        style={{ backgroundColor: thumbBg }}
-                      >
-                        <Text className="text-[22px]">{recipe.emoji}</Text>
-                      </View>
-                      <View className="flex-1">
-                        <Text className="text-sm font-semibold text-text">
-                          {recipe.title}
-                        </Text>
-                        <Text className="mt-0.5 text-xs text-text-2">
-                          {recipe.cuisines[0]} &middot;{" "}
-                          {recipe.prepTime + recipe.cookTime} min
-                        </Text>
-                      </View>
-                      <Text className="text-xs text-text-3">
-                        {"\uD83D\uDD16"} Saved
+                {savedMatches.map((recipe, index) => (
+                  <Pressable
+                    key={recipe.id}
+                    onPress={() => onRecipeSelect(recipe.id)}
+                    className={`flex-row items-start gap-3 px-4 py-3 ${
+                      index < savedMatches.length - 1
+                        ? "border-b border-border-subtle"
+                        : ""
+                    }`}
+                  >
+                    <View className="mt-0.5 h-[34px] w-[34px] items-center justify-center rounded-lg bg-bg-elevated">
+                      <Text className="text-base">{"\uD83D\uDD16"}</Text>
+                    </View>
+                    <View className="flex-1">
+                      <Text className="text-[15px] font-medium text-text">
+                        {recipe.title}
                       </Text>
-                      <ChevronRightIcon size={16} color="#C4BDB7" />
-                    </Pressable>
-                  );
-                })}
+                      <Text className="mt-0.5 text-xs text-text-3">
+                        {formatSavedAgo(recipe.createdAt)}
+                      </Text>
+                    </View>
+                    <View className="mt-2">
+                      <ChevronRightIcon size={16} color="#C4BCB5" />
+                    </View>
+                  </Pressable>
+                ))}
               </View>
             ) : null}
 
-            {/* DISCOVER section */}
+            {/* DISCOVER — matches State 2: first item highlighted, others with category badge */}
             {discoverMatches.length > 0 ? (
-              <View className="mt-2">
-                <Text className="px-4 pb-1.5 pt-2.5 text-[11px] font-bold uppercase tracking-wider text-text-3">
+              <View>
+                <Text className="px-4 pb-1.5 pt-3.5 text-[11px] font-bold uppercase tracking-wider text-brand">
                   Discover
                 </Text>
                 {discoverMatches.map((dish, index) => {
@@ -157,7 +163,7 @@ export function SearchSuggestions({
                     <Pressable
                       key={dish.name}
                       onPress={() => onDishSelect(dish.name)}
-                      className={`flex-row items-center gap-3 px-4 py-3 ${
+                      className={`flex-row items-start gap-3 px-4 py-3 ${
                         isFirst ? "bg-brand-50" : ""
                       } ${
                         index < discoverMatches.length - 1
@@ -165,33 +171,38 @@ export function SearchSuggestions({
                           : ""
                       }`}
                     >
-                      <View className="h-[46px] w-[46px] items-center justify-center rounded-lg bg-bg-elevated">
-                        <Text className="text-[22px]">{dish.emoji}</Text>
+                      <View
+                        className={`mt-0.5 h-[34px] w-[34px] items-center justify-center rounded-lg ${
+                          isFirst ? "bg-brand-light" : "bg-bg-elevated"
+                        }`}
+                      >
+                        <Text className={isFirst ? "text-lg" : "text-base"}>
+                          {dish.emoji}
+                        </Text>
                       </View>
                       <View className="flex-1">
                         <Text
-                          className={`text-sm text-text ${isFirst ? "font-bold" : "font-semibold"}`}
+                          className={`text-[15px] text-text ${isFirst ? "font-bold" : "font-medium"}`}
                         >
                           {dish.name}
                         </Text>
-                        <Text className="mt-0.5 text-xs text-text-2">
+                        <Text className="mt-0.5 text-xs text-text-3">
                           {dish.cuisine}
                         </Text>
                       </View>
                       {isFirst ? (
-                        <View className="rounded-full bg-brand-light px-2 py-0.5">
+                        <View className="mt-1.5 rounded-full bg-brand-light px-2 py-0.5">
                           <Text className="text-[11px] font-semibold text-brand">
                             47 variations
                           </Text>
                         </View>
                       ) : (
-                        <View className="rounded-full bg-bg-elevated px-2 py-0.5">
-                          <Text className="text-[11px] text-text-2">
+                        <View className="mt-1.5 rounded-full bg-bg-elevated px-2 py-0.5">
+                          <Text className="text-[11px] font-semibold text-text-2">
                             {dish.cuisine}
                           </Text>
                         </View>
                       )}
-                      <ChevronRightIcon size={16} color="#C4BDB7" />
                     </Pressable>
                   );
                 })}
