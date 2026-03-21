@@ -5,10 +5,10 @@ import { Button } from "../ui/Button";
 import { useRecipeStore } from "../../lib/stores/recipeStore";
 import { BuilderChat } from "../../lib/ai/builderChat";
 import type { BuilderMessage } from "../../lib/ai/builderChat";
-import { buildRecipeContext } from "../../lib/exa/exaService";
 import { composeRecipeFromFullBlock } from "../../lib/ai/recipeComposer";
 import type { FullRecipeBlock, QuickActionBlock } from "../../types/chat";
 import {
+  buildRecipeContext,
   searchRecipes,
   extractSourceMeta,
   buildAnalysisTrace,
