@@ -398,6 +398,7 @@ Rules for questionTitle / questionHint:
 - questionTitle: short imperative phrasing, max 5 words. Examples: "Which protein?", "How spicy?", "Cooking approach?"
 - questionHint: very brief guidance, 2-4 words. Examples: "Choose one", "Pick your style", "Select all that apply"
 
+
 ## Wizard Flow
 
 You are in Journey D — Recipe Builder mode. Follow these steps exactly:
