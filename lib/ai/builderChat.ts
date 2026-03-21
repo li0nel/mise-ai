@@ -3,6 +3,12 @@ import type { ChatSession } from "@firebase/ai";
 import { getApps } from "firebase/app";
 import type { Block } from "@/types/chat";
 import { buildBuilderSystemPrompt } from "./systemPrompt";
+import {
+  MOCK_VERDICT,
+  MOCK_QUESTIONS,
+  MOCK_WRAPUP,
+  createMockRecipe,
+} from "../mocks/massamanCurryMock";
 
 export interface BuilderMessage {
   role: "user" | "assistant";
@@ -85,9 +91,125 @@ export function parseBuilderResponse(text: string): {
 export class BuilderChat {
   private chat: ChatSession | null = null;
   private systemPrompt: string;
+  private mockRound = 0;
 
   constructor(dishName: string, recipeContext: string) {
     this.systemPrompt = buildBuilderSystemPrompt(dishName, recipeContext);
+  }
+
+  private buildQuickActionBlocks(options: { label: string }[]): Block[] {
+    return options.map((opt) => ({
+      type: "quick-action" as const,
+      data: {
+        label: opt.label,
+        actionType: "chat" as const,
+        chatMessage: opt.label,
+      },
+    }));
+  }
+
+  private async getMockResponse(): Promise<BuilderMessage> {
+    await new Promise((resolve) => setTimeout(resolve, 300));
+
+    const round = this.mockRound;
+    this.mockRound += 1;
+
+    if (round === 0) {
+      const q = MOCK_QUESTIONS[0];
+      if (!q) throw new Error(`Mock data missing question ${String(0)}`);
+      return {
+        role: "assistant",
+        content: MOCK_VERDICT,
+        questionTitle: "Which protein?",
+        questionHint: "Choose one",
+        blocks: this.buildQuickActionBlocks(q.options),
+      };
+    }
+
+    if (round === 1) {
+      const q = MOCK_QUESTIONS[1];
+      if (!q) throw new Error(`Mock data missing question ${String(1)}`);
+      return {
+        role: "assistant",
+        content: q.aiText,
+        questionTitle: "Cooking approach?",
+        questionHint: "Pick your style",
+        blocks: this.buildQuickActionBlocks(q.options),
+      };
+    }
+
+    if (round === 2) {
+      const q = MOCK_QUESTIONS[2];
+      if (!q) throw new Error(`Mock data missing question ${String(2)}`);
+      return {
+        role: "assistant",
+        content: q.aiText,
+        questionTitle: "Curry paste?",
+        questionHint: "Choose one",
+        blocks: this.buildQuickActionBlocks(q.options),
+      };
+    }
+
+    if (round === 3) {
+      const q = MOCK_QUESTIONS[3];
+      if (!q) throw new Error(`Mock data missing question ${String(3)}`);
+      return {
+        role: "assistant",
+        content: q.aiText,
+        questionTitle: "Spice level?",
+        questionHint: "Choose one",
+        blocks: this.buildQuickActionBlocks(q.options),
+      };
+    }
+
+    // Round 4+: final recipe
+    const mockId = "mock-builder-" + Date.now().toString(36);
+    const recipe = createMockRecipe(mockId);
+    const fullRecipeBlock: Block = {
+      type: "full-recipe",
+      data: {
+        id: recipe.id,
+        title: recipe.title,
+        emoji: recipe.emoji,
+        time: `${String(recipe.prepTime + recipe.cookTime)} min`,
+        servings: recipe.servings,
+        cuisine: recipe.cuisines[0] ?? "International",
+        description: recipe.aiBlurb ?? "",
+        image: recipe.heroImage,
+        ingredients: {
+          sections: recipe.ingredientSections.map((s) => ({
+            name: s.name ?? "Ingredients",
+          })),
+          items: recipe.ingredientSections.flatMap((s) =>
+            s.ingredients.map((ing) => ({
+              amount: ing.amount,
+              unit: ing.unit,
+              name: ing.name,
+              notes: ing.notes,
+            })),
+          ),
+        },
+        steps: recipe.instructions.map((inst) => ({
+          stepNumber: inst.stepNumber,
+          title: inst.title ?? `Step ${String(inst.stepNumber)}`,
+          text: inst.text,
+          timerPill: inst.timers?.[0]?.duration,
+          tips: inst.tips?.[0],
+          warnings: inst.warnings,
+        })),
+        tags: recipe.tags,
+        aiBlurb: recipe.aiBlurb,
+        sources: recipe.sources,
+      },
+    };
+
+    return {
+      role: "assistant",
+      content: MOCK_WRAPUP,
+      questionTitle: null,
+      questionHint: null,
+      blocks: [fullRecipeBlock],
+    };
   }
 
   private initChat(): ChatSession | null {
@@ -123,6 +245,10 @@ export class BuilderChat {
    * For subsequent calls, send the user's quick-action selection.
    */
   async sendReply(userMessage: string): Promise<BuilderMessage> {
+    if (process.env.EXPO_PUBLIC_MOCK_AI === "true") {
+      return this.getMockResponse();
+    }
+
     const chat = this.initChat();
     if (!chat) {
       return {
