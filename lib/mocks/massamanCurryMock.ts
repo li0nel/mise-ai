@@ -1,21 +1,6 @@
 import type { Recipe } from "../../types";
 import { SEED_RECIPE } from "../../data/seedRecipe";
 
-/** Chain-of-thought trace lines from mise-search-v1 State 3 */
-export const MOCK_COT_LINES: string[] = [
-  "Searching the web for massaman curry recipes\u2026",
-  "Found 47 sources across the web",
-  "Reading bonappetit.com \u2026 seriouseats.com \u2026 hot-thai-kitchen.com \u2026",
-  "12 detailed recipes with full ingredient lists",
-  "Comparing proteins: beef (traditional in 9 of 12), chicken, tofu",
-  "Paste methods: 2 approaches \u2014 homemade from scratch vs store-bought",
-  "Processing ~85,000 tokens of recipe data",
-  "Spice levels vary widely \u2014 some use 8 dried chillies, some use 2",
-  "Cook times range from 35 min to 2.5 hrs",
-  "joshuaweissman.com \u2026 epicurious.com \u2026 9 more",
-  "Deep analysis complete in 4.2s",
-];
-
 /** AI verdict text from conversational flow mock */
 export const MOCK_VERDICT =
   "I\u2019ve gone through 47 recipes for Massaman Curry and found some really interesting patterns.\n\n" +
