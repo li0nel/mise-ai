@@ -8,10 +8,9 @@ import {
 } from "react-native";
 import { useRecipeStore } from "../../lib/stores/recipeStore";
 import { ChevronRightIcon, SearchIcon } from "../ui/Icons";
-import { searchDishes } from "../../lib/search/dishCatalogue";
+import { isRecipeUrl } from "../../lib/recipeImport";
 
 const MAX_SAVED_RESULTS = 5;
-const MAX_DISCOVER_RESULTS = 10;
 
 /** Return a human-readable relative timestamp. */
 function formatSavedAgo(createdAt: Date | undefined): string {
@@ -31,7 +30,7 @@ interface SearchSuggestionsProps {
   searchText: string;
   onSearchChange: (text: string) => void;
   onRecipeSelect: (recipeId: string) => void;
-  onDishSelect: (dishName: string) => void;
+  onUrlSubmit: (url: string) => void;
   onCancel: () => void;
 }
 
@@ -39,7 +38,7 @@ export function SearchSuggestions({
   searchText,
   onSearchChange,
   onRecipeSelect,
-  onDishSelect,
+  onUrlSubmit,
   onCancel,
 }: SearchSuggestionsProps) {
   const recipes = useRecipeStore((s) => s.recipes);
@@ -53,15 +52,9 @@ export function SearchSuggestions({
           .slice(0, MAX_SAVED_RESULTS)
       : [];
 
-  // Discover dishes from catalogue
-  const discoverMatches =
-    query.length > 0 ? searchDishes(query, MAX_DISCOVER_RESULTS) : [];
-
-  const hasResults = savedMatches.length > 0 || discoverMatches.length > 0;
-
   return (
     <View className="absolute inset-0 z-10 bg-bg">
-      {/* Search bar — matches State 2: rounded-md, brand border, brand-light glow */}
+      {/* Search bar — brand border, brand-light glow */}
       <View className="flex-row items-center gap-2.5 px-4 pt-2.5 pb-2">
         <View
           className="h-[42px] flex-1 flex-row items-center gap-2.5 rounded-xl border-[1.5px] border-brand bg-bg-surface px-3.5"
@@ -76,14 +69,15 @@ export function SearchSuggestions({
           <SearchIcon size={16} color="#C8481C" />
           <TextInput
             className="flex-1 text-[15px] font-medium text-text"
-            placeholder="Search a recipe or paste a URL\u2026"
+            placeholder="Paste a recipe URL or search saved\u2026"
             placeholderTextColor="#A8A09A"
             value={searchText}
             onChangeText={onSearchChange}
             onSubmitEditing={() => {
-              if (searchText.trim()) onDishSelect(searchText.trim());
+              const trimmed = searchText.trim();
+              if (trimmed && isRecipeUrl(trimmed)) onUrlSubmit(trimmed);
             }}
-            returnKeyType="search"
+            returnKeyType="go"
             autoFocus
             style={{ outlineStyle: "none" } as Record<string, unknown>}
           />
@@ -101,114 +95,52 @@ export function SearchSuggestions({
         {query.length === 0 ? (
           <View className="items-center px-4 py-12">
             <Text className="text-sm text-text-3">
-              Type to search recipes and dishes
+              Paste a URL to import or search your saved recipes
             </Text>
           </View>
-        ) : !hasResults ? (
+        ) : savedMatches.length === 0 ? (
           <View className="items-center px-4 py-12">
             <SearchIcon size={28} color="#C4BCB5" />
             <Text className="mt-2 text-sm font-medium text-text-3">
-              No results found
+              No saved recipes found
             </Text>
             <Text className="mt-1 text-xs text-text-3">
-              Try a different search term
+              Try a different search term or paste a URL
             </Text>
           </View>
         ) : (
-          <>
-            {/* YOUR RECIPES — matches State 2: 🔖 icon, "Saved X days ago", chevron */}
-            {savedMatches.length > 0 ? (
-              <View>
-                <Text className="px-4 pb-1.5 pt-3.5 text-[11px] font-bold uppercase tracking-wider text-brand">
-                  Your Recipes
-                </Text>
-                {savedMatches.map((recipe, index) => (
-                  <Pressable
-                    key={recipe.id}
-                    onPress={() => onRecipeSelect(recipe.id)}
-                    className={`flex-row items-start gap-3 px-4 py-3 ${
-                      index < savedMatches.length - 1
-                        ? "border-b border-border-subtle"
-                        : ""
-                    }`}
-                  >
-                    <View className="mt-0.5 h-[34px] w-[34px] items-center justify-center rounded-lg bg-bg-elevated">
-                      <Text className="text-base">{"\uD83D\uDD16"}</Text>
-                    </View>
-                    <View className="flex-1">
-                      <Text className="text-[15px] font-medium text-text">
-                        {recipe.title}
-                      </Text>
-                      <Text className="mt-0.5 text-xs text-text-3">
-                        {formatSavedAgo(recipe.createdAt)}
-                      </Text>
-                    </View>
-                    <View className="mt-2">
-                      <ChevronRightIcon size={16} color="#C4BCB5" />
-                    </View>
-                  </Pressable>
-                ))}
-              </View>
-            ) : null}
-
-            {/* DISCOVER — matches State 2: first item highlighted, others with category badge */}
-            {discoverMatches.length > 0 ? (
-              <View>
-                <Text className="px-4 pb-1.5 pt-3.5 text-[11px] font-bold uppercase tracking-wider text-brand">
-                  Discover
-                </Text>
-                {discoverMatches.map((dish, index) => {
-                  const isFirst = index === 0;
-                  return (
-                    <Pressable
-                      key={dish.name}
-                      onPress={() => onDishSelect(dish.name)}
-                      className={`flex-row items-start gap-3 px-4 py-3 ${
-                        isFirst ? "bg-brand-50" : ""
-                      } ${
-                        index < discoverMatches.length - 1
-                          ? "border-b border-border-subtle"
-                          : ""
-                      }`}
-                    >
-                      <View
-                        className={`mt-0.5 h-[34px] w-[34px] items-center justify-center rounded-lg ${
-                          isFirst ? "bg-brand-light" : "bg-bg-elevated"
-                        }`}
-                      >
-                        <Text className={isFirst ? "text-lg" : "text-base"}>
-                          {dish.emoji}
-                        </Text>
-                      </View>
-                      <View className="flex-1">
-                        <Text
-                          className={`text-[15px] text-text ${isFirst ? "font-bold" : "font-medium"}`}
-                        >
-                          {dish.name}
-                        </Text>
-                        <Text className="mt-0.5 text-xs text-text-3">
-                          {dish.cuisine}
-                        </Text>
-                      </View>
-                      {isFirst ? (
-                        <View className="mt-1.5 rounded-full bg-brand-light px-2 py-0.5">
-                          <Text className="text-[11px] font-semibold text-brand">
-                            47 variations
-                          </Text>
-                        </View>
-                      ) : (
-                        <View className="mt-1.5 rounded-full bg-bg-elevated px-2 py-0.5">
-                          <Text className="text-[11px] font-semibold text-text-2">
-                            {dish.cuisine}
-                          </Text>
-                        </View>
-                      )}
-                    </Pressable>
-                  );
-                })}
-              </View>
-            ) : null}
-          </>
+          /* YOUR RECIPES */
+          <View>
+            <Text className="px-4 pb-1.5 pt-3.5 text-[11px] font-bold uppercase tracking-wider text-brand">
+              Your Recipes
+            </Text>
+            {savedMatches.map((recipe, index) => (
+              <Pressable
+                key={recipe.id}
+                onPress={() => onRecipeSelect(recipe.id)}
+                className={`flex-row items-start gap-3 px-4 py-3 ${
+                  index < savedMatches.length - 1
+                    ? "border-b border-border-subtle"
+                    : ""
+                }`}
+              >
+                <View className="mt-0.5 h-[34px] w-[34px] items-center justify-center rounded-lg bg-bg-elevated">
+                  <Text className="text-base">{"\uD83D\uDD16"}</Text>
+                </View>
+                <View className="flex-1">
+                  <Text className="text-[15px] font-medium text-text">
+                    {recipe.title}
+                  </Text>
+                  <Text className="mt-0.5 text-xs text-text-3">
+                    {formatSavedAgo(recipe.createdAt)}
+                  </Text>
+                </View>
+                <View className="mt-2">
+                  <ChevronRightIcon size={16} color="#C4BCB5" />
+                </View>
+              </Pressable>
+            ))}
+          </View>
         )}
       </ScrollView>
     </View>

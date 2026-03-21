@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 test.describe("Home screen and search journey", () => {
-  test("empty state shows branding, search bar, quick picks, and recently searched", async ({
+  test("empty state shows branding, search bar, and bottom navigation", async ({
     page,
   }) => {
     const errors: string[] = [];
@@ -18,18 +18,9 @@ test.describe("Home screen and search journey", () => {
     // App bar branding
     await expect(page.getByText("mise.")).toBeVisible();
 
-    // Search bar present
+    // Search bar present with URL placeholder
     const searchBar = page.getByRole("textbox").first();
     await expect(searchBar).toBeVisible();
-
-    // Quick picks section
-    await expect(page.getByText("Quick picks")).toBeVisible();
-
-    // Recently searched items
-    await expect(page.getByText("Recently Searched")).toBeVisible();
-    await expect(page.getByText("Chicken curry")).toBeVisible();
-    await expect(page.getByText("Pasta carbonara")).toBeVisible();
-    await expect(page.getByText("Pad Thai")).toBeVisible();
 
     // Bottom navigation tabs
     await expect(page.getByRole("tab", { name: "Home" })).toBeVisible();

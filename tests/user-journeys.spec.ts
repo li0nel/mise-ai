@@ -1,9 +1,8 @@
 import { test, expect } from "@playwright/test";
 
 test.describe("User journeys", () => {
-  test("Search → builder → answer questions → recipe ready", async ({
-    page,
-  }) => {
+  test("Paste URL → import → recipe detail", async ({ page }, testInfo) => {
+    testInfo.setTimeout(30_000);
     const errors: string[] = [];
     page.on("console", (msg) => {
       if (msg.type() === "error") errors.push(msg.text());
@@ -13,58 +12,36 @@ test.describe("User journeys", () => {
     await page.goto("/");
     await expect(page.getByText("Find any dish.")).toBeVisible();
 
-    // Select a recently searched item (stable) to enter builder flow
-    await page.getByText("Chicken curry").click();
+    // Open search and paste URL
+    const searchBar = page.getByRole("textbox").first();
+    await searchBar.click();
+    await expect(page.getByText("Cancel")).toBeVisible({ timeout: 5_000 });
 
-    // Analyzing phase
-    await expect(page.getByText("Analyzing variations\u2026")).toBeVisible({
+    const overlayInput = page.getByRole("textbox").last();
+    await overlayInput.fill("https://hot-thai-kitchen.com/massaman-curry/");
+    await overlayInput.press("Enter");
+
+    // Import loading screen
+    await expect(page.getByText("Importing recipe\u2026")).toBeVisible({
       timeout: 5_000,
     });
 
-    // Wait for analysis to complete and conversing phase to start
-    // Mock streams 11 CoT lines at 600ms intervals + 400ms transition ≈ 7s
-    await expect(page.getByText("Which protein would you like?")).toBeVisible({
-      timeout: 15_000,
-    });
-
-    // Answer first question by clicking a quick reply
-    await page.getByText("\uD83D\uDC04 Beef (traditional)").click();
-
-    // Second question appears
-    await expect(
-      page.getByText(/slow-cook version or something quicker/),
-    ).toBeVisible({ timeout: 5_000 });
-    await page.getByText("\u26A1 Weeknight express (45 min)").click();
-
-    // Third question
-    await expect(page.getByText(/Homemade or store-bought/)).toBeVisible({
-      timeout: 5_000,
-    });
-    await page.getByText("\uD83C\uDFEA Store-bought (totally fine)").click();
-
-    // Fourth question — spice level
-    await expect(page.getByText(/How spicy do you want it/)).toBeVisible({
-      timeout: 5_000,
-    });
-    await page.getByText("\uD83C\uDF36\uFE0F\uD83C\uDF36\uFE0F Medium").click();
-
-    // Recipe ready celebration
-    await expect(page.getByText("Your recipe is ready")).toBeVisible({
+    // Progress events stream
+    await expect(page.getByText(/Fetching from/)).toBeVisible({
       timeout: 5_000,
     });
 
-    // Click View Recipe
-    await page.getByText("View Recipe \u2192").click();
-
-    // Navigated to recipe detail page
+    // Auto-navigates to recipe detail
     await expect(
       page.getByText("Weeknight Chicken Massaman Curry"),
-    ).toBeVisible({ timeout: 5_000 });
+    ).toBeVisible({ timeout: 15_000 });
 
     expect(errors).toHaveLength(0);
   });
 
-  test("Recently searched item enters builder", async ({ page }) => {
+  test("Search overlay shows saved recipes and cancel works", async ({
+    page,
+  }) => {
     const errors: string[] = [];
     page.on("console", (msg) => {
       if (msg.type() === "error") errors.push(msg.text());
@@ -72,37 +49,55 @@ test.describe("User journeys", () => {
 
     await page.goto("/");
 
-    // Click a recently searched item (use exact match to avoid quick pick collision)
-    await page.getByText("Pad Thai", { exact: true }).click();
+    // Open search overlay
+    const searchBar = page.getByRole("textbox").first();
+    await searchBar.click();
+    await expect(page.getByText("Cancel")).toBeVisible({ timeout: 5_000 });
 
-    // Builder flow starts
-    await expect(page.getByText("Analyzing variations\u2026")).toBeVisible({
-      timeout: 5_000,
-    });
-
-    expect(errors).toHaveLength(0);
-  });
-
-  test("Builder analyzing phase shows CoT lines", async ({ page }) => {
-    const errors: string[] = [];
-    page.on("console", (msg) => {
-      if (msg.type() === "error") errors.push(msg.text());
-    });
-
-    await page.goto("/");
-
-    // Enter builder via recently searched
-    await page.getByText("Chicken curry").click();
-
-    // Analyzing phase starts
-    await expect(page.getByText("Analyzing variations\u2026")).toBeVisible({
-      timeout: 5_000,
-    });
-
-    // CoT lines stream in
+    // Empty state message
     await expect(
-      page.getByText("Searching the web for massaman curry recipes\u2026"),
-    ).toBeVisible({ timeout: 10_000 });
+      page.getByText(/Paste a URL to import or search/),
+    ).toBeVisible();
+
+    // Cancel returns to home
+    await page.getByText("Cancel").click();
+    await expect(page.getByText("Find any dish.")).toBeVisible();
+
+    expect(errors).toHaveLength(0);
+  });
+
+  test("Import loading screen shows domain and progress", async ({
+    page,
+  }, testInfo) => {
+    testInfo.setTimeout(30_000);
+    const errors: string[] = [];
+    page.on("console", (msg) => {
+      if (msg.type() === "error") errors.push(msg.text());
+    });
+
+    await page.goto("/");
+
+    // Open search overlay and submit URL
+    const searchBar = page.getByRole("textbox").first();
+    await searchBar.click();
+    await expect(page.getByText("Cancel")).toBeVisible({ timeout: 5_000 });
+
+    const overlayInput = page.getByRole("textbox").last();
+    await overlayInput.fill("https://seriouseats.com/massaman-curry-recipe");
+    await overlayInput.press("Enter");
+
+    // Loading screen appears with domain
+    await expect(page.getByText("Importing recipe\u2026")).toBeVisible({
+      timeout: 5_000,
+    });
+    await expect(
+      page.getByText("seriouseats.com", { exact: true }),
+    ).toBeVisible();
+
+    // Progress messages update
+    await expect(page.getByText(/Enriching/)).toBeVisible({
+      timeout: 15_000,
+    });
 
     expect(errors).toHaveLength(0);
   });

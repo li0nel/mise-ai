@@ -4,14 +4,15 @@ import { useRouter } from "expo-router";
 import { AppBar } from "../../components/ui/AppBar";
 import { ChatEmptyState } from "../../components/chat/ChatEmptyState";
 import { SearchSuggestions } from "../../components/chat/SearchSuggestions";
-import { RecipeBuilderFlow } from "../../components/recipe/RecipeBuilderFlow";
+import { URLImportFlow } from "../../components/recipe/URLImportFlow";
+import { isRecipeUrl } from "../../lib/recipeImport";
 
 export default function MainIndex() {
   const router = useRouter();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [searchActive, setSearchActive] = useState(false);
-  const [builderDish, setBuilderDish] = useState<string | null>(null);
+  const [importUrl, setImportUrl] = useState<string | null>(null);
 
   const handleSearchTextChange = useCallback((text: string) => {
     setSearchQuery(text);
@@ -27,11 +28,13 @@ export default function MainIndex() {
     [router],
   );
 
-  // Start recipe builder flow with a dish name
-  const handleDishSearch = useCallback((dishName: string) => {
-    setSearchActive(false);
-    setBuilderDish(dishName);
-    setSearchQuery("");
+  // Handle URL submission — only triggers for URLs
+  const handleUrlSubmit = useCallback((text: string) => {
+    if (isRecipeUrl(text)) {
+      setSearchActive(false);
+      setSearchQuery("");
+      setImportUrl(text);
+    }
   }, []);
 
   // Open full-screen search
@@ -45,26 +48,32 @@ export default function MainIndex() {
     setSearchQuery("");
   }, []);
 
-  // Recipe builder callbacks
-  const handleViewRecipe = useCallback(
+  // URL import callbacks
+  const handleImportComplete = useCallback(
     (recipeId: string) => {
-      setBuilderDish(null);
+      setImportUrl(null);
       router.push(`/recipe/${recipeId}` as never);
     },
     [router],
   );
 
-  const handleBuilderBack = useCallback(() => {
-    setBuilderDish(null);
+  const handleImportBack = useCallback(() => {
+    setImportUrl(null);
   }, []);
 
-  // Builder mode — full-screen wizard, no AppBar or tab bar
-  if (builderDish) {
+  const handleImportError = useCallback((message: string) => {
+    console.error("[mise] Import error:", message);
+    setImportUrl(null);
+  }, []);
+
+  // URL import mode — full-screen loading, no AppBar or tab bar
+  if (importUrl) {
     return (
-      <RecipeBuilderFlow
-        dishName={builderDish}
-        onViewRecipe={handleViewRecipe}
-        onBack={handleBuilderBack}
+      <URLImportFlow
+        url={importUrl}
+        onComplete={handleImportComplete}
+        onBack={handleImportBack}
+        onError={handleImportError}
       />
     );
   }
@@ -82,8 +91,7 @@ export default function MainIndex() {
           setSearchQuery(text);
           if (!searchActive && text.length > 0) setSearchActive(true);
         }}
-        onSearchSubmit={handleDishSearch}
-        onDishSelect={handleDishSearch}
+        onSearchSubmit={handleUrlSubmit}
         onSearchFocus={handleSearchFocus}
       />
 
@@ -93,7 +101,7 @@ export default function MainIndex() {
           searchText={searchQuery}
           onSearchChange={handleSearchTextChange}
           onRecipeSelect={handleRecipeSelect}
-          onDishSelect={handleDishSearch}
+          onUrlSubmit={handleUrlSubmit}
           onCancel={handleSearchCancel}
         />
       ) : null}
