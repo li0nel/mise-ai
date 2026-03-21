@@ -12,13 +12,27 @@ import { BackArrowIcon, SendIcon } from "../ui/Icons";
 import { UserBubble } from "../chat/UserBubble";
 import { Button } from "../ui/Button";
 import {
-  MOCK_COT_LINES,
   MOCK_VERDICT,
   MOCK_QUESTIONS,
   MOCK_WRAPUP,
   createMockRecipe,
 } from "../../lib/mocks/massamanCurryMock";
 import { useRecipeStore } from "../../lib/stores/recipeStore";
+
+/** Chain-of-thought trace lines shown during the analyzing phase */
+const MOCK_COT_LINES: string[] = [
+  "Searching the web for massaman curry recipes\u2026",
+  "Found 47 sources across the web",
+  "Reading bonappetit.com \u2026 seriouseats.com \u2026 hot-thai-kitchen.com \u2026",
+  "12 detailed recipes with full ingredient lists",
+  "Comparing proteins: beef (traditional in 9 of 12), chicken, tofu",
+  "Paste methods: 2 approaches \u2014 homemade from scratch vs store-bought",
+  "Processing ~85,000 tokens of recipe data",
+  "Spice levels vary widely \u2014 some use 8 dried chillies, some use 2",
+  "Cook times range from 35 min to 2.5 hrs",
+  "joshuaweissman.com \u2026 epicurious.com \u2026 9 more",
+  "Deep analysis complete in 4.2s",
+];
 
 type Phase = "analyzing" | "conversing" | "ready";
 
