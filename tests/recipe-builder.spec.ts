@@ -26,8 +26,8 @@ test.describe("Recipe builder wizard (search entry)", () => {
       timeout: 5_000,
     });
 
-    // Wait for first question (analysis -> conversing transition)
-    await expect(page.getByText("Which protein would you like?")).toBeVisible({
+    // Wait for first question card (analysis -> conversing transition)
+    await expect(page.getByText("Which protein?")).toBeVisible({
       timeout: 15_000,
     });
 
@@ -39,26 +39,26 @@ test.describe("Recipe builder wizard (search entry)", () => {
     await expect(page.getByText("\uD83E\uDED8 Tofu")).toBeVisible();
     await expect(page.getByText("\uD83E\uDD90 Shrimp")).toBeVisible();
 
-    // Verify analysis chip
-    await expect(page.getByText("Analyzed 47 sources")).toBeVisible();
+    // Verify analysis chip shows dish name and source count
+    await expect(page.getByText(/Massaman Curry.*sources/)).toBeVisible();
 
     // Tap Chicken
     await page.getByText("\uD83C\uDF57 Chicken").click();
 
     // Q2: Cooking approach
-    await expect(
-      page.getByText(/slow-cook version or something quicker/),
-    ).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByText("Cooking approach?")).toBeVisible({
+      timeout: 10_000,
+    });
     await page.getByText("\u26A1 Weeknight express (45 min)").click();
 
     // Q3: Curry paste
-    await expect(page.getByText(/Homemade or store-bought/)).toBeVisible({
+    await expect(page.getByText("Curry paste?")).toBeVisible({
       timeout: 10_000,
     });
     await page.getByText("\uD83C\uDFEA Store-bought (totally fine)").click();
 
     // Q4: Spice level
-    await expect(page.getByText(/How spicy do you want it/)).toBeVisible({
+    await expect(page.getByText("Spice level?")).toBeVisible({
       timeout: 10_000,
     });
     await page.getByText("\uD83C\uDF36\uFE0F\uD83C\uDF36\uFE0F Medium").click();
@@ -99,9 +99,9 @@ test.describe("Recipe builder wizard (search entry)", () => {
       timeout: 5_000,
     });
 
-    // CoT trace lines stream in
+    // CoT trace lines stream in (generated from Exa response)
     await expect(
-      page.getByText("Searching the web for massaman curry recipes\u2026"),
+      page.getByText(/Found \d+ sources across the web/),
     ).toBeVisible({ timeout: 10_000 });
 
     expect(errors).toHaveLength(0);
