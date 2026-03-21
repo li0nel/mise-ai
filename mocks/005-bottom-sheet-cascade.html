@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mise AI - Variation 005: Bottom Sheet Cascade</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ───────────────────────── Custom Properties ───────────────────────── */
+    :root {
+      --brand: #C8481C;
+      --brand-hover: #A33A16;
+      --bg-default: #FDFAF7;
+      --bg-surface: #F5F0EB;
+      --bg-elevated: #FFFFFF;
+      --text-primary: #1A1614;
+      --text-secondary: #6B5E54;
+      --text-muted: #9C8E82;
+      --border-default: #E8E0D8;
+      --border-subtle: #F0EAE4;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 20px;
+      --radius-full: 9999px;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.06);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+      --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+
+      /* Phone dimensions */
+      --phone-w: 390px;
+      --phone-h: 760px;
+      --phone-radius: 44px;
+      --status-bar-h: 44px;
+      --header-h: 52px;
+    }
+
+    /* ───────────────────────── Reset & Base ───────────────────────── */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #F0EAE4;
+      color: var(--text-primary);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* ───────────────────────── Page Layout ───────────────────────── */
+    .page-header {
+      text-align: center;
+      padding: 48px 24px 32px;
+    }
+
+    .variation-badge {
+      display: inline-block;
+      background: var(--brand);
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: var(--radius-full);
+      margin-bottom: 16px;
+    }
+
+    .page-header h1 {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+      line-height: 1.2;
+    }
+
+    .page-header p {
+      font-size: 16px;
+      color: var(--text-secondary);
+      max-width: 680px;
+      margin: 0 auto;
+      line-height: 1.5;
+    }
+
+    /* ───────────────────────── Frame Grid ───────────────────────── */
+    .frames-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 40px;
+      padding: 20px 40px 80px;
+      max-width: 1800px;
+      margin: 0 auto;
+    }
+
+    .frame-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .frame-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .frame-annotation {
+      font-size: 13px;
+      color: var(--text-muted);
+      text-align: center;
+      max-width: 340px;
+      line-height: 1.5;
+    }
+
+    /* ───────────────────────── Phone Shell ───────────────────────── */
+    .phone {
+      width: var(--phone-w);
+      height: var(--phone-h);
+      border-radius: var(--phone-radius);
+      background: var(--bg-default);
+      overflow: hidden;
+      position: relative;
+      box-shadow:
+        0 0 0 1px rgba(0,0,0,0.08),
+        0 20px 60px rgba(0,0,0,0.15),
+        0 4px 16px rgba(0,0,0,0.08),
+        inset 0 0 0 1px rgba(255,255,255,0.5);
+    }
+
+    /* ─── Status Bar ─── */
+    .status-bar {
+      height: var(--status-bar-h);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      position: relative;
+      z-index: 20;
+      background: var(--bg-default);
+    }
+
+    .status-time {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: -0.2px;
+    }
+
+    .status-icons {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-icons svg {
+      width: 16px;
+      height: 16px;
+      fill: var(--text-primary);
+    }
+
+    /* ─── App Header ─── */
+    .app-header {
+      height: var(--header-h);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      position: relative;
+      z-index: 20;
+      background: var(--bg-default);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .back-arrow {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      color: var(--text-primary);
+      flex-shrink: 0;
+    }
+
+    .back-arrow svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .logo {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-left: 8px;
+      letter-spacing: -0.5px;
+    }
+
+    .logo span {
+      color: var(--brand);
+    }
+
+    /* ─── Main Content Area ─── */
+    .main-content {
+      position: absolute;
+      top: calc(var(--status-bar-h) + var(--header-h));
+      left: 0;
+      right: 0;
+      bottom: 0;
+      overflow: hidden;
+    }
+
+    .content-inner {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    /* ─── Backdrop Overlay ─── */
+    .backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.3);
+      z-index: 5;
+    }
+
+    /* ─── Answer Chips Row ─── */
+    .chips-row {
+      position: absolute;
+      left: 0;
+      right: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 20px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .chips-row::-webkit-scrollbar {
+      display: none;
+    }
+
+    .answer-chip {
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 12px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-full);
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-primary);
+      white-space: nowrap;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .answer-chip.tapped {
+      border-color: var(--brand);
+      background: #FEF3EE;
+      color: var(--brand);
+    }
+
+    .answer-chip.summary {
+      cursor: default;
+    }
+
+    /* ─── Bottom Sheet ─── */
+    .bottom-sheet {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 15;
+      background: var(--bg-elevated);
+      border-top-left-radius: var(--radius-lg);
+      border-top-right-radius: var(--radius-lg);
+      padding: 12px 24px 34px;
+      box-shadow: 0 -4px 24px rgba(0,0,0,0.12);
+    }
+
+    .drag-handle {
+      width: 40px;
+      height: 4px;
+      border-radius: var(--radius-full);
+      background: var(--border-default);
+      margin: 0 auto 20px;
+    }
+
+    .sheet-question {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+      line-height: 1.3;
+    }
+
+    .sheet-subtitle {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+      line-height: 1.4;
+    }
+
+    .sheet-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .sheet-label.revising {
+      color: var(--brand);
+    }
+
+    /* ─── Pill Options ─── */
+    .pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 18px;
+      background: var(--bg-default);
+      border: 1.5px solid var(--border-default);
+      border-radius: var(--radius-full);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+
+    .pill:hover {
+      border-color: var(--text-muted);
+    }
+
+    .pill.selected {
+      background: var(--brand);
+      border-color: var(--brand);
+      color: white;
+    }
+
+    .pill .check {
+      font-size: 13px;
+    }
+
+    /* ─── Buttons ─── */
+    .btn-primary {
+      width: 100%;
+      padding: 15px 24px;
+      background: var(--brand);
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: background 0.15s ease;
+      text-align: center;
+    }
+
+    .btn-primary:hover {
+      background: var(--brand-hover);
+    }
+
+    .btn-secondary {
+      width: 100%;
+      padding: 15px 24px;
+      background: var(--bg-surface);
+      color: var(--text-primary);
+      font-size: 16px;
+      font-weight: 600;
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-align: center;
+    }
+
+    .btn-secondary:hover {
+      background: var(--border-default);
+    }
+
+    .btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* ───────────────────────── Frame 1: Analysis ───────────────────────── */
+    .analysis-state {
+      text-align: center;
+    }
+
+    .analysis-icon {
+      width: 72px;
+      height: 72px;
+      border-radius: var(--radius-full);
+      background: var(--bg-surface);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      font-size: 36px;
+    }
+
+    .analysis-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .analysis-dots {
+      display: inline-flex;
+      gap: 4px;
+      margin-left: 2px;
+    }
+
+    .analysis-dots span {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--brand);
+      display: inline-block;
+      animation: pulse-dot 1.4s ease-in-out infinite;
+    }
+
+    .analysis-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .analysis-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes pulse-dot {
+      0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+      40% { opacity: 1; transform: scale(1); }
+    }
+
+    .analysis-subtitle {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+    }
+
+    .sources-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+      max-width: 280px;
+    }
+
+    .source-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      background: var(--bg-surface);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      color: var(--text-secondary);
+      animation: source-appear 0.4s ease-out backwards;
+    }
+
+    .source-item:nth-child(1) { animation-delay: 0s; }
+    .source-item:nth-child(2) { animation-delay: 0.6s; }
+    .source-item:nth-child(3) { animation-delay: 1.2s; }
+
+    @keyframes source-appear {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .source-globe {
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .source-domain {
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .source-status {
+      margin-left: auto;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .analysis-progress {
+      width: 100%;
+      max-width: 280px;
+      margin-top: 20px;
+    }
+
+    .progress-bar-bg {
+      width: 100%;
+      height: 3px;
+      background: var(--border-default);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      width: 65%;
+      height: 100%;
+      background: var(--brand);
+      border-radius: var(--radius-full);
+      animation: progress-grow 2s ease-out forwards;
+    }
+
+    @keyframes progress-grow {
+      from { width: 10%; }
+      to { width: 65%; }
+    }
+
+    .progress-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 8px;
+      text-align: center;
+    }
+
+    /* ───────────────────────── Frame 2: Dimmed Content Behind Sheet ─── */
+    .dimmed-content {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .analysis-complete-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-full);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .analysis-complete-chip .count {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .completed-check {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #2D8B4E;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .dimmed-text {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-top: 12px;
+    }
+
+    /* ───────────────────────── Frame 5: Celebration ───────────────────────── */
+    .celebration {
+      text-align: center;
+      width: 100%;
+    }
+
+    .celebration-emoji {
+      font-size: 48px;
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .celebration-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .celebration-recipe-name {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--brand);
+      margin-bottom: 24px;
+    }
+
+    .summary-chips {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 32px;
+    }
+
+    .summary-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 12px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-full);
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+
+    .celebration-btn {
+      width: 100%;
+      max-width: 280px;
+      margin: 0 auto;
+    }
+
+    /* ───────────────────────── Frame 6: URL Sheet ───────────────────────── */
+    .url-preview {
+      margin-bottom: 20px;
+    }
+
+    .url-preview-image {
+      width: 100%;
+      height: 140px;
+      background: linear-gradient(135deg, #E8D5C4 0%, #D4B896 100%);
+      border-radius: var(--radius-md);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .url-preview-image::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.1), transparent);
+    }
+
+    .url-source-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      background: var(--bg-surface);
+      border-radius: var(--radius-full);
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .url-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+      line-height: 1.3;
+    }
+
+    .url-summary {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      margin-bottom: 4px;
+    }
+
+    .url-meta {
+      display: flex;
+      gap: 16px;
+      margin-top: 12px;
+      margin-bottom: 20px;
+    }
+
+    .url-meta-item {
+      font-size: 12px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* ───────────────────────── Details / Spec ───────────────────────── */
+    .spec-section {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 40px 80px;
+    }
+
+    .spec-section details {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+
+    .spec-section summary {
+      padding: 18px 24px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+      cursor: pointer;
+      user-select: none;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .spec-section summary::before {
+      content: '\25B6';
+      font-size: 10px;
+      color: var(--text-muted);
+      transition: transform 0.2s ease;
+    }
+
+    .spec-section details[open] summary::before {
+      transform: rotate(90deg);
+    }
+
+    .spec-section summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .spec-content {
+      padding: 0 24px 24px;
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--text-secondary);
+    }
+
+    .spec-content h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 24px 0 8px;
+    }
+
+    .spec-content h3:first-child {
+      margin-top: 0;
+    }
+
+    .spec-content p {
+      margin-bottom: 8px;
+    }
+
+    .spec-content ul {
+      padding-left: 20px;
+      margin-bottom: 8px;
+    }
+
+    .spec-content li {
+      margin-bottom: 4px;
+    }
+
+    .spec-content table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0;
+      font-size: 13px;
+    }
+
+    .spec-content th,
+    .spec-content td {
+      text-align: left;
+      padding: 8px 12px;
+      border: 1px solid var(--border-default);
+    }
+
+    .spec-content th {
+      background: var(--bg-surface);
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .spec-content code {
+      background: var(--bg-surface);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ════════════════════════ PAGE HEADER ════════════════════════ -->
+  <header class="page-header">
+    <div class="variation-badge">Variation 5</div>
+    <h1>Bottom Sheet Cascade</h1>
+    <p>Each question slides up as a bottom sheet over the main content. Previous answers float as compact selected chips. Analysis chip pinned at top. Mobile-native iOS action sheet style.</p>
+  </header>
+
+  <!-- ════════════════════════ FRAMES ════════════════════════ -->
+  <section class="frames-container">
+
+    <!-- ────── Frame 1: Analysis Phase ────── -->
+    <div class="frame-wrapper">
+      <div class="frame-label">Frame 1 &mdash; Analysis</div>
+      <div class="phone">
+        <!-- Status Bar -->
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons">
+            <svg viewBox="0 0 16 16"><path d="M1 12h2v3H1zm4-3h2v6H5zm4-3h2v9H9zm4-4h2v13h-2z"/></svg>
+            <svg viewBox="0 0 16 16"><path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm3.5 8H8.2a.5.5 0 0 1-.5-.5V4a.5.5 0 0 1 1 0v4h2.8a.5.5 0 1 1 0 1z" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+            <svg viewBox="0 0 16 16"><path d="M2 5h10a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2zm0 1a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H2zm12.5 1v2h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1zM2.5 7.5h8v1h-8z"/></svg>
+          </div>
+        </div>
+        <!-- App Header -->
+        <div class="app-header">
+          <div class="back-arrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </div>
+          <div class="logo">mise<span>.</span></div>
+        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+          <div class="content-inner">
+            <div class="analysis-state">
+              <div class="analysis-icon">
+                <span>🍛</span>
+              </div>
+              <div class="analysis-title">
+                Analyzing Massaman Curry
+                <span class="analysis-dots">
+                  <span></span><span></span><span></span>
+                </span>
+              </div>
+              <div class="analysis-subtitle">Gathering recipes and techniques</div>
+
+              <div class="sources-list">
+                <div class="source-item">
+                  <span class="source-globe">🌐</span>
+                  <span class="source-domain">hotthaikitchen.com</span>
+                  <span class="source-status">reading...</span>
+                </div>
+                <div class="source-item">
+                  <span class="source-globe">🌐</span>
+                  <span class="source-domain">seriouseats.com</span>
+                  <span class="source-status">reading...</span>
+                </div>
+                <div class="source-item">
+                  <span class="source-globe">🌐</span>
+                  <span class="source-domain">bonappetit.com</span>
+                  <span class="source-status">queued</span>
+                </div>
+              </div>
+
+              <div class="analysis-progress">
+                <div class="progress-bar-bg">
+                  <div class="progress-bar-fill"></div>
+                </div>
+                <div class="progress-label">47 sources found</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="frame-annotation">Clean centered analysis state. Source domains appear with staggered animation. No bottom sheet yet &mdash; full content area.</div>
+    </div>
+
+    <!-- ────── Frame 2: First Bottom Sheet (Dietary) ────── -->
+    <div class="frame-wrapper">
+      <div class="frame-label">Frame 2 &mdash; Dietary Sheet</div>
+      <div class="phone">
+        <!-- Status Bar -->
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons">
+            <svg viewBox="0 0 16 16"><path d="M1 12h2v3H1zm4-3h2v6H5zm4-3h2v9H9zm4-4h2v13h-2z"/></svg>
+            <svg viewBox="0 0 16 16"><path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm3.5 8H8.2a.5.5 0 0 1-.5-.5V4a.5.5 0 0 1 1 0v4h2.8a.5.5 0 1 1 0 1z" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+            <svg viewBox="0 0 16 16"><path d="M2 5h10a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2zm0 1a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H2zm12.5 1v2h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1zM2.5 7.5h8v1h-8z"/></svg>
+          </div>
+        </div>
+        <!-- App Header -->
+        <div class="app-header">
+          <div class="back-arrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </div>
+          <div class="logo">mise<span>.</span></div>
+        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+          <!-- Dimmed content behind -->
+          <div class="dimmed-content">
+            <div class="completed-check">&#10003;</div>
+            <div style="margin-top: 12px;">
+              <div class="analysis-complete-chip">
+                🍛 Massaman Curry <span class="count">&middot; 47 sources</span>
+              </div>
+            </div>
+            <div class="dimmed-text">Analysis complete</div>
+          </div>
+
+          <!-- Dark backdrop -->
+          <div class="backdrop"></div>
+
+          <!-- Bottom Sheet -->
+          <div class="bottom-sheet" style="height: 60%;">
+            <div class="drag-handle"></div>
+            <div class="sheet-question">Any dietary needs?</div>
+            <div class="sheet-subtitle">Select all that apply, or skip to continue.</div>
+            <div class="pills">
+              <div class="pill selected">Nut-free <span class="check">&#10003;</span></div>
+              <div class="pill">Dairy-free</div>
+              <div class="pill">Vegetarian</div>
+              <div class="pill">Vegan</div>
+              <div class="pill">Gluten-free</div>
+              <div class="pill">Low-sodium</div>
+            </div>
+            <button class="btn-primary">Next</button>
+          </div>
+        </div>
+      </div>
+      <div class="frame-annotation">First sheet slides up over dimmed analysis summary. Nut-free pre-selected. 60% sheet height with drag handle.</div>
+    </div>
+
+    <!-- ────── Frame 3: Mid-Flow Sheet with Answer Chips ────── -->
+    <div class="frame-wrapper">
+      <div class="frame-label">Frame 3 &mdash; Spice Level</div>
+      <div class="phone">
+        <!-- Status Bar -->
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons">
+            <svg viewBox="0 0 16 16"><path d="M1 12h2v3H1zm4-3h2v6H5zm4-3h2v9H9zm4-4h2v13h-2z"/></svg>
+            <svg viewBox="0 0 16 16"><path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm3.5 8H8.2a.5.5 0 0 1-.5-.5V4a.5.5 0 0 1 1 0v4h2.8a.5.5 0 1 1 0 1z" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+            <svg viewBox="0 0 16 16"><path d="M2 5h10a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2zm0 1a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H2zm12.5 1v2h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1zM2.5 7.5h8v1h-8z"/></svg>
+          </div>
+        </div>
+        <!-- App Header -->
+        <div class="app-header">
+          <div class="back-arrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </div>
+          <div class="logo">mise<span>.</span></div>
+        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+          <!-- Dark backdrop -->
+          <div class="backdrop"></div>
+
+          <!-- Answer Chips Row -->
+          <div class="chips-row" style="top: 12px;">
+            <div class="answer-chip">🍛 Massaman</div>
+            <div class="answer-chip">Diet: Nut-free</div>
+            <div class="answer-chip">Protein: Chicken</div>
+          </div>
+
+          <!-- Bottom Sheet -->
+          <div class="bottom-sheet" style="height: 52%;">
+            <div class="drag-handle"></div>
+            <div class="sheet-label">Question 4 of 5</div>
+            <div class="sheet-question">How spicy?</div>
+            <div class="sheet-subtitle">Choose your heat level.</div>
+            <div class="pills">
+              <div class="pill">Mild</div>
+              <div class="pill selected">Medium <span class="check">&#10003;</span></div>
+              <div class="pill">Hot</div>
+              <div class="pill">Thai Hot</div>
+            </div>
+            <button class="btn-primary">Next</button>
+          </div>
+        </div>
+      </div>
+      <div class="frame-annotation">Previous answers scroll as compact chips above the sheet. Current question fills the bottom sheet. Backdrop keeps focus on active question.</div>
+    </div>
+
+    <!-- ────── Frame 4: Revising (Tapped Chip) ────── -->
+    <div class="frame-wrapper">
+      <div class="frame-label">Frame 4 &mdash; Revise Answer</div>
+      <div class="phone">
+        <!-- Status Bar -->
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons">
+            <svg viewBox="0 0 16 16"><path d="M1 12h2v3H1zm4-3h2v6H5zm4-3h2v9H9zm4-4h2v13h-2z"/></svg>
+            <svg viewBox="0 0 16 16"><path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm3.5 8H8.2a.5.5 0 0 1-.5-.5V4a.5.5 0 0 1 1 0v4h2.8a.5.5 0 1 1 0 1z" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+            <svg viewBox="0 0 16 16"><path d="M2 5h10a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2zm0 1a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H2zm12.5 1v2h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1zM2.5 7.5h8v1h-8z"/></svg>
+          </div>
+        </div>
+        <!-- App Header -->
+        <div class="app-header">
+          <div class="back-arrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </div>
+          <div class="logo">mise<span>.</span></div>
+        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+          <!-- Dark backdrop -->
+          <div class="backdrop"></div>
+
+          <!-- Answer Chips Row — Protein chip is tapped/highlighted -->
+          <div class="chips-row" style="top: 12px;">
+            <div class="answer-chip">🍛 Massaman</div>
+            <div class="answer-chip">Diet: Nut-free</div>
+            <div class="answer-chip tapped">Protein: Chicken</div>
+            <div class="answer-chip">Spice: Medium</div>
+          </div>
+
+          <!-- Bottom Sheet — Revision mode -->
+          <div class="bottom-sheet" style="height: 55%;">
+            <div class="drag-handle"></div>
+            <div class="sheet-label revising">Revising answer</div>
+            <div class="sheet-question">Pick your protein</div>
+            <div class="sheet-subtitle">Tap to change your selection.</div>
+            <div class="pills">
+              <div class="pill selected">Chicken thigh <span class="check">&#10003;</span></div>
+              <div class="pill">Chicken breast</div>
+              <div class="pill">Beef</div>
+              <div class="pill">Tofu</div>
+              <div class="pill">Shrimp</div>
+              <div class="pill">Lamb</div>
+            </div>
+            <button class="btn-primary">Update &amp; Continue</button>
+          </div>
+        </div>
+      </div>
+      <div class="frame-annotation">Tapped chip highlights in terracotta. Sheet reopens in "Revising" mode with current selection intact. Update button replaces Next.</div>
+    </div>
+
+    <!-- ────── Frame 5: Recipe Ready ────── -->
+    <div class="frame-wrapper">
+      <div class="frame-label">Frame 5 &mdash; Recipe Ready</div>
+      <div class="phone">
+        <!-- Status Bar -->
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons">
+            <svg viewBox="0 0 16 16"><path d="M1 12h2v3H1zm4-3h2v6H5zm4-3h2v9H9zm4-4h2v13h-2z"/></svg>
+            <svg viewBox="0 0 16 16"><path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm3.5 8H8.2a.5.5 0 0 1-.5-.5V4a.5.5 0 0 1 1 0v4h2.8a.5.5 0 1 1 0 1z" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+            <svg viewBox="0 0 16 16"><path d="M2 5h10a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2zm0 1a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H2zm12.5 1v2h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1zM2.5 7.5h8v1h-8z"/></svg>
+          </div>
+        </div>
+        <!-- App Header -->
+        <div class="app-header">
+          <div class="back-arrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </div>
+          <div class="logo">mise<span>.</span></div>
+        </div>
+        <!-- Main Content — Full, no sheet -->
+        <div class="main-content">
+          <div class="content-inner">
+            <div class="celebration">
+              <span class="celebration-emoji">🎉</span>
+              <div class="celebration-title">Your Recipe is Ready</div>
+              <div class="celebration-recipe-name">Nut-Free Massaman Curry</div>
+
+              <div class="summary-chips">
+                <div class="summary-chip">🍛 Massaman</div>
+                <div class="summary-chip">Nut-free</div>
+                <div class="summary-chip">Chicken thigh</div>
+                <div class="summary-chip">Medium spice</div>
+                <div class="summary-chip">Coconut milk base</div>
+              </div>
+
+              <div style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px;">
+                <div style="display: flex; align-items: center; gap: 8px; justify-content: center; font-size: 13px; color: var(--text-muted);">
+                  <span>⏱ 55 min</span>
+                  <span style="color: var(--border-default);">|</span>
+                  <span>🍽 4 servings</span>
+                  <span style="color: var(--border-default);">|</span>
+                  <span>📊 Medium</span>
+                </div>
+              </div>
+
+              <div class="celebration-btn">
+                <button class="btn-primary">View Recipe</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="frame-annotation">Full content area celebration. No bottom sheet. All answer chips displayed as a non-interactive summary. Single primary CTA.</div>
+    </div>
+
+    <!-- ────── Frame 6: URL Flow ────── -->
+    <div class="frame-wrapper">
+      <div class="frame-label">Frame 6 &mdash; URL Preview</div>
+      <div class="phone">
+        <!-- Status Bar -->
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons">
+            <svg viewBox="0 0 16 16"><path d="M1 12h2v3H1zm4-3h2v6H5zm4-3h2v9H9zm4-4h2v13h-2z"/></svg>
+            <svg viewBox="0 0 16 16"><path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm3.5 8H8.2a.5.5 0 0 1-.5-.5V4a.5.5 0 0 1 1 0v4h2.8a.5.5 0 1 1 0 1z" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+            <svg viewBox="0 0 16 16"><path d="M2 5h10a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2zm0 1a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H2zm12.5 1v2h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1zM2.5 7.5h8v1h-8z"/></svg>
+          </div>
+        </div>
+        <!-- App Header -->
+        <div class="app-header">
+          <div class="back-arrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </div>
+          <div class="logo">mise<span>.</span></div>
+        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+          <!-- Dimmed content behind showing recipe context -->
+          <div class="dimmed-content">
+            <div style="text-align: center; opacity: 0.6;">
+              <div style="font-size: 14px; color: var(--text-muted); margin-bottom: 8px;">Shared recipe link</div>
+              <div style="font-size: 12px; color: var(--text-muted); word-break: break-all; max-width: 260px;">hotthaikitchen.com/massaman-curry-recipe</div>
+            </div>
+          </div>
+
+          <!-- Dark backdrop -->
+          <div class="backdrop"></div>
+
+          <!-- Bottom Sheet — URL preview -->
+          <div class="bottom-sheet" style="height: 68%;">
+            <div class="drag-handle"></div>
+
+            <div class="url-preview">
+              <div class="url-preview-image">🍛</div>
+              <div class="url-source-badge">
+                🌐 hotthaikitchen.com
+              </div>
+              <div class="url-title">Authentic Massaman Curry</div>
+              <div class="url-summary">
+                A rich, warming Thai curry with tender potatoes, roasted peanuts, and a fragrant spice paste. This classic southern Thai dish balances sweet, savory, and aromatic flavors.
+              </div>
+              <div class="url-meta">
+                <div class="url-meta-item">
+                  <span>⏱</span> 1 hr 15 min
+                </div>
+                <div class="url-meta-item">
+                  <span>🍽</span> 4 servings
+                </div>
+                <div class="url-meta-item">
+                  <span>⭐</span> 4.8 (312)
+                </div>
+              </div>
+            </div>
+
+            <div class="btn-group">
+              <button class="btn-primary">Save &amp; Cook Now</button>
+              <button class="btn-secondary">Customize</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="frame-annotation">URL shared into app. Bottom sheet shows recipe preview with source attribution, metadata, and dual CTAs. Customize opens the cascade flow.</div>
+    </div>
+
+  </section>
+
+  <!-- ════════════════════════ IMPLEMENTATION SPEC ════════════════════════ -->
+  <section class="spec-section">
+    <details>
+      <summary>Implementation Spec &mdash; Bottom Sheet Cascade</summary>
+      <div class="spec-content">
+        <h3>Screen Overview</h3>
+        <p>The Bottom Sheet Cascade pattern uses sequential bottom sheets to guide users through recipe customization. Each question appears as a modal sheet sliding up from the bottom, while previous answers accumulate as compact chips in a horizontally scrollable row above the active sheet. The main content area behind the sheet shows a dimmed/blurred previous context.</p>
+
+        <h3>Layout Hierarchy</h3>
+        <ul>
+          <li><strong>Layer 0 &mdash; Status Bar</strong>: Fixed 44px, always visible, z-index 20</li>
+          <li><strong>Layer 1 &mdash; App Header</strong>: Fixed 52px, back arrow + "mise." logo, z-index 20</li>
+          <li><strong>Layer 2 &mdash; Main Content Area</strong>: Fills remaining space below header. Shows analysis state or celebration content.</li>
+          <li><strong>Layer 3 &mdash; Backdrop Overlay</strong>: <code>rgba(0,0,0,0.3)</code>, z-index 5. Appears when a bottom sheet is active. Tapping dismisses the sheet (returns to previous question or cancels).</li>
+          <li><strong>Layer 4 &mdash; Answer Chips Row</strong>: Horizontal flex, z-index 10, positioned between header and sheet. Overflow-x scroll, gap 8px. Each chip is tappable to revise that answer.</li>
+          <li><strong>Layer 5 &mdash; Bottom Sheet</strong>: z-index 15, white elevated background, top border-radius 20px. Contains drag handle, question, pills, and primary CTA.</li>
+        </ul>
+
+        <h3>Component Spec Table</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Component</th>
+              <th>Element</th>
+              <th>Spec</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Status Bar</td>
+              <td>Container</td>
+              <td>height: 44px, padding: 0 28px, flex between</td>
+            </tr>
+            <tr>
+              <td>App Header</td>
+              <td>Container</td>
+              <td>height: 52px, padding: 0 20px, border-bottom 1px <code>--border-subtle</code></td>
+            </tr>
+            <tr>
+              <td>App Header</td>
+              <td>Logo text</td>
+              <td>font: 20px/700 Inter, color <code>--text-primary</code>, period color <code>--brand</code></td>
+            </tr>
+            <tr>
+              <td>Back Arrow</td>
+              <td>Icon</td>
+              <td>20px chevron-left, 32px tap target, radius-full</td>
+            </tr>
+            <tr>
+              <td>Backdrop</td>
+              <td>Overlay</td>
+              <td><code>rgba(0,0,0,0.3)</code>, absolute inset 0, z-index 5</td>
+            </tr>
+            <tr>
+              <td>Answer Chip</td>
+              <td>Pill</td>
+              <td>padding: 6px 12px, font: 12px/500, bg <code>--bg-elevated</code>, border 1px <code>--border-default</code>, radius-full, shadow-sm</td>
+            </tr>
+            <tr>
+              <td>Answer Chip</td>
+              <td>Tapped state</td>
+              <td>border-color <code>--brand</code>, bg <code>#FEF3EE</code>, text color <code>--brand</code></td>
+            </tr>
+            <tr>
+              <td>Chips Row</td>
+              <td>Container</td>
+              <td>flex, gap 8px, overflow-x auto, padding: 12px 20px, z-index 10</td>
+            </tr>
+            <tr>
+              <td>Bottom Sheet</td>
+              <td>Container</td>
+              <td>bg <code>--bg-elevated</code>, border-top-radius 20px, padding: 12px 24px 34px, shadow: <code>0 -4px 24px rgba(0,0,0,0.12)</code></td>
+            </tr>
+            <tr>
+              <td>Drag Handle</td>
+              <td>Bar</td>
+              <td>40x4px, radius-full, bg <code>--border-default</code>, centered, margin-bottom 20px</td>
+            </tr>
+            <tr>
+              <td>Sheet Question</td>
+              <td>Heading</td>
+              <td>font: 20px/700 Inter, color <code>--text-primary</code></td>
+            </tr>
+            <tr>
+              <td>Sheet Subtitle</td>
+              <td>Text</td>
+              <td>font: 14px/400 Inter, color <code>--text-muted</code></td>
+            </tr>
+            <tr>
+              <td>Pill Option</td>
+              <td>Default</td>
+              <td>padding: 10px 18px, font: 14px/500, bg <code>--bg-default</code>, border 1.5px <code>--border-default</code>, radius-full</td>
+            </tr>
+            <tr>
+              <td>Pill Option</td>
+              <td>Selected</td>
+              <td>bg <code>--brand</code>, border-color <code>--brand</code>, color white, checkmark suffix</td>
+            </tr>
+            <tr>
+              <td>Primary Button</td>
+              <td>Button</td>
+              <td>width: 100%, padding: 15px 24px, bg <code>--brand</code>, font: 16px/600, radius-md, hover: <code>--brand-hover</code></td>
+            </tr>
+            <tr>
+              <td>Secondary Button</td>
+              <td>Button</td>
+              <td>width: 100%, padding: 15px 24px, bg <code>--bg-surface</code>, border 1px <code>--border-default</code>, font: 16px/600, radius-md</td>
+            </tr>
+            <tr>
+              <td>Revise Label</td>
+              <td>Text</td>
+              <td>font: 11px/600, letter-spacing 1px, uppercase, color <code>--brand</code></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>State Matrix</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>State</th>
+              <th>Backdrop</th>
+              <th>Chips Row</th>
+              <th>Bottom Sheet</th>
+              <th>Main Content</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Analysis (loading)</td>
+              <td>Hidden</td>
+              <td>Hidden</td>
+              <td>Hidden</td>
+              <td>Centered analysis animation with source domains</td>
+            </tr>
+            <tr>
+              <td>First question</td>
+              <td>Visible</td>
+              <td>Hidden (no answers yet)</td>
+              <td>Visible, ~60% height</td>
+              <td>Dimmed analysis summary chip</td>
+            </tr>
+            <tr>
+              <td>Mid-flow question</td>
+              <td>Visible</td>
+              <td>Visible with N answer chips</td>
+              <td>Visible, ~50-55% height</td>
+              <td>Hidden behind backdrop</td>
+            </tr>
+            <tr>
+              <td>Revising answer</td>
+              <td>Visible</td>
+              <td>Visible, tapped chip highlighted</td>
+              <td>Visible, "Revising" label, "Update" CTA</td>
+              <td>Hidden behind backdrop</td>
+            </tr>
+            <tr>
+              <td>Recipe ready</td>
+              <td>Hidden</td>
+              <td>Hidden (chips in content area)</td>
+              <td>Hidden</td>
+              <td>Full celebration view with summary chips and CTA</td>
+            </tr>
+            <tr>
+              <td>URL flow</td>
+              <td>Visible</td>
+              <td>Hidden</td>
+              <td>Visible, ~68% height, recipe preview</td>
+              <td>Dimmed URL context</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Animation Spec</h3>
+        <ul>
+          <li><strong>Sheet enter</strong>: <code>translateY(100%) &rarr; translateY(0)</code>, 350ms cubic-bezier(0.32, 0.72, 0, 1) (iOS spring curve)</li>
+          <li><strong>Sheet exit</strong>: <code>translateY(0) &rarr; translateY(100%)</code>, 250ms ease-in</li>
+          <li><strong>Backdrop fade</strong>: opacity 0 &rarr; 1, 200ms ease-out (enter), 150ms ease-in (exit)</li>
+          <li><strong>Chip appear</strong>: scale(0.9) + opacity 0 &rarr; scale(1) + opacity 1, 200ms ease-out</li>
+          <li><strong>Pill select</strong>: scale(0.95) &rarr; scale(1), 150ms with haptic feedback</li>
+          <li><strong>Source items</strong>: staggered translateY(8px) + opacity 0, 400ms each, 600ms delay between items</li>
+          <li><strong>Progress bar</strong>: width 10% &rarr; 65%, 2s ease-out</li>
+        </ul>
+
+        <h3>Gesture Spec</h3>
+        <ul>
+          <li><strong>Sheet drag down</strong>: Pan gesture on sheet; if velocity &gt; 500 or drag &gt; 40% sheet height, dismiss sheet (go back one question)</li>
+          <li><strong>Sheet drag up</strong>: No effect (already at max height)</li>
+          <li><strong>Backdrop tap</strong>: Dismiss current sheet, return to previous state</li>
+          <li><strong>Chip tap</strong>: Open revision sheet for that answer; chip highlights in terracotta</li>
+          <li><strong>Pill tap</strong>: Toggle selection state with haptic feedback</li>
+          <li><strong>Chips row scroll</strong>: Horizontal swipe, momentum-based, no scroll indicators</li>
+        </ul>
+
+        <h3>Responsive Notes</h3>
+        <ul>
+          <li>Phone shell is fixed at 390x760px (iPhone 14/15 viewport)</li>
+          <li>Bottom sheet heights are percentage-based (52-68%) and adapt to content</li>
+          <li>On taller devices (&gt;812pt), sheet maintains percentage heights; on shorter devices, sheet takes up more space (max 85%)</li>
+          <li>Chips row horizontally scrolls; no wrapping to prevent vertical growth</li>
+          <li>Safe area inset at bottom: 34px padding accounts for home indicator</li>
+          <li>On landscape or tablet, bottom sheet converts to centered card (max-width 420px) with backdrop still full-screen</li>
+        </ul>
+
+        <h3>What the Mock Does NOT Show</h3>
+        <ul>
+          <li><strong>Drag-to-dismiss gesture</strong>: Interactive sheet dragging, rubber-band effect at top, velocity-based snap-to-dismiss threshold</li>
+          <li><strong>Sheet transition animation</strong>: Spring-based slide-up/down between questions, cross-fade of content within the sheet</li>
+          <li><strong>Multi-select vs single-select logic</strong>: Dietary allows multi-select; protein and spice are single-select. The mock shows both but does not enforce the constraint</li>
+          <li><strong>Haptic feedback</strong>: Light impact on pill selection, medium impact on sheet snap, success notification on recipe ready</li>
+          <li><strong>Keyboard avoidance</strong>: Not applicable (no text input in this flow)</li>
+          <li><strong>Loading state between questions</strong>: Brief (200ms) skeleton shimmer in sheet while next question loads from LLM</li>
+          <li><strong>Error/retry state</strong>: Network failure banner at top, retry button in sheet</li>
+          <li><strong>Skip functionality</strong>: Each question can be skipped; "Skip" text button below primary CTA, not shown in mock</li>
+          <li><strong>Accessibility</strong>: Sheet announced as modal dialog, focus trap within sheet, VoiceOver rotor for chips, reduce-motion preference disables spring animations</li>
+          <li><strong>Deep link handling</strong>: URL flow shows the entry point but not the URL parsing, validation, or fallback states for unsupported domains</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+</body>
+</html>

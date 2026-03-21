@@ -1,0 +1,1520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mise AI — Variation 002: Story Swipe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --brand: #C8481C;
+    --brand-hover: #A33A16;
+    --bg-default: #FDFAF7;
+    --bg-surface: #F5F0EB;
+    --bg-elevated: #FFFFFF;
+    --text-primary: #1A1614;
+    --text-secondary: #6B5E54;
+    --text-muted: #9C8E82;
+    --border-default: #E8E0D8;
+    --border-subtle: #F0EAE4;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 20px;
+    --radius-full: 9999px;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.06);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+    --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+
+    /* Story-specific tints */
+    --tint-analysis: linear-gradient(160deg, #FDF5EE 0%, #FAE8D4 40%, #F5DCC6 100%);
+    --tint-peach: linear-gradient(160deg, #FDF5EE 0%, #FCEEE2 40%, #FAE3D3 100%);
+    --tint-amber: linear-gradient(160deg, #FDF8EE 0%, #FCF0D8 40%, #F9E8C6 100%);
+    --tint-amber-revised: linear-gradient(160deg, #FDF8EE 0%, #FCF0D8 40%, #F9E8C6 100%);
+    --tint-celebration: linear-gradient(160deg, #FDF5EE 0%, #FAE8D8 30%, #F5E0CC 70%, #F0D8C0 100%);
+    --tint-fork: linear-gradient(160deg, #FDFAF7 0%, #F5EDE4 40%, #EDE2D6 100%);
+
+    --phone-width: 390px;
+    --phone-height: 760px;
+    --phone-radius: 44px;
+    --status-bar-height: 44px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #F0EAE4;
+    color: var(--text-primary);
+    min-height: 100vh;
+    padding: 40px 24px 80px;
+  }
+
+  /* ─── Page Header ─── */
+  .page-header {
+    max-width: 1600px;
+    margin: 0 auto 48px;
+    text-align: center;
+  }
+  .variation-badge {
+    display: inline-block;
+    padding: 6px 16px;
+    background: var(--brand);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    border-radius: var(--radius-full);
+    margin-bottom: 16px;
+  }
+  .page-header h1 {
+    font-size: 40px;
+    font-weight: 900;
+    color: var(--text-primary);
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+  }
+  .page-header p {
+    font-size: 18px;
+    color: var(--text-secondary);
+    max-width: 680px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  /* ─── Frame Grid ─── */
+  .frames-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 48px;
+    max-width: 1800px;
+    margin: 0 auto;
+  }
+  .frame-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  .frame-label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    text-align: center;
+  }
+  .frame-annotation {
+    max-width: var(--phone-width);
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.55;
+    padding: 0 8px;
+  }
+  .frame-annotation strong {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
+  /* ─── Phone Shell ─── */
+  .phone-shell {
+    width: var(--phone-width);
+    height: var(--phone-height);
+    border-radius: var(--phone-radius);
+    background: #1A1614;
+    padding: 8px;
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.08) inset,
+      0 2px 4px rgba(0,0,0,0.12),
+      0 8px 24px rgba(0,0,0,0.16),
+      0 24px 48px rgba(0,0,0,0.20);
+    position: relative;
+  }
+  .phone-screen {
+    width: 100%;
+    height: 100%;
+    border-radius: 36px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ─── Status Bar ─── */
+  .status-bar {
+    height: var(--status-bar-height);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 10;
+  }
+  .status-bar .time {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  .status-bar .icons {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .status-bar .icons svg {
+    display: block;
+  }
+
+  /* ─── Header Bar (semi-transparent) ─── */
+  .header-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 20px 12px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 10;
+  }
+  .header-bar .back-arrow {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .header-bar .back-arrow:hover {
+    background: rgba(0,0,0,0.06);
+  }
+  .header-bar .logo {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -0.3px;
+  }
+  .header-bar .spacer {
+    width: 32px;
+  }
+
+  /* ─── Progress Segments ─── */
+  .progress-segments {
+    display: flex;
+    gap: 4px;
+    padding: 0 20px 12px;
+    flex-shrink: 0;
+    z-index: 10;
+  }
+  .progress-segment {
+    flex: 1;
+    height: 3px;
+    border-radius: 2px;
+    background: rgba(0,0,0,0.1);
+    transition: background 0.3s;
+    cursor: pointer;
+  }
+  .progress-segment:hover {
+    background: rgba(0,0,0,0.18);
+  }
+  .progress-segment.filled {
+    background: var(--brand);
+  }
+  .progress-segment.filled:hover {
+    background: var(--brand-hover);
+  }
+
+  /* ─── Story Content Area ─── */
+  .story-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0 28px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ─── Analysis Phase (Frame 1) ─── */
+  .screen-analysis .phone-screen {
+    background: var(--tint-analysis);
+  }
+  .analysis-center {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  .analysis-pulse {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(200,72,28,0.15) 0%, rgba(200,72,28,0.04) 70%, transparent 100%);
+    margin: 0 auto 24px;
+    position: relative;
+    animation: pulse-ring 2s ease-in-out infinite;
+  }
+  .analysis-pulse::before {
+    content: '';
+    position: absolute;
+    inset: 16px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(200,72,28,0.25) 0%, rgba(200,72,28,0.08) 100%);
+    animation: pulse-core 2s ease-in-out infinite 0.3s;
+  }
+  .analysis-pulse::after {
+    content: '';
+    position: absolute;
+    inset: 28px;
+    border-radius: 50%;
+    background: var(--brand);
+    opacity: 0.6;
+    animation: pulse-dot 2s ease-in-out infinite 0.6s;
+  }
+  @keyframes pulse-ring {
+    0%, 100% { transform: scale(1); opacity: 0.6; }
+    50% { transform: scale(1.15); opacity: 1; }
+  }
+  @keyframes pulse-core {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.1); opacity: 0.8; }
+  }
+  @keyframes pulse-dot {
+    0%, 100% { transform: scale(1); opacity: 0.6; }
+    50% { transform: scale(0.9); opacity: 1; }
+  }
+  .analysis-text {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -0.3px;
+    margin-bottom: 6px;
+  }
+  .analysis-sub {
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+  .source-bubbles {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+    width: 100%;
+  }
+  .source-bubble {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: rgba(255,255,255,0.7);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.5);
+    border-radius: var(--radius-full);
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    animation: float-up 0.6s ease-out both;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  .source-bubble:nth-child(1) { animation-delay: 0s; }
+  .source-bubble:nth-child(2) { animation-delay: 0.4s; }
+  .source-bubble:nth-child(3) { animation-delay: 0.8s; }
+  .source-bubble:nth-child(4) { animation-delay: 1.2s; }
+  .source-bubble .globe {
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  @keyframes float-up {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─── Question Screens ─── */
+  .question-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--text-primary);
+    text-align: center;
+    letter-spacing: -0.3px;
+    margin-bottom: 28px;
+    line-height: 1.2;
+  }
+
+  /* Analysis chip */
+  .analysis-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    background: rgba(255,255,255,0.65);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.4);
+    border-radius: var(--radius-full);
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    margin-bottom: 28px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+  .analysis-chip .chip-emoji {
+    font-size: 13px;
+  }
+
+  /* Pill options grid */
+  .pill-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    width: 100%;
+    max-width: 320px;
+  }
+  .pill-option {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 12px 20px;
+    background: rgba(255,255,255,0.55);
+    backdrop-filter: blur(6px);
+    border: 2px solid var(--border-default);
+    border-radius: var(--radius-full);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+  }
+  .pill-option:hover {
+    border-color: var(--brand);
+    background: rgba(255,255,255,0.75);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(200,72,28,0.1);
+  }
+  .pill-option:active {
+    transform: translateY(0);
+  }
+  .pill-option.selected {
+    background: var(--brand);
+    border-color: var(--brand);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(200,72,28,0.25);
+  }
+  .pill-option.selected:hover {
+    background: var(--brand-hover);
+    border-color: var(--brand-hover);
+  }
+  .pill-check {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    border: 2px solid var(--border-default);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+  .pill-option.selected .pill-check {
+    border-color: rgba(255,255,255,0.5);
+    background: rgba(255,255,255,0.2);
+  }
+  .pill-check svg {
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .pill-option.selected .pill-check svg {
+    opacity: 1;
+  }
+
+  /* Large pills (spice level) */
+  .pill-grid-large {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    max-width: 300px;
+  }
+  .pill-large {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 18px 24px;
+    background: rgba(255,255,255,0.55);
+    backdrop-filter: blur(6px);
+    border: 2px solid var(--border-default);
+    border-radius: var(--radius-lg);
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+  }
+  .pill-large:hover {
+    border-color: var(--brand);
+    background: rgba(255,255,255,0.75);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(200,72,28,0.1);
+  }
+  .pill-large:active {
+    transform: translateY(0);
+  }
+  .pill-large.selected {
+    background: var(--brand);
+    border-color: var(--brand);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(200,72,28,0.25);
+  }
+  .pill-large.selected:hover {
+    background: var(--brand-hover);
+    border-color: var(--brand-hover);
+  }
+  .pill-large .pill-emoji {
+    font-size: 20px;
+  }
+
+  /* Next button */
+  .next-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 14px 32px;
+    background: var(--brand);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-full);
+    font-size: 15px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 32px;
+    box-shadow: 0 4px 16px rgba(200,72,28,0.3);
+  }
+  .next-btn:hover {
+    background: var(--brand-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(200,72,28,0.35);
+  }
+  .next-btn:active {
+    transform: translateY(0);
+  }
+
+  /* ─── Toast ─── */
+  .toast {
+    position: absolute;
+    bottom: 24px;
+    left: 28px;
+    right: 28px;
+    padding: 12px 16px;
+    background: var(--text-primary);
+    color: #fff;
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    font-weight: 500;
+    text-align: center;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    z-index: 20;
+    animation: toast-in 0.4s ease-out both;
+  }
+  @keyframes toast-in {
+    0% { opacity: 0; transform: translateY(12px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─── Celebration (Frame 5) ─── */
+  .screen-celebration .phone-screen {
+    background: var(--tint-celebration);
+  }
+  .celebration-content {
+    text-align: center;
+    position: relative;
+  }
+  .celebration-emoji {
+    font-size: 64px;
+    margin-bottom: 16px;
+    animation: bounce-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+  @keyframes bounce-in {
+    0% { transform: scale(0); opacity: 0; }
+    60% { transform: scale(1.2); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .celebration-title {
+    font-size: 26px;
+    font-weight: 900;
+    color: var(--text-primary);
+    letter-spacing: -0.3px;
+    margin-bottom: 8px;
+  }
+  .celebration-recipe-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 36px;
+  }
+  .confetti-dots {
+    position: absolute;
+    inset: -40px;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .confetti-dot {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    animation: confetti-fall 3s ease-in-out infinite;
+  }
+  .confetti-dot:nth-child(1) { background: var(--brand); left: 10%; top: 5%; animation-delay: 0s; }
+  .confetti-dot:nth-child(2) { background: #E89B6C; left: 85%; top: 10%; animation-delay: 0.5s; }
+  .confetti-dot:nth-child(3) { background: #D4A574; left: 25%; top: 90%; animation-delay: 1s; width: 5px; height: 5px; }
+  .confetti-dot:nth-child(4) { background: var(--brand); left: 70%; top: 85%; animation-delay: 1.5s; width: 4px; height: 4px; }
+  .confetti-dot:nth-child(5) { background: #C49A6C; left: 50%; top: 3%; animation-delay: 0.3s; width: 7px; height: 7px; }
+  .confetti-dot:nth-child(6) { background: #E8C4A0; left: 5%; top: 60%; animation-delay: 0.8s; }
+  .confetti-dot:nth-child(7) { background: var(--brand); left: 92%; top: 50%; animation-delay: 1.2s; width: 5px; height: 5px; }
+  .confetti-dot:nth-child(8) { background: #D4A574; left: 40%; top: 95%; animation-delay: 0.6s; width: 4px; height: 4px; }
+  .confetti-dot:nth-child(9) { background: #E89B6C; left: 15%; top: 35%; animation-delay: 1.8s; width: 5px; height: 5px; }
+  .confetti-dot:nth-child(10) { background: #C49A6C; left: 78%; top: 70%; animation-delay: 2.2s; }
+  @keyframes confetti-fall {
+    0%, 100% { transform: translateY(0) scale(1); opacity: 0.7; }
+    25% { transform: translateY(-8px) scale(1.2); opacity: 1; }
+    50% { transform: translateY(4px) scale(0.9); opacity: 0.8; }
+    75% { transform: translateY(-4px) scale(1.1); opacity: 0.9; }
+  }
+  .view-recipe-btn {
+    display: block;
+    width: 100%;
+    max-width: 280px;
+    padding: 16px 24px;
+    background: var(--brand);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-full);
+    font-size: 16px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 16px rgba(200,72,28,0.3);
+    margin: 0 auto 12px;
+    text-align: center;
+  }
+  .view-recipe-btn:hover {
+    background: var(--brand-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(200,72,28,0.35);
+  }
+  .review-link {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.15s;
+  }
+  .review-link:hover {
+    color: var(--brand);
+  }
+
+  /* ─── Fork Decision (Frame 6) ─── */
+  .screen-fork .phone-screen {
+    background: var(--tint-fork);
+  }
+  .fork-card {
+    width: 100%;
+    background: rgba(255,255,255,0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.5);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+  }
+  .fork-source-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    background: rgba(200,72,28,0.08);
+    border-radius: var(--radius-full);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--brand);
+    margin-bottom: 12px;
+  }
+  .fork-recipe-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -0.2px;
+    margin-bottom: 16px;
+    line-height: 1.25;
+  }
+  .fork-meta {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .fork-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+  .fork-meta-item .meta-icon {
+    font-size: 15px;
+  }
+  .fork-ingredients-preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 24px;
+  }
+  .ingredient-tag {
+    padding: 5px 10px;
+    background: var(--bg-surface);
+    border-radius: var(--radius-full);
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+  .fork-cta-primary {
+    display: block;
+    width: 100%;
+    padding: 16px 24px;
+    background: var(--brand);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-full);
+    font-size: 16px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 16px rgba(200,72,28,0.3);
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  .fork-cta-primary:hover {
+    background: var(--brand-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(200,72,28,0.35);
+  }
+  .fork-cta-secondary {
+    display: block;
+    width: 100%;
+    padding: 16px 24px;
+    background: transparent;
+    color: var(--brand);
+    border: 2px solid var(--brand);
+    border-radius: var(--radius-full);
+    font-size: 16px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+  }
+  .fork-cta-secondary:hover {
+    background: rgba(200,72,28,0.06);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(200,72,28,0.1);
+  }
+
+  /* ─── Background tints per screen ─── */
+  .screen-analysis .phone-screen { background: var(--tint-analysis); }
+  .screen-dietary .phone-screen { background: var(--tint-peach); }
+  .screen-spice .phone-screen { background: var(--tint-amber); }
+  .screen-spice-revised .phone-screen { background: var(--tint-amber-revised); }
+
+  /* ─── Implementation Spec ─── */
+  .spec-section {
+    max-width: 1200px;
+    margin: 80px auto 0;
+  }
+  .spec-details {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+  }
+  .spec-details summary {
+    padding: 20px 28px;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .spec-details summary::-webkit-details-marker { display: none; }
+  .spec-details summary::before {
+    content: '\25B6';
+    font-size: 10px;
+    color: var(--text-muted);
+    transition: transform 0.2s;
+  }
+  .spec-details[open] summary::before {
+    transform: rotate(90deg);
+  }
+  .spec-details summary:hover {
+    background: var(--bg-surface);
+  }
+  .spec-body {
+    padding: 0 28px 28px;
+  }
+  .spec-body h3 {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 24px 0 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .spec-body h3:first-child {
+    margin-top: 0;
+  }
+  .spec-body p, .spec-body li {
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--text-secondary);
+  }
+  .spec-body ul {
+    padding-left: 20px;
+    margin: 6px 0;
+  }
+  .spec-body li {
+    margin-bottom: 4px;
+  }
+  .spec-body code {
+    font-size: 13px;
+    background: var(--bg-surface);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--brand);
+    font-family: 'SF Mono', 'Fira Code', monospace;
+  }
+  .spec-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+    font-size: 13px;
+  }
+  .spec-table th {
+    text-align: left;
+    padding: 10px 12px;
+    background: var(--bg-surface);
+    font-weight: 600;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-default);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .spec-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+    vertical-align: top;
+    line-height: 1.5;
+  }
+  .spec-table tr:last-child td {
+    border-bottom: none;
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════
+     PAGE HEADER
+     ════════════════════════════════════════════════ -->
+<header class="page-header">
+  <div class="variation-badge">Variation 002</div>
+  <h1>Story Swipe</h1>
+  <p>Fullscreen immersive steps like Instagram stories. One decision per screen. Bold typography, dramatic transitions, warm background tints that shift with each question.</p>
+</header>
+
+<!-- ════════════════════════════════════════════════
+     FRAME ROW
+     ════════════════════════════════════════════════ -->
+<div class="frames-row">
+
+  <!-- ──────────────────────────────────────────────
+       FRAME 1 — Analysis Phase (Immersive)
+       ────────────────────────────────────────────── -->
+  <div class="frame-container">
+    <div class="frame-label">Frame 1 — Analysis</div>
+    <div class="phone-shell screen-analysis">
+      <div class="phone-screen">
+        <!-- Status Bar -->
+        <div class="status-bar">
+          <span class="time">9:41</span>
+          <div class="icons">
+            <svg width="17" height="12" viewBox="0 0 17 12" fill="none"><rect x="0" y="3" width="3" height="9" rx="1" fill="#1A1614"/><rect x="4.5" y="2" width="3" height="10" rx="1" fill="#1A1614"/><rect x="9" y="0.5" width="3" height="11.5" rx="1" fill="#1A1614"/><rect x="13.5" y="0" width="3" height="12" rx="1" fill="#1A1614"/></svg>
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><path d="M8 3.6C9.8 3.6 11.4 4.3 12.6 5.4L14.2 3.8C12.5 2.2 10.4 1.2 8 1.2C5.6 1.2 3.5 2.2 1.8 3.8L3.4 5.4C4.6 4.3 6.2 3.6 8 3.6Z" fill="#1A1614"/><path d="M8 7.2C9 7.2 9.9 7.6 10.6 8.2L8 11.2L5.4 8.2C6.1 7.6 7 7.2 8 7.2Z" fill="#1A1614"/></svg>
+            <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0" y="1" width="22" height="10" rx="2" stroke="#1A1614" stroke-width="1"/><rect x="23" y="4" width="2" height="4" rx="0.5" fill="#1A1614"/><rect x="1.5" y="2.5" width="17" height="7" rx="1" fill="#1A1614"/></svg>
+          </div>
+        </div>
+
+        <!-- Header -->
+        <div class="header-bar">
+          <div class="back-arrow">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5 15L7.5 10L12.5 5" stroke="#1A1614" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="logo">mise.</div>
+          <div class="spacer"></div>
+        </div>
+
+        <!-- Progress (all empty) -->
+        <div class="progress-segments">
+          <div class="progress-segment"></div>
+          <div class="progress-segment"></div>
+          <div class="progress-segment"></div>
+          <div class="progress-segment"></div>
+          <div class="progress-segment"></div>
+          <div class="progress-segment"></div>
+        </div>
+
+        <!-- Content -->
+        <div class="story-content">
+          <div class="analysis-center">
+            <div class="analysis-pulse"></div>
+            <div class="analysis-text">Analyzing...</div>
+            <div class="analysis-sub">Finding the best recipes</div>
+          </div>
+          <div class="source-bubbles">
+            <div class="source-bubble">
+              <span class="globe">&#127760;</span>
+              hotthaikitchen.com
+            </div>
+            <div class="source-bubble">
+              <span class="globe">&#127760;</span>
+              seriouseats.com
+            </div>
+            <div class="source-bubble">
+              <span class="globe">&#127760;</span>
+              bonappetit.com
+            </div>
+            <div class="source-bubble">
+              <span class="globe">&#127760;</span>
+              woksoflife.com
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="frame-annotation">
+      <strong>Dramatic analysis.</strong> Pulsing orb + floating source bubbles. Warm gradient background. All progress segments empty. Sets the immersive tone for the entire flow.
+    </div>
+  </div>
+
+  <!-- ──────────────────────────────────────────────
+       FRAME 2 — Dietary Question (Peach Tint)
+       ────────────────────────────────────────────── -->
+  <div class="frame-container">
+    <div class="frame-label">Frame 2 — Dietary Needs</div>
+    <div class="phone-shell screen-dietary">
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span class="time">9:41</span>
+          <div class="icons">
+            <svg width="17" height="12" viewBox="0 0 17 12" fill="none"><rect x="0" y="3" width="3" height="9" rx="1" fill="#1A1614"/><rect x="4.5" y="2" width="3" height="10" rx="1" fill="#1A1614"/><rect x="9" y="0.5" width="3" height="11.5" rx="1" fill="#1A1614"/><rect x="13.5" y="0" width="3" height="12" rx="1" fill="#1A1614"/></svg>
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><path d="M8 3.6C9.8 3.6 11.4 4.3 12.6 5.4L14.2 3.8C12.5 2.2 10.4 1.2 8 1.2C5.6 1.2 3.5 2.2 1.8 3.8L3.4 5.4C4.6 4.3 6.2 3.6 8 3.6Z" fill="#1A1614"/><path d="M8 7.2C9 7.2 9.9 7.6 10.6 8.2L8 11.2L5.4 8.2C6.1 7.6 7 7.2 8 7.2Z" fill="#1A1614"/></svg>
+            <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0" y="1" width="22" height="10" rx="2" stroke="#1A1614" stroke-width="1"/><rect x="23" y="4" width="2" height="4" rx="0.5" fill="#1A1614"/><rect x="1.5" y="2.5" width="17" height="7" rx="1" fill="#1A1614"/></svg>
+          </div>
+        </div>
+
+        <div class="header-bar">
+          <div class="back-arrow">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5 15L7.5 10L12.5 5" stroke="#1A1614" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="logo">mise.</div>
+          <div class="spacer"></div>
+        </div>
+
+        <!-- Progress: 1 of 6 filled -->
+        <div class="progress-segments">
+          <div class="progress-segment filled"></div>
+          <div class="progress-segment"></div>
+          <div class="progress-segment"></div>
+          <div class="progress-segment"></div>
+          <div class="progress-segment"></div>
+          <div class="progress-segment"></div>
+        </div>
+
+        <div class="story-content">
+          <!-- Analysis chip -->
+          <div class="analysis-chip">
+            <span class="chip-emoji">&#127835;</span>
+            Massaman &middot; 47 sources
+          </div>
+
+          <div class="question-title">Any dietary<br>needs?</div>
+
+          <div class="pill-grid">
+            <div class="pill-option selected">
+              <div class="pill-check">
+                <svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              Nut-free
+            </div>
+            <div class="pill-option">
+              <div class="pill-check">
+                <svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              Dairy-free
+            </div>
+            <div class="pill-option">
+              <div class="pill-check">
+                <svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              Vegetarian
+            </div>
+            <div class="pill-option">
+              <div class="pill-check">
+                <svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              Vegan
+            </div>
+            <div class="pill-option">
+              <div class="pill-check">
+                <svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              Gluten-free
+            </div>
+            <div class="pill-option">
+              <div class="pill-check">
+                <svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              Low-sodium
+            </div>
+          </div>
+
+          <button class="next-btn">
+            Next
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 12L10 8L6 4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="frame-annotation">
+      <strong>One question, full focus.</strong> Warm peach tint. "Nut-free" pre-checked. Outlined pills with checkmarks. Analysis collapsed to tiny chip at top. 1 of 6 progress segments filled.
+    </div>
+  </div>
+
+  <!-- ──────────────────────────────────────────────
+       FRAME 3 — Spice Level (Amber Tint)
+       ────────────────────────────────────────────── -->
+  <div class="frame-container">
+    <div class="frame-label">Frame 3 — Spice Level</div>
+    <div class="phone-shell screen-spice">
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span class="time">9:41</span>
+          <div class="icons">
+            <svg width="17" height="12" viewBox="0 0 17 12" fill="none"><rect x="0" y="3" width="3" height="9" rx="1" fill="#1A1614"/><rect x="4.5" y="2" width="3" height="10" rx="1" fill="#1A1614"/><rect x="9" y="0.5" width="3" height="11.5" rx="1" fill="#1A1614"/><rect x="13.5" y="0" width="3" height="12" rx="1" fill="#1A1614"/></svg>
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><path d="M8 3.6C9.8 3.6 11.4 4.3 12.6 5.4L14.2 3.8C12.5 2.2 10.4 1.2 8 1.2C5.6 1.2 3.5 2.2 1.8 3.8L3.4 5.4C4.6 4.3 6.2 3.6 8 3.6Z" fill="#1A1614"/><path d="M8 7.2C9 7.2 9.9 7.6 10.6 8.2L8 11.2L5.4 8.2C6.1 7.6 7 7.2 8 7.2Z" fill="#1A1614"/></svg>
+            <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0" y="1" width="22" height="10" rx="2" stroke="#1A1614" stroke-width="1"/><rect x="23" y="4" width="2" height="4" rx="0.5" fill="#1A1614"/><rect x="1.5" y="2.5" width="17" height="7" rx="1" fill="#1A1614"/></svg>
+          </div>
+        </div>
+
+        <div class="header-bar">
+          <div class="back-arrow">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5 15L7.5 10L12.5 5" stroke="#1A1614" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="logo">mise.</div>
+          <div class="spacer"></div>
+        </div>
+
+        <!-- Progress: 4 of 6 filled -->
+        <div class="progress-segments">
+          <div class="progress-segment filled"></div>
+          <div class="progress-segment filled"></div>
+          <div class="progress-segment filled"></div>
+          <div class="progress-segment filled"></div>
+          <div class="progress-segment"></div>
+          <div class="progress-segment"></div>
+        </div>
+
+        <div class="story-content">
+          <div class="question-title">How spicy?</div>
+
+          <div class="pill-grid-large">
+            <div class="pill-large">
+              <span class="pill-emoji">&#129782;</span>
+              Mild
+            </div>
+            <div class="pill-large selected">
+              <span class="pill-emoji">&#127798;&#65039;</span>
+              Medium
+            </div>
+            <div class="pill-large">
+              <span class="pill-emoji">&#128293;</span>
+              Hot
+            </div>
+            <div class="pill-large">
+              <span class="pill-emoji">&#129397;</span>
+              Thai Hot
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="frame-annotation">
+      <strong>Fully immersive, no context.</strong> Amber background tint. Large stacked pill options. "Medium" selected. No previous answers visible anywhere. 4 of 6 filled. Pure focus on one decision.
+    </div>
+  </div>
+
+  <!-- ──────────────────────────────────────────────
+       FRAME 4 — Revised Answer (Amber Tint)
+       ────────────────────────────────────────────── -->
+  <div class="frame-container">
+    <div class="frame-label">Frame 4 — Revised Answer</div>
+    <div class="phone-shell screen-spice-revised">
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span class="time">9:41</span>
+          <div class="icons">
+            <svg width="17" height="12" viewBox="0 0 17 12" fill="none"><rect x="0" y="3" width="3" height="9" rx="1" fill="#1A1614"/><rect x="4.5" y="2" width="3" height="10" rx="1" fill="#1A1614"/><rect x="9" y="0.5" width="3" height="11.5" rx="1" fill="#1A1614"/><rect x="13.5" y="0" width="3" height="12" rx="1" fill="#1A1614"/></svg>
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><path d="M8 3.6C9.8 3.6 11.4 4.3 12.6 5.4L14.2 3.8C12.5 2.2 10.4 1.2 8 1.2C5.6 1.2 3.5 2.2 1.8 3.8L3.4 5.4C4.6 4.3 6.2 3.6 8 3.6Z" fill="#1A1614"/><path d="M8 7.2C9 7.2 9.9 7.6 10.6 8.2L8 11.2L5.4 8.2C6.1 7.6 7 7.2 8 7.2Z" fill="#1A1614"/></svg>
+            <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0" y="1" width="22" height="10" rx="2" stroke="#1A1614" stroke-width="1"/><rect x="23" y="4" width="2" height="4" rx="0.5" fill="#1A1614"/><rect x="1.5" y="2.5" width="17" height="7" rx="1" fill="#1A1614"/></svg>
+          </div>
+        </div>
+
+        <div class="header-bar">
+          <div class="back-arrow">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5 15L7.5 10L12.5 5" stroke="#1A1614" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="logo">mise.</div>
+          <div class="spacer"></div>
+        </div>
+
+        <!-- Progress: 4 of 6 filled (tappable dots) -->
+        <div class="progress-segments">
+          <div class="progress-segment filled" title="Dietary needs" style="cursor:pointer;"></div>
+          <div class="progress-segment filled" title="Servings" style="cursor:pointer;"></div>
+          <div class="progress-segment filled" title="Cooking time" style="cursor:pointer;"></div>
+          <div class="progress-segment filled" title="Spice level" style="cursor:pointer;"></div>
+          <div class="progress-segment"></div>
+          <div class="progress-segment"></div>
+        </div>
+
+        <div class="story-content">
+          <div class="question-title">How spicy?</div>
+
+          <div class="pill-grid-large">
+            <div class="pill-large">
+              <span class="pill-emoji">&#129782;</span>
+              Mild
+            </div>
+            <div class="pill-large">
+              <span class="pill-emoji">&#127798;&#65039;</span>
+              Medium
+            </div>
+            <div class="pill-large selected">
+              <span class="pill-emoji">&#128293;</span>
+              Hot
+            </div>
+            <div class="pill-large">
+              <span class="pill-emoji">&#129397;</span>
+              Thai Hot
+            </div>
+          </div>
+
+          <!-- Toast notification -->
+          <div class="toast">Updated! Tap any dot to revisit.</div>
+        </div>
+      </div>
+    </div>
+    <div class="frame-annotation">
+      <strong>Changed mind: Hot instead of Medium.</strong> Toast confirms the update and hints that progress dots are tappable for non-linear navigation. Same amber tint, same question, different selection.
+    </div>
+  </div>
+
+  <!-- ──────────────────────────────────────────────
+       FRAME 5 — Recipe Ready (Celebration)
+       ────────────────────────────────────────────── -->
+  <div class="frame-container">
+    <div class="frame-label">Frame 5 — Recipe Ready</div>
+    <div class="phone-shell screen-celebration">
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span class="time">9:41</span>
+          <div class="icons">
+            <svg width="17" height="12" viewBox="0 0 17 12" fill="none"><rect x="0" y="3" width="3" height="9" rx="1" fill="#1A1614"/><rect x="4.5" y="2" width="3" height="10" rx="1" fill="#1A1614"/><rect x="9" y="0.5" width="3" height="11.5" rx="1" fill="#1A1614"/><rect x="13.5" y="0" width="3" height="12" rx="1" fill="#1A1614"/></svg>
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><path d="M8 3.6C9.8 3.6 11.4 4.3 12.6 5.4L14.2 3.8C12.5 2.2 10.4 1.2 8 1.2C5.6 1.2 3.5 2.2 1.8 3.8L3.4 5.4C4.6 4.3 6.2 3.6 8 3.6Z" fill="#1A1614"/><path d="M8 7.2C9 7.2 9.9 7.6 10.6 8.2L8 11.2L5.4 8.2C6.1 7.6 7 7.2 8 7.2Z" fill="#1A1614"/></svg>
+            <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0" y="1" width="22" height="10" rx="2" stroke="#1A1614" stroke-width="1"/><rect x="23" y="4" width="2" height="4" rx="0.5" fill="#1A1614"/><rect x="1.5" y="2.5" width="17" height="7" rx="1" fill="#1A1614"/></svg>
+          </div>
+        </div>
+
+        <div class="header-bar">
+          <div class="back-arrow">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5 15L7.5 10L12.5 5" stroke="#1A1614" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="logo">mise.</div>
+          <div class="spacer"></div>
+        </div>
+
+        <!-- Progress: ALL filled -->
+        <div class="progress-segments">
+          <div class="progress-segment filled"></div>
+          <div class="progress-segment filled"></div>
+          <div class="progress-segment filled"></div>
+          <div class="progress-segment filled"></div>
+          <div class="progress-segment filled"></div>
+          <div class="progress-segment filled"></div>
+        </div>
+
+        <div class="story-content">
+          <div class="celebration-content">
+            <div class="confetti-dots">
+              <div class="confetti-dot"></div>
+              <div class="confetti-dot"></div>
+              <div class="confetti-dot"></div>
+              <div class="confetti-dot"></div>
+              <div class="confetti-dot"></div>
+              <div class="confetti-dot"></div>
+              <div class="confetti-dot"></div>
+              <div class="confetti-dot"></div>
+              <div class="confetti-dot"></div>
+              <div class="confetti-dot"></div>
+            </div>
+            <div class="celebration-emoji">&#127881;</div>
+            <div class="celebration-title">Your Recipe<br>is Ready</div>
+            <div class="celebration-recipe-name">Classic Massaman Curry</div>
+          </div>
+          <button class="view-recipe-btn">View Recipe</button>
+          <a class="review-link" href="#">Review Choices</a>
+        </div>
+      </div>
+    </div>
+    <div class="frame-annotation">
+      <strong>Celebration moment.</strong> All progress filled. Confetti dots animate around the party emoji. Recipe name revealed. "View Recipe" as primary CTA, "Review Choices" as subtle text link.
+    </div>
+  </div>
+
+  <!-- ──────────────────────────────────────────────
+       FRAME 6 — Fork Decision (URL Flow)
+       ────────────────────────────────────────────── -->
+  <div class="frame-container">
+    <div class="frame-label">Frame 6 — URL Fork Decision</div>
+    <div class="phone-shell screen-fork">
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span class="time">9:41</span>
+          <div class="icons">
+            <svg width="17" height="12" viewBox="0 0 17 12" fill="none"><rect x="0" y="3" width="3" height="9" rx="1" fill="#1A1614"/><rect x="4.5" y="2" width="3" height="10" rx="1" fill="#1A1614"/><rect x="9" y="0.5" width="3" height="11.5" rx="1" fill="#1A1614"/><rect x="13.5" y="0" width="3" height="12" rx="1" fill="#1A1614"/></svg>
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><path d="M8 3.6C9.8 3.6 11.4 4.3 12.6 5.4L14.2 3.8C12.5 2.2 10.4 1.2 8 1.2C5.6 1.2 3.5 2.2 1.8 3.8L3.4 5.4C4.6 4.3 6.2 3.6 8 3.6Z" fill="#1A1614"/><path d="M8 7.2C9 7.2 9.9 7.6 10.6 8.2L8 11.2L5.4 8.2C6.1 7.6 7 7.2 8 7.2Z" fill="#1A1614"/></svg>
+            <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0" y="1" width="22" height="10" rx="2" stroke="#1A1614" stroke-width="1"/><rect x="23" y="4" width="2" height="4" rx="0.5" fill="#1A1614"/><rect x="1.5" y="2.5" width="17" height="7" rx="1" fill="#1A1614"/></svg>
+          </div>
+        </div>
+
+        <div class="header-bar">
+          <div class="back-arrow">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5 15L7.5 10L12.5 5" stroke="#1A1614" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="logo">mise.</div>
+          <div class="spacer"></div>
+        </div>
+
+        <div class="story-content" style="justify-content: center; padding: 0 20px 24px;">
+          <div class="fork-card">
+            <div class="fork-source-pill">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="#C8481C" stroke-width="1.2"/><path d="M6 1C6 1 3 4.5 3 6C3 7.5 6 11 6 11" stroke="#C8481C" stroke-width="1"/><path d="M6 1C6 1 9 4.5 9 6C9 7.5 6 11 6 11" stroke="#C8481C" stroke-width="1"/><line x1="1.5" y1="4.5" x2="10.5" y2="4.5" stroke="#C8481C" stroke-width="0.8"/><line x1="1.2" y1="7.5" x2="10.8" y2="7.5" stroke="#C8481C" stroke-width="0.8"/></svg>
+              seriouseats.com
+            </div>
+            <div class="fork-recipe-title">Pad Thai from<br>Serious Eats</div>
+            <div class="fork-meta">
+              <div class="fork-meta-item">
+                <span class="meta-icon">&#9201;</span>
+                45 min
+              </div>
+              <div class="fork-meta-item">
+                <span class="meta-icon">&#127858;</span>
+                14 ingredients
+              </div>
+              <div class="fork-meta-item">
+                <span class="meta-icon">&#128101;</span>
+                Serves 4
+              </div>
+            </div>
+            <div class="fork-ingredients-preview">
+              <span class="ingredient-tag">Rice noodles</span>
+              <span class="ingredient-tag">Shrimp</span>
+              <span class="ingredient-tag">Tamarind</span>
+              <span class="ingredient-tag">Fish sauce</span>
+              <span class="ingredient-tag">+10 more</span>
+            </div>
+            <button class="fork-cta-primary">Save &amp; Cook Now</button>
+            <button class="fork-cta-secondary">Customize This Recipe</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="frame-annotation">
+      <strong>URL fork: save or customize?</strong> Full-screen card with recipe preview from a pasted URL. Source domain pill, key metadata, ingredient tags. Two clear CTAs stacked full-width.
+    </div>
+  </div>
+
+</div><!-- end frames-row -->
+
+<!-- ════════════════════════════════════════════════
+     IMPLEMENTATION SPEC
+     ════════════════════════════════════════════════ -->
+<div class="spec-section">
+  <details class="spec-details">
+    <summary>Implementation Specification &mdash; Story Swipe (Variation 002)</summary>
+    <div class="spec-body">
+
+      <h3>1. Screen Overview</h3>
+      <table class="spec-table">
+        <thead>
+          <tr>
+            <th>Frame</th>
+            <th>Screen</th>
+            <th>Purpose</th>
+            <th>Background Tint</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>Analysis Phase</td>
+            <td>Immersive loading state while sources are analyzed</td>
+            <td>Warm gradient (#FDF5EE to #F5DCC6)</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>Dietary Needs</td>
+            <td>Multi-select dietary restrictions</td>
+            <td>Peach (#FDF5EE to #FAE3D3)</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>Spice Level</td>
+            <td>Single-select spice preference</td>
+            <td>Amber (#FDF8EE to #F9E8C6)</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>Revised Answer</td>
+            <td>Change-of-mind flow with toast confirmation</td>
+            <td>Amber (same as Frame 3)</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>Recipe Ready</td>
+            <td>Celebration / completion moment</td>
+            <td>Warm celebration gradient</td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td>URL Fork Decision</td>
+            <td>Save vs. customize a pasted recipe URL</td>
+            <td>Neutral warm (#FDFAF7 to #EDE2D6)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>2. Layout Hierarchy</h3>
+      <ul>
+        <li><code>StatusBar</code> &mdash; 44px, time + system icons, always visible</li>
+        <li><code>HeaderBar</code> &mdash; Semi-transparent, back arrow + "mise." logo centered + spacer</li>
+        <li><code>ProgressSegments</code> &mdash; Horizontal bar split into N segments (one per question), 3px tall, 4px gap</li>
+        <li><code>StoryContent</code> &mdash; Flex-grow area, vertically and horizontally centered content</li>
+        <li>Each screen fills the entire content area below the progress bar &mdash; no scrolling, no secondary content zones</li>
+      </ul>
+
+      <h3>3. Component Spec Table</h3>
+      <table class="spec-table">
+        <thead>
+          <tr>
+            <th>Component</th>
+            <th>Dimensions / Spacing</th>
+            <th>Typography</th>
+            <th>Colors</th>
+            <th>States</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>ProgressSegment</td>
+            <td>Flex: 1, height: 3px, gap: 4px, radius: 2px</td>
+            <td>N/A</td>
+            <td>Empty: <code>rgba(0,0,0,0.1)</code>, Filled: <code>--brand</code></td>
+            <td>empty, filled, hover, tappable (cursor: pointer)</td>
+          </tr>
+          <tr>
+            <td>QuestionTitle</td>
+            <td>Max-width: 320px, centered</td>
+            <td>28px / 800 weight / -0.3 tracking / 1.2 line-height</td>
+            <td><code>--text-primary</code></td>
+            <td>Static</td>
+          </tr>
+          <tr>
+            <td>PillOption (small)</td>
+            <td>Padding: 12px 20px, gap: 7px, radius: full</td>
+            <td>15px / 600 weight</td>
+            <td>Default: white/55% bg + <code>--border-default</code> border. Selected: <code>--brand</code> fill + white text</td>
+            <td>default, hover, selected, active</td>
+          </tr>
+          <tr>
+            <td>PillLarge</td>
+            <td>Full width, padding: 18px 24px, radius: 20px</td>
+            <td>17px / 700 weight</td>
+            <td>Same as PillOption</td>
+            <td>default, hover, selected, active</td>
+          </tr>
+          <tr>
+            <td>AnalysisChip</td>
+            <td>Padding: 6px 14px, radius: full</td>
+            <td>12px / 500 weight</td>
+            <td>White/65% bg, blur(8px), white/40% border</td>
+            <td>Static</td>
+          </tr>
+          <tr>
+            <td>SourceBubble</td>
+            <td>Padding: 8px 16px, radius: full</td>
+            <td>13px / 500 weight</td>
+            <td>White/70% bg, blur(8px)</td>
+            <td>Animated entrance (float-up, staggered 0.4s)</td>
+          </tr>
+          <tr>
+            <td>NextButton</td>
+            <td>Padding: 14px 32px, radius: full</td>
+            <td>15px / 700 weight</td>
+            <td><code>--brand</code> bg, white text, 0.3 brand shadow</td>
+            <td>default, hover (lift + darker), active (press)</td>
+          </tr>
+          <tr>
+            <td>Toast</td>
+            <td>Absolute bottom: 24px, left/right: 28px, padding: 12px 16px, radius: 12px</td>
+            <td>13px / 500 weight / centered</td>
+            <td><code>--text-primary</code> bg, white text</td>
+            <td>Animated entrance (slide-up + fade)</td>
+          </tr>
+          <tr>
+            <td>ForkCard</td>
+            <td>Full width, padding: 24px, radius: 20px</td>
+            <td>Title: 22px/800, meta: 13px/500</td>
+            <td>White/70% bg, blur(10px), white/50% border</td>
+            <td>Static container</td>
+          </tr>
+          <tr>
+            <td>CTA Primary</td>
+            <td>Full width, padding: 16px 24px, radius: full</td>
+            <td>16px / 700 weight</td>
+            <td><code>--brand</code> fill, white text</td>
+            <td>default, hover (lift + darker)</td>
+          </tr>
+          <tr>
+            <td>CTA Secondary</td>
+            <td>Full width, padding: 16px 24px, radius: full</td>
+            <td>16px / 700 weight</td>
+            <td>Transparent bg, <code>--brand</code> border + text</td>
+            <td>default, hover (subtle brand bg tint)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>4. State Matrix</h3>
+      <table class="spec-table">
+        <thead>
+          <tr>
+            <th>Interaction</th>
+            <th>Trigger</th>
+            <th>Visual Change</th>
+            <th>Data Effect</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Select pill (multi)</td>
+            <td>Tap pill</td>
+            <td>Border &rarr; brand fill, text &rarr; white, checkmark appears</td>
+            <td>Toggle item in array (e.g. <code>dietary: ["nut-free"]</code>)</td>
+          </tr>
+          <tr>
+            <td>Select pill (single)</td>
+            <td>Tap pill</td>
+            <td>Previous deselects, new pill fills brand</td>
+            <td>Replace value (e.g. <code>spice: "hot"</code>)</td>
+          </tr>
+          <tr>
+            <td>Advance</td>
+            <td>Tap "Next" or swipe left</td>
+            <td>Cross-fade to next question, fill next progress segment, background tint shifts</td>
+            <td>Step index increments</td>
+          </tr>
+          <tr>
+            <td>Go back</td>
+            <td>Swipe right or tap back arrow</td>
+            <td>Reverse transition, previous tint</td>
+            <td>Step index decrements</td>
+          </tr>
+          <tr>
+            <td>Jump to step</td>
+            <td>Tap a filled progress segment</td>
+            <td>Immediate transition to that step</td>
+            <td>Step index set to tapped segment</td>
+          </tr>
+          <tr>
+            <td>Revise answer</td>
+            <td>Change selection on revisited step</td>
+            <td>Toast appears: "Updated! Tap any dot to revisit."</td>
+            <td>Value replaced in state</td>
+          </tr>
+          <tr>
+            <td>Complete</td>
+            <td>All questions answered + final "Next"</td>
+            <td>Celebration screen with confetti, all segments filled</td>
+            <td>Build recipe with collected answers</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>5. Responsive Notes</h3>
+      <ul>
+        <li>Phone shell is fixed at 390&times;760px &mdash; content is pixel-accurate to device</li>
+        <li>In production, the story view fills <code>100dvh</code> minus safe-area insets</li>
+        <li>Background tints use CSS custom properties for easy theming per step</li>
+        <li>Pill grid wraps naturally; on narrower devices (320px), pills may stack to fewer per row</li>
+        <li>Large pills (spice) are always full-width, stacked vertically</li>
+        <li>Toast is absolutely positioned and auto-dismisses after 3s (not shown in static mock)</li>
+        <li>Swipe gestures handled via <code>react-native-gesture-handler</code> PanGestureHandler or <code>Animated.event</code></li>
+      </ul>
+
+      <h3>6. What the Mock Does NOT Show</h3>
+      <ul>
+        <li><strong>Swipe transitions</strong> &mdash; cross-fade / slide animations between steps are described but not interactive in this static mock</li>
+        <li><strong>Gesture handling</strong> &mdash; swipe left/right to advance/retreat</li>
+        <li><strong>Auto-advance</strong> &mdash; on single-select questions, selecting a pill could auto-advance after a 500ms delay</li>
+        <li><strong>Toast auto-dismiss</strong> &mdash; toast should disappear after ~3 seconds</li>
+        <li><strong>Skip / "None" option</strong> &mdash; some questions may need a skip affordance</li>
+        <li><strong>Loading states</strong> &mdash; between analysis completion and first question</li>
+        <li><strong>Haptic feedback</strong> &mdash; light impact on pill selection, medium on step advance, success on celebration</li>
+        <li><strong>Accessibility</strong> &mdash; role="radiogroup" / role="checkbox", aria-current for progress, reduced-motion preferences for confetti</li>
+        <li><strong>Deep link handling</strong> &mdash; Frame 6 URL fork is triggered externally; the entry point (share sheet, clipboard detection) is not shown</li>
+        <li><strong>Questions 2, 3, 5</strong> &mdash; only dietary (Q1) and spice (Q4) are mocked; remaining questions (servings, cook time, equipment, garnish) follow identical layout patterns with their own tints</li>
+      </ul>
+
+    </div>
+  </details>
+</div>
+
+</body>
+</html>

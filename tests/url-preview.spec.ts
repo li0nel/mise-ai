@@ -1,109 +1,69 @@
 import { test, expect } from "@playwright/test";
 
-test.describe("URL preview extraction", () => {
-  test("recipe URL shows preview card with title and emoji", async ({
-    page,
-  }) => {
+test.describe("Search and builder entry points", () => {
+  test("search submission enters builder flow", async ({ page }) => {
     const errors: string[] = [];
     page.on("console", (msg) => {
       if (msg.type() === "error") errors.push(msg.text());
     });
 
-    await page.goto("/(main)");
+    await page.goto("/");
+    await expect(page.getByText("Find any dish.")).toBeVisible();
 
-    const input = page.getByPlaceholder("Ask about recipes...");
-    await expect(input).toBeVisible();
+    // Type in the search bar — filling triggers the overlay with a second input
+    const searchBar = page.getByRole("textbox").first();
+    await searchBar.fill("Massaman Curry");
+    // The search suggestions overlay now has focus; submit on the visible input
+    await page.getByRole("textbox").last().press("Enter");
 
-    // Type a recipe URL that maps to the Massaman mock
-    await input.fill("https://hot-thai-kitchen.com/massaman-curry/");
-
-    // Loading state
-    await expect(page.getByText("Extracting recipe…")).toBeVisible({
+    // Builder flow starts — shows dish name and analyzing state
+    await expect(page.getByText("Massaman Curry")).toBeVisible({
       timeout: 5_000,
     });
-
-    // Success state — title + emoji
-    await expect(page.getByText("Massaman Curry")).toBeVisible({
-      timeout: 10_000,
+    await expect(page.getByText("Analyzing variations\u2026")).toBeVisible({
+      timeout: 5_000,
     });
-    await expect(page.getByText("🍛")).toBeVisible();
-
-    // Truncated URL shown
-    await expect(
-      page.getByText("hot-thai-kitchen.com/massaman-curry/"),
-    ).toBeVisible();
-
-    // Send the message
-    await input.press("Enter");
-    await expect(input).toHaveValue("");
-
-    // User bubble with URL appears
-    await expect(
-      page.getByText("https://hot-thai-kitchen.com/massaman-curry/"),
-    ).toBeVisible({ timeout: 5_000 });
 
     expect(errors).toHaveLength(0);
   });
 
-  test("non-recipe URL shows failure state", async ({ page }) => {
+  test("recently searched item enters builder flow", async ({ page }) => {
     const errors: string[] = [];
     page.on("console", (msg) => {
       if (msg.type() === "error") errors.push(msg.text());
     });
 
-    await page.goto("/(main)");
+    await page.goto("/");
+    await expect(page.getByText("Find any dish.")).toBeVisible();
 
-    const input = page.getByPlaceholder("Ask about recipes...");
-    await expect(input).toBeVisible();
+    // Click a recently searched item (hardcoded: "Chicken curry")
+    await page.getByText("Chicken curry").click();
 
-    // Type a non-recipe URL
-    await input.fill("https://www.example.com/about");
-
-    // Loading state
-    await expect(page.getByText("Extracting recipe…")).toBeVisible({
+    // Builder flow starts
+    await expect(page.getByText("Analyzing variations\u2026")).toBeVisible({
       timeout: 5_000,
     });
-
-    // Failure state
-    await expect(page.getByText("Not a recipe page")).toBeVisible({
-      timeout: 10_000,
-    });
-    await expect(
-      page.getByText("This page does not contain a recipe."),
-    ).toBeVisible();
-
-    // User can dismiss
-    await page.getByLabel("Dismiss preview").click();
-    await expect(page.getByText("Not a recipe page")).not.toBeVisible();
 
     expect(errors).toHaveLength(0);
   });
 
-  test("preview can be dismissed after success", async ({ page }) => {
+  test("quick pick enters builder flow", async ({ page }) => {
     const errors: string[] = [];
     page.on("console", (msg) => {
       if (msg.type() === "error") errors.push(msg.text());
     });
 
-    await page.goto("/(main)");
+    await page.goto("/");
+    await expect(page.getByText("Quick picks")).toBeVisible();
 
-    const input = page.getByPlaceholder("Ask about recipes...");
-    await expect(input).toBeVisible();
+    // Quick picks are randomized — click "Pasta carbonara" from recently searched instead
+    // since it's always present, then verify the builder
+    await page.getByText("Pasta carbonara").click();
 
-    // Type a recipe URL
-    await input.fill("https://hot-thai-kitchen.com/massaman-curry/");
-
-    // Wait for success
-    await expect(page.getByText("Massaman Curry")).toBeVisible({
-      timeout: 10_000,
+    // Builder flow starts
+    await expect(page.getByText("Analyzing variations\u2026")).toBeVisible({
+      timeout: 5_000,
     });
-
-    // Dismiss
-    await page.getByLabel("Dismiss preview").click();
-
-    // Preview gone
-    await expect(page.getByText("Massaman Curry")).not.toBeVisible();
-    await expect(page.getByText("Extracting recipe…")).not.toBeVisible();
 
     expect(errors).toHaveLength(0);
   });

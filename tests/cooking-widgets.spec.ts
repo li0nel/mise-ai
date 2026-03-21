@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
-test.describe("Cooking widgets journey", () => {
-  test("cook-mode and rescue widgets render correctly via mock AI", async ({
+test.describe("Recipe detail content", () => {
+  test("recipe page renders ingredients, steps, and metadata", async ({
     page,
   }) => {
     const errors: string[] = [];
@@ -9,44 +9,27 @@ test.describe("Cooking widgets journey", () => {
       if (msg.type() === "error") errors.push(msg.text());
     });
 
-    await page.goto("/(main)");
-    const input = page.getByPlaceholder("Ask about recipes...");
+    // Navigate directly to the seed recipe
+    await page.goto("/recipe/massaman-curry");
 
-    // Send a recipe query to trigger full-recipe response
-    await input.fill("How do I make potato puree?");
-    await input.press("Enter");
-
-    // Verify full-recipe widget renders
-    await expect(page.getByText("Classic Potato Puree")).toBeVisible({
+    await expect(page.getByText("Massaman Curry").first()).toBeVisible({
       timeout: 10_000,
     });
 
-    // Verify recipe header content
-    await expect(page.getByText("30 min")).toBeVisible();
-    await expect(page.getByText("4 servings")).toBeVisible();
-    await expect(page.getByText("French", { exact: true })).toBeVisible();
+    // Verify recipe metadata
+    await expect(page.getByText(/4 serving/).first()).toBeVisible();
 
-    // Verify ingredients
-    await expect(page.getByText("Ingredients")).toBeVisible();
-    await expect(page.getByText("Yukon Gold potatoes")).toBeVisible();
-    await expect(page.getByText("Unsalted butter")).toBeVisible();
+    // Verify ingredients section
+    await expect(page.getByText("Beef chuck").first()).toBeVisible();
+    await expect(page.getByText("Coconut milk").first()).toBeVisible();
+    await expect(page.getByText("Baby potatoes").first()).toBeVisible();
+    await expect(page.getByText("Roasted peanuts").first()).toBeVisible();
 
-    // Verify steps
-    await expect(page.getByText("Steps")).toBeVisible();
-    await expect(page.getByText("Prep potatoes")).toBeVisible();
-    await expect(page.getByText("Boil until tender")).toBeVisible();
+    // Verify instructions section
+    await expect(page.getByText("Instructions")).toBeVisible();
 
-    // Verify timer pill
-    const timerPill = page.getByText(/20 min/);
-    await timerPill.first().scrollIntoViewIfNeeded();
-    await expect(timerPill.first()).toBeVisible();
-
-    // Verify save button
-    await expect(page.getByText("Save to My Recipes")).toBeVisible();
-
-    // Verify quick-action bubbles
-    await expect(page.getByText("Show me a variation")).toBeVisible();
-    await expect(page.getByText("What to serve with this?")).toBeVisible();
+    // Unsaved recipe shows Save Recipe button (not Cook Now / Add to Shopping)
+    await expect(page.getByText("Save Recipe")).toBeVisible();
 
     expect(errors).toHaveLength(0);
   });

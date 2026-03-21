@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 test.describe("Navigation journey", () => {
-  test("full cross-screen flow: chat → recipe detail → cart icon → shopping list", async ({
+  test("cross-screen flow: home → recipe detail → shopping list", async ({
     page,
   }) => {
     const errors: string[] = [];
@@ -9,11 +9,11 @@ test.describe("Navigation journey", () => {
       if (msg.type() === "error") errors.push(msg.text());
     });
 
-    // Start on chat — verify it loads
-    await page.goto("/(main)");
-    await expect(page.getByText("Ready to cook?")).toBeVisible();
+    // Start on home — verify it loads
+    await page.goto("/");
+    await expect(page.getByText("Find any dish.")).toBeVisible();
 
-    // Navigate to an existing recipe detail page (seed recipe)
+    // Navigate to a recipe detail page (seed recipe)
     await page.goto("/recipe/massaman-curry");
     await expect(page.getByText("Massaman Curry").first()).toBeVisible({
       timeout: 10_000,
@@ -25,7 +25,7 @@ test.describe("Navigation journey", () => {
     await expect(page.getByText("Shopping List")).toBeVisible({
       timeout: 10_000,
     });
-    // Mock shopping data has items from Boeuf Bourguignon and Pad Thai
+    // Mock shopping data has items
     await expect(page.getByText("Lardons").first()).toBeVisible();
 
     expect(errors).toHaveLength(0);
@@ -39,14 +39,13 @@ test.describe("Navigation journey", () => {
       if (msg.type() === "error") errors.push(msg.text());
     });
 
-    // Chat page
-    await page.goto("/(main)");
-    await expect(page.getByText("Ready to cook?")).toBeVisible();
-    await expect(page.getByPlaceholder("Ask about recipes...")).toBeVisible();
+    // Home page
+    await page.goto("/");
+    await expect(page.getByText("Find any dish.")).toBeVisible();
 
     // Recipe detail page (seed recipe)
     await page.goto("/recipe/massaman-curry");
-    await expect(page.getByText("Massaman Curry")).toBeVisible({
+    await expect(page.getByText("Massaman Curry").first()).toBeVisible({
       timeout: 10_000,
     });
     await expect(page.getByText("Beef chuck").first()).toBeVisible();

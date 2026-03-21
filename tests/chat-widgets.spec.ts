@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
-test.describe("Chat widgets journey", () => {
-  test("full-recipe widget renders with header, ingredients, steps, and quick-actions", async ({
+test.describe("Recipe builder flow", () => {
+  test("builder shows analysis, questions, and recipe ready state", async ({
     page,
   }) => {
     const errors: string[] = [];
@@ -9,78 +9,58 @@ test.describe("Chat widgets journey", () => {
       if (msg.type() === "error") errors.push(msg.text());
     });
 
-    await page.goto("/(main)");
-    const input = page.getByPlaceholder("Ask about recipes...");
-    await input.fill("How do I make potato puree?");
-    await input.press("Enter");
-    await expect(page.getByText("Classic Potato Puree")).toBeVisible({
-      timeout: 10_000,
+    await page.goto("/");
+    await page.getByText("Chicken curry").click();
+
+    // Analysis phase
+    await expect(page.getByText("Analyzing variations\u2026")).toBeVisible({
+      timeout: 5_000,
     });
 
-    await test.step("full-recipe renders with complete metadata", async () => {
-      await expect(page.getByText("Classic Potato Puree")).toBeVisible();
-      await expect(page.getByText("🥔").first()).toBeVisible();
-      await expect(page.getByText("4 servings")).toBeVisible();
-      await expect(page.getByText("French", { exact: true })).toBeVisible();
-      await expect(
-        page.getByText(/Silky smooth mashed potatoes/),
-      ).toBeVisible();
+    // Verdict appears after analysis
+    await expect(page.getByText("Which protein would you like?")).toBeVisible({
+      timeout: 15_000,
     });
 
-    await test.step("ingredients section renders all items", async () => {
-      await expect(page.getByText("Ingredients")).toBeVisible();
-      await expect(page.getByText("Yukon Gold potatoes")).toBeVisible();
-      await expect(page.getByText("Unsalted butter")).toBeVisible();
-      await expect(page.getByText("Heavy cream")).toBeVisible();
-      await expect(
-        page.getByText("Salt and white pepper", { exact: true }),
-      ).toBeVisible();
-    });
+    // Analyzed sources card
+    await expect(page.getByText("Analyzed 47 sources")).toBeVisible();
 
-    await test.step("steps section renders all steps with details", async () => {
-      await expect(page.getByText("Steps")).toBeVisible();
-      await expect(page.getByText("Prep potatoes")).toBeVisible();
-      await expect(page.getByText("Boil until tender")).toBeVisible();
-      await expect(page.getByText("Drain and dry")).toBeVisible();
-      await expect(page.getByText("Rice and enrich")).toBeVisible();
-    });
-
-    await test.step("quick-action bubbles render with arrows", async () => {
-      const variation = page.getByText("Show me a variation");
-      await variation.scrollIntoViewIfNeeded();
-      await expect(variation).toBeVisible();
-      await expect(page.getByText("What to serve with this?")).toBeVisible();
-      await expect(page.getByText("\u2192").first()).toBeVisible();
-    });
-
-    await test.step("quick-action click sends chat message", async () => {
-      await page.getByText("Show me a variation").click();
-      await expect(
-        page.getByText("Show me a different variation of this recipe"),
-      ).toBeVisible({ timeout: 10_000 });
-    });
+    // Quick reply options visible
+    await expect(
+      page.getByText("\uD83D\uDC04 Beef (traditional)"),
+    ).toBeVisible();
+    await expect(page.getByText("\uD83C\uDF57 Chicken")).toBeVisible();
+    await expect(page.getByText("\uD83E\uDED8 Tofu")).toBeVisible();
+    await expect(page.getByText("\uD83E\uDD90 Shrimp")).toBeVisible();
 
     expect(errors).toHaveLength(0);
   });
 
-  test("Save to My Recipes shows feedback", async ({ page }) => {
+  test("answering all questions leads to recipe ready", async ({ page }) => {
     const errors: string[] = [];
     page.on("console", (msg) => {
       if (msg.type() === "error") errors.push(msg.text());
     });
 
-    await page.goto("/(main)");
-    const input = page.getByPlaceholder("Ask about recipes...");
-    await input.fill("How do I make potato puree?");
-    await input.press("Enter");
-    await expect(page.getByText("Save to My Recipes")).toBeVisible({
-      timeout: 10_000,
+    await page.goto("/");
+    await page.getByText("Chicken curry").click();
+
+    // Wait for first question
+    await expect(page.getByText("Which protein would you like?")).toBeVisible({
+      timeout: 15_000,
     });
 
-    await page.getByText("Save to My Recipes").click();
-    await expect(page.getByText(/Saved to My Recipes/)).toBeVisible({
+    // Answer all 4 questions
+    await page.getByText("\uD83D\uDC04 Beef (traditional)").click();
+    await page.getByText("\u26A1 Weeknight express (45 min)").click();
+    await page.getByText("\uD83C\uDFEA Store-bought (totally fine)").click();
+    await page.getByText("\uD83C\uDF36\uFE0F\uD83C\uDF36\uFE0F Medium").click();
+
+    // Recipe ready
+    await expect(page.getByText("Your recipe is ready")).toBeVisible({
       timeout: 5_000,
     });
+    await expect(page.getByText("View Recipe \u2192")).toBeVisible();
 
     expect(errors).toHaveLength(0);
   });

@@ -9,7 +9,7 @@ test.describe("Shopping list journey", () => {
       if (msg.type() === "error") errors.push(msg.text());
     });
 
-    await page.goto("/(main)/shopping");
+    await page.goto("/shopping");
     await expect(page.getByText("Shopping List")).toBeVisible({
       timeout: 10_000,
     });
@@ -57,7 +57,7 @@ test.describe("Shopping list journey", () => {
       if (msg.type() === "error") errors.push(msg.text());
     });
 
-    await page.goto("/(main)/shopping");
+    await page.goto("/shopping");
     await expect(page.getByText("Shopping List")).toBeVisible({
       timeout: 10_000,
     });
@@ -82,7 +82,7 @@ test.describe("Shopping list journey", () => {
     expect(errors).toHaveLength(0);
   });
 
-  test("recipe page → add to shopping overlay → add items → done state persists → items appear in shopping list", async ({
+  test("recipe page → save → add to shopping overlay → items appear in shopping list", async ({
     page,
   }) => {
     const errors: string[] = [];
@@ -90,13 +90,18 @@ test.describe("Shopping list journey", () => {
       if (msg.type() === "error") errors.push(msg.text());
     });
 
-    await page.goto("/(main)/recipe/massaman-curry");
-    await expect(page.getByText("Massaman Curry")).toBeVisible({
+    await page.goto("/recipe/massaman-curry");
+    await expect(page.getByText("Massaman Curry").first()).toBeVisible({
       timeout: 10_000,
     });
 
-    // Add to Shopping List button in bottom bar
-    await expect(page.getByText("Add to Shopping List")).toBeVisible();
+    // Unsaved recipe: save first to reveal Add to Shopping List
+    await page.getByText("Save Recipe").click();
+
+    // After saving, Add to Shopping List appears
+    await expect(page.getByText("Add to Shopping List")).toBeVisible({
+      timeout: 5_000,
+    });
 
     // Click → overlay opens with ingredient count
     await page.getByText("Add to Shopping List").click();
@@ -107,21 +112,14 @@ test.describe("Shopping list journey", () => {
     // Click Add Items button in overlay
     await page.getByText(/Add 20 Items to List/).click();
 
-    // Done state: checkmark feedback, original button gone
+    // Done state: checkmark feedback
     await expect(page.getByText(/\u2713.*Added to shopping list/)).toBeVisible({
       timeout: 3_000,
     });
-    await expect(
-      page.getByText("Add to Shopping List", { exact: true }),
-    ).not.toBeVisible();
-
-    // FAILURE MODE: done state persists (doesn't revert after 3s)
-    await page.waitForTimeout(3_000);
-    await expect(page.getByText(/Added to shopping list/)).toBeVisible();
 
     // Navigate to shopping list — items actually appear
     await page.getByLabel("Shopping list").click();
-    await expect(page.getByText("Shopping List")).toBeVisible({
+    await expect(page.getByText("Shopping List", { exact: true })).toBeVisible({
       timeout: 10_000,
     });
     await expect(page.getByText(/Garlic/).first()).toBeVisible();

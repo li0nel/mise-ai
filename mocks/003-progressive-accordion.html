@@ -1,0 +1,1531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mise AI — Variation 003: Progressive Accordion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --brand: #C8481C;
+    --brand-hover: #A33A16;
+    --bg-default: #FDFAF7;
+    --bg-surface: #F5F0EB;
+    --bg-elevated: #FFFFFF;
+    --text-primary: #1A1614;
+    --text-secondary: #6B5E54;
+    --text-muted: #9C8E82;
+    --border-default: #E8E0D8;
+    --border-subtle: #F0EAE4;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 20px;
+    --radius-full: 9999px;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.06);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+    --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+
+    --green-check: #2D8A4E;
+    --green-bg: #E8F5EC;
+    --green-border: #B7DFBF;
+    --amber-bg: #FFF8E1;
+    --amber-border: #FFE082;
+    --revise-border: #F0C674;
+    --revise-bg: #FFFBF0;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #F3F0ED;
+    color: var(--text-primary);
+    padding: 48px 32px 80px;
+    min-height: 100vh;
+  }
+
+  /* ── Page Header ── */
+  .page-header {
+    max-width: 1600px;
+    margin: 0 auto 48px;
+    text-align: center;
+  }
+  .page-header .badge {
+    display: inline-block;
+    background: var(--brand);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    border-radius: var(--radius-full);
+    margin-bottom: 16px;
+  }
+  .page-header h1 {
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+  }
+  .page-header p {
+    font-size: 16px;
+    color: var(--text-secondary);
+    max-width: 700px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  /* ── Frames Row ── */
+  .frames-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 48px;
+    justify-content: center;
+    max-width: 1800px;
+    margin: 0 auto 64px;
+  }
+
+  .frame-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    flex-shrink: 0;
+  }
+  .frame-label {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .frame-annotation {
+    max-width: 360px;
+    text-align: center;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--text-secondary);
+    margin-top: 4px;
+  }
+  .frame-annotation strong {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
+  /* ── Phone Shell ── */
+  .phone-shell {
+    width: 390px;
+    height: 760px;
+    border-radius: 44px;
+    background: var(--bg-default);
+    box-shadow:
+      0 0 0 2px #1A1614,
+      0 0 0 6px #3A3330,
+      0 0 0 8px #1A1614,
+      var(--shadow-lg);
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Status Bar ── */
+  .status-bar {
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    flex-shrink: 0;
+    background: var(--bg-default);
+  }
+  .status-bar .time { font-weight: 700; }
+  .status-icons {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+  }
+  .status-icons svg { display: block; }
+
+  /* ── App Header ── */
+  .app-header {
+    height: 48px;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 12px;
+    flex-shrink: 0;
+    border-bottom: 1px solid var(--border-subtle);
+    background: var(--bg-default);
+  }
+  .back-arrow {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    color: var(--text-primary);
+    transition: background 0.15s;
+  }
+  .back-arrow:hover { background: var(--bg-surface); }
+  .logo-text {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -0.5px;
+  }
+  .logo-text .dot { color: var(--brand); }
+
+  /* ── Screen Content ── */
+  .screen-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  /* ── Analysis Chip ── */
+  .analysis-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-full);
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.15s;
+    align-self: center;
+    margin-bottom: 6px;
+  }
+  .analysis-chip:hover {
+    background: var(--bg-elevated);
+    border-color: var(--brand);
+    color: var(--text-primary);
+  }
+  .analysis-chip .emoji { font-size: 15px; }
+  .analysis-chip .count {
+    font-weight: 600;
+    color: var(--text-muted);
+    font-size: 12px;
+  }
+
+  /* ── Accordion Container ── */
+  .accordion {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  /* ── Accordion Row ── */
+  .accordion-row {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    transition: all 0.2s;
+  }
+  .accordion-row.pending {
+    opacity: 0.5;
+  }
+  .accordion-row.completed {
+    border-color: var(--green-border);
+    background: var(--green-bg);
+  }
+  .accordion-row.active {
+    border-color: var(--brand);
+    border-left: 3px solid var(--brand);
+    box-shadow: var(--shadow-sm);
+  }
+  .accordion-row.revising {
+    border-color: var(--revise-border);
+    border-left: 3px solid var(--revise-border);
+    background: var(--revise-bg);
+    box-shadow: 0 2px 8px rgba(240, 198, 116, 0.15);
+  }
+
+  /* ── Row Header ── */
+  .row-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    cursor: pointer;
+    min-height: 44px;
+  }
+  .row-header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .row-number {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .pending .row-number {
+    background: var(--bg-surface);
+    color: var(--text-muted);
+  }
+  .active .row-number {
+    background: var(--brand);
+    color: #fff;
+  }
+  .revising .row-number {
+    background: #E8A840;
+    color: #fff;
+  }
+  .completed .row-number {
+    background: var(--green-check);
+    color: #fff;
+  }
+  .row-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  .pending .row-label {
+    color: var(--text-muted);
+  }
+  .row-header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .row-answer {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--green-check);
+  }
+  .row-chevron {
+    width: 18px;
+    height: 18px;
+    color: var(--text-muted);
+    transition: transform 0.2s;
+    flex-shrink: 0;
+  }
+  .active .row-chevron,
+  .revising .row-chevron {
+    transform: rotate(180deg);
+    color: var(--brand);
+  }
+  .revising .row-chevron {
+    color: #E8A840;
+  }
+
+  /* ── Pill Options ── */
+  .pill-area {
+    padding: 0 14px 14px;
+  }
+  .pill-area .question-text {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+    line-height: 1.4;
+  }
+  .pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: var(--radius-full);
+    border: 1.5px solid var(--border-default);
+    background: var(--bg-elevated);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .pill:hover {
+    border-color: var(--brand);
+    background: #FDF5F2;
+  }
+  .pill.selected {
+    border-color: var(--brand);
+    background: var(--brand);
+    color: #fff;
+  }
+  .pill.selected .pill-check {
+    display: inline-flex;
+  }
+  .pill-check {
+    display: none;
+    width: 14px;
+    height: 14px;
+  }
+  .pill.pre-checked {
+    border-color: var(--brand);
+    border-style: dashed;
+    background: #FDF5F2;
+    color: var(--brand);
+  }
+  .pill.pre-checked .pill-check {
+    display: inline-flex;
+    color: var(--brand);
+  }
+
+  /* ── Revise hint ── */
+  .revise-hint {
+    font-size: 11px;
+    color: #C8961C;
+    font-weight: 500;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* ── Celebration Card ── */
+  .celebration-card {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
+    padding: 24px 20px;
+    text-align: center;
+    box-shadow: var(--shadow-md);
+    margin-top: 8px;
+  }
+  .celebration-emoji {
+    font-size: 36px;
+    margin-bottom: 8px;
+  }
+  .celebration-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }
+  .celebration-subtitle {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 18px;
+  }
+  .btn-primary {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: var(--radius-md);
+    background: var(--brand);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.15s;
+    margin-bottom: 8px;
+  }
+  .btn-primary:hover { background: var(--brand-hover); }
+  .btn-secondary {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    border: 1.5px solid var(--border-default);
+    border-radius: var(--radius-md);
+    background: var(--bg-elevated);
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-secondary:hover {
+    border-color: var(--brand);
+    color: var(--text-primary);
+    background: #FDF5F2;
+  }
+
+  /* ── Recipe Preview Card (Frame 5) ── */
+  .recipe-preview {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+  .recipe-preview-image {
+    height: 140px;
+    background: linear-gradient(135deg, #E8A840 0%, #C8481C 60%, #8B2E10 100%);
+    display: flex;
+    align-items: flex-end;
+    padding: 12px 16px;
+    position: relative;
+  }
+  .recipe-preview-image::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 60%);
+  }
+  .recipe-preview-image .source-badge {
+    position: relative;
+    z-index: 1;
+    background: rgba(255,255,255,0.9);
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+  .recipe-preview-body {
+    padding: 16px;
+  }
+  .recipe-preview-body h3 {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+  }
+  .recipe-preview-meta {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .recipe-preview-meta span {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+  .recipe-preview-body p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  /* ── URL Entry Area (Frame 5) ── */
+  .url-entry {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 4px;
+  }
+  .url-entry .url-icon {
+    width: 20px;
+    height: 20px;
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+  .url-entry .url-text {
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* ── Divider ── */
+  .or-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 4px 0;
+  }
+  .or-divider .line {
+    flex: 1;
+    height: 1px;
+    background: var(--border-default);
+  }
+  .or-divider span {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+  }
+
+  /* ── Section Label in Frame 5 ── */
+  .section-label {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    margin-bottom: 2px;
+  }
+
+  /* ── Progress Dots ── */
+  .progress-bar {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    justify-content: center;
+    margin-bottom: 4px;
+  }
+  .progress-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--border-default);
+  }
+  .progress-dot.done { background: var(--green-check); }
+  .progress-dot.current { background: var(--brand); width: 20px; border-radius: 4px; }
+  .progress-dot.pending-dot { background: var(--border-default); }
+
+  /* ── Checkmark SVG reusable ── */
+  .check-icon {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+  }
+
+  /* ── Implementation Spec ── */
+  .spec-section {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 16px;
+  }
+  .spec-section details {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+  .spec-section summary {
+    padding: 20px 24px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    color: var(--text-primary);
+    user-select: none;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .spec-section summary::-webkit-details-marker { display: none; }
+  .spec-section summary::before {
+    content: '\25B6';
+    font-size: 10px;
+    transition: transform 0.2s;
+    color: var(--text-muted);
+  }
+  .spec-section details[open] summary::before {
+    transform: rotate(90deg);
+  }
+  .spec-body {
+    padding: 0 24px 24px;
+  }
+  .spec-body h3 {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 24px 0 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .spec-body h3:first-child { margin-top: 0; }
+  .spec-body p, .spec-body li {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+  }
+  .spec-body ul, .spec-body ol {
+    padding-left: 20px;
+    margin: 8px 0;
+  }
+  .spec-body li { margin-bottom: 4px; }
+  .spec-body table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+    font-size: 13px;
+  }
+  .spec-body th {
+    text-align: left;
+    font-weight: 600;
+    color: var(--text-primary);
+    padding: 8px 12px;
+    border-bottom: 2px solid var(--border-default);
+    background: var(--bg-surface);
+  }
+  .spec-body td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+    vertical-align: top;
+  }
+  .spec-body code {
+    background: var(--bg-surface);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- PAGE HEADER                                  -->
+<!-- ════════════════════════════════════════════ -->
+<header class="page-header">
+  <div class="badge">Variation 3</div>
+  <h1>Progressive Accordion</h1>
+  <p>All question categories visible from the start as collapsed rows. Current question expanded with pill options. Answer, collapse, next opens. Full journey visible at all times. Tap any answered row to revise.</p>
+</header>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- FRAMES ROW                                   -->
+<!-- ════════════════════════════════════════════ -->
+<div class="frames-row">
+
+  <!-- ──────────────────────────────── -->
+  <!-- FRAME 1: Analysis Complete       -->
+  <!-- ──────────────────────────────── -->
+  <div class="frame-container">
+    <div class="frame-label">Frame 1</div>
+    <div class="phone-shell">
+      <!-- Status Bar -->
+      <div class="status-bar">
+        <span class="time">9:41</span>
+        <div class="status-icons">
+          <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><rect x="0" y="5" width="3" height="7" rx="1" fill="currentColor" opacity="0.4"/><rect x="4.5" y="3" width="3" height="9" rx="1" fill="currentColor" opacity="0.6"/><rect x="9" y="1" width="3" height="11" rx="1" fill="currentColor" opacity="0.8"/><rect x="13.5" y="0" width="3" height="12" rx="1" fill="currentColor"/></svg>
+          <svg width="15" height="12" viewBox="0 0 15 12" fill="none"><path d="M7.5 3.5C9.4 3.5 11.1 4.3 12.3 5.5L13.7 4.1C12.1 2.5 9.9 1.5 7.5 1.5C5.1 1.5 2.9 2.5 1.3 4.1L2.7 5.5C3.9 4.3 5.6 3.5 7.5 3.5ZM7.5 7.5C8.5 7.5 9.3 7.9 9.9 8.5L11.3 7.1C10.3 6.1 9 5.5 7.5 5.5C6 5.5 4.7 6.1 3.7 7.1L5.1 8.5C5.7 7.9 6.5 7.5 7.5 7.5ZM7.5 11.5C8.3 11.5 9 10.8 9 10C9 9.2 8.3 8.5 7.5 8.5C6.7 8.5 6 9.2 6 10C6 10.8 6.7 11.5 7.5 11.5Z" fill="currentColor"/></svg>
+          <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0" y="1" width="21" height="10" rx="2.5" stroke="currentColor" stroke-width="1"/><rect x="22" y="4" width="2" height="4" rx="1" fill="currentColor" opacity="0.4"/><rect x="1.5" y="2.5" width="14" height="7" rx="1.5" fill="currentColor"/></svg>
+        </div>
+      </div>
+      <!-- App Header -->
+      <div class="app-header">
+        <div class="back-arrow">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="logo-text">mise<span class="dot">.</span></div>
+      </div>
+      <!-- Screen -->
+      <div class="screen-content">
+        <div class="analysis-chip">
+          <span class="emoji">&#127835;</span>
+          <span>Massaman Curry</span>
+          <span class="count">47 sources</span>
+        </div>
+        <div class="accordion">
+          <!-- 1: Dietary Needs — ACTIVE / EXPANDED -->
+          <div class="accordion-row active">
+            <div class="row-header">
+              <div class="row-header-left">
+                <div class="row-number">1</div>
+                <div class="row-label">Dietary Needs</div>
+              </div>
+              <div class="row-header-right">
+                <svg class="row-chevron" viewBox="0 0 18 18" fill="none"><path d="M4.5 6.75L9 11.25L13.5 6.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+            </div>
+            <div class="pill-area">
+              <div class="question-text">Any dietary restrictions to consider?</div>
+              <div class="pills">
+                <div class="pill pre-checked">
+                  <svg class="pill-check" viewBox="0 0 14 14" fill="none"><path d="M2.5 7.5L5.5 10.5L11.5 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  Nut-free
+                </div>
+                <div class="pill">Dairy-free</div>
+                <div class="pill">Vegetarian</div>
+                <div class="pill">Vegan</div>
+                <div class="pill">Gluten-free</div>
+                <div class="pill">Low-sodium</div>
+              </div>
+            </div>
+          </div>
+          <!-- 2: Protein — PENDING -->
+          <div class="accordion-row pending">
+            <div class="row-header">
+              <div class="row-header-left">
+                <div class="row-number">2</div>
+                <div class="row-label">Protein</div>
+              </div>
+              <div class="row-header-right">
+                <svg class="row-chevron" viewBox="0 0 18 18" fill="none"><path d="M4.5 6.75L9 11.25L13.5 6.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+            </div>
+          </div>
+          <!-- 3: Cook Time — PENDING -->
+          <div class="accordion-row pending">
+            <div class="row-header">
+              <div class="row-header-left">
+                <div class="row-number">3</div>
+                <div class="row-label">Cook Time</div>
+              </div>
+              <div class="row-header-right">
+                <svg class="row-chevron" viewBox="0 0 18 18" fill="none"><path d="M4.5 6.75L9 11.25L13.5 6.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+            </div>
+          </div>
+          <!-- 4: Curry Paste — PENDING -->
+          <div class="accordion-row pending">
+            <div class="row-header">
+              <div class="row-header-left">
+                <div class="row-number">4</div>
+                <div class="row-label">Curry Paste</div>
+              </div>
+              <div class="row-header-right">
+                <svg class="row-chevron" viewBox="0 0 18 18" fill="none"><path d="M4.5 6.75L9 11.25L13.5 6.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+            </div>
+          </div>
+          <!-- 5: Spice Level — PENDING -->
+          <div class="accordion-row pending">
+            <div class="row-header">
+              <div class="row-header-left">
+                <div class="row-number">5</div>
+                <div class="row-label">Spice Level</div>
+              </div>
+              <div class="row-header-right">
+                <svg class="row-chevron" viewBox="0 0 18 18" fill="none"><path d="M4.5 6.75L9 11.25L13.5 6.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+            </div>
+          </div>
+          <!-- 6: Serving Size — PENDING -->
+          <div class="accordion-row pending">
+            <div class="row-header">
+              <div class="row-header-left">
+                <div class="row-number">6</div>
+                <div class="row-label">Serving Size</div>
+              </div>
+              <div class="row-header-right">
+                <svg class="row-chevron" viewBox="0 0 18 18" fill="none"><path d="M4.5 6.75L9 11.25L13.5 6.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="frame-annotation"><strong>Analysis complete.</strong> All 6 categories visible. Dietary Needs expanded first with pre-checked "Nut-free" (detected from peanut allergy). Remaining rows dimmed.</div>
+  </div>
+
+  <!-- ──────────────────────────────── -->
+  <!-- FRAME 2: Mid-Flow               -->
+  <!-- ──────────────────────────────── -->
+  <div class="frame-container">
+    <div class="frame-label">Frame 2</div>
+    <div class="phone-shell">
+      <div class="status-bar">
+        <span class="time">9:41</span>
+        <div class="status-icons">
+          <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><rect x="0" y="5" width="3" height="7" rx="1" fill="currentColor" opacity="0.4"/><rect x="4.5" y="3" width="3" height="9" rx="1" fill="currentColor" opacity="0.6"/><rect x="9" y="1" width="3" height="11" rx="1" fill="currentColor" opacity="0.8"/><rect x="13.5" y="0" width="3" height="12" rx="1" fill="currentColor"/></svg>
+          <svg width="15" height="12" viewBox="0 0 15 12" fill="none"><path d="M7.5 3.5C9.4 3.5 11.1 4.3 12.3 5.5L13.7 4.1C12.1 2.5 9.9 1.5 7.5 1.5C5.1 1.5 2.9 2.5 1.3 4.1L2.7 5.5C3.9 4.3 5.6 3.5 7.5 3.5ZM7.5 7.5C8.5 7.5 9.3 7.9 9.9 8.5L11.3 7.1C10.3 6.1 9 5.5 7.5 5.5C6 5.5 4.7 6.1 3.7 7.1L5.1 8.5C5.7 7.9 6.5 7.5 7.5 7.5ZM7.5 11.5C8.3 11.5 9 10.8 9 10C9 9.2 8.3 8.5 7.5 8.5C6.7 8.5 6 9.2 6 10C6 10.8 6.7 11.5 7.5 11.5Z" fill="currentColor"/></svg>
+          <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0" y="1" width="21" height="10" rx="2.5" stroke="currentColor" stroke-width="1"/><rect x="22" y="4" width="2" height="4" rx="1" fill="currentColor" opacity="0.4"/><rect x="1.5" y="2.5" width="14" height="7" rx="1.5" fill="currentColor"/></svg>
+        </div>
+      </div>
+      <div class="app-header">
+        <div class="back-arrow">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="logo-text">mise<span class="dot">.</span></div>
+      </div>
+      <div class="screen-content">
+        <div class="analysis-chip">
+          <span class="emoji">&#127835;</span>
+          <span>Massaman Curry</span>
+          <span class="count">47 sources</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-dot done"></div>
+          <div class="progress-dot done"></div>
+          <div class="progress-dot done"></div>
+          <div class="progress-dot current"></div>
+          <div class="progress-dot pending-dot"></div>
+          <div class="progress-dot pending-dot"></div>
+        </div>
+        <div class="accordion">
+          <!-- 1: Dietary Needs — COMPLETED -->
+          <div class="accordion-row completed">
+            <div class="row-header">
+              <div class="row-header-left">
+                <div class="row-number">
+                  <svg class="check-icon" viewBox="0 0 14 14" fill="none"><path d="M2.5 7.5L5.5 10.5L11.5 4.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <div class="row-label">Dietary Needs</div>
+              </div>
+              <div class="row-header-right">
+                <span class="row-answer">Nut-free</span>
+                <svg class="row-chevron" viewBox="0 0 18 18" fill="none"><path d="M4.5 6.75L9 11.25L13.5 6.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+            </div>
+          </div>
+          <!-- 2: Protein — COMPLETED -->
+          <div class="accordion-row completed">
+            <div class="row-header">
+              <div class="row-header-left">
+                <div class="row-number">
+                  <svg class="check-icon" viewBox="0 0 14 14" fill="none"><path d="M2.5 7.5L5.5 10.5L11.5 4.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <div class="row-label">Protein</div>
+              </div>
+              <div class="row-header-right">
+                <span class="row-answer">Chicken thigh</span>
+                <svg class="row-chevron" viewBox="0 0 18 18" fill="none"><path d="M4.5 6.75L9 11.25L13.5 6.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+            </div>
+          </div>
+          <!-- 3: Cook Time — COMPLETED -->
+          <div class="accordion-row completed">
+            <div class="row-header">
+              <div class="row-header-left">
+                <div class="row-number">
+                  <svg class="check-icon" viewBox="0 0 14 14" fill="none"><path d="M2.5 7.5L5.5 10.5L11.5 4.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <div class="row-label">Cook Time</div>
+              </div>
+              <div class="row-header-right">
+                <span class="row-answer">Under 45 min</span>
+                <svg class="row-chevron" viewBox="0 0 18 18" fill="none"><path d="M4.5 6.75L9 11.25L13.5 6.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+            </div>
+          </div>
+          <!-- 4: Curry Paste — ACTIVE / EXPANDED -->
+          <div class="accordion-row active">
+            <div class="row-header">
+              <div class="row-header-left">
+                <div class="row-number">4</div>
+                <div class="row-label">Curry Paste</div>
+              </div>
+              <div class="row-header-right">
+                <svg class="row-chevron" viewBox="0 0 18 18" fill="none"><path d="M4.5 6.75L9 11.25L13.5 6.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+            </div>
+            <div class="pill-area">
+              <div class="question-text">Use store-bought or make from scratch?</div>
+              <div class="pills">
+                <div class="pill">Store-bought</div>
+                <div class="pill">Homemade</div>
+                <div class="pill">Either works</div>
+              </div>
+            </div>
+          </div>
+          <!-- 5: Spice Level — PENDING -->
+          <div class="accordion-row pending">
+            <div class="row-header">
+              <div class="row-header-left">
+                <div class="row-number">5</div>
+                <div class="row-label">Spice Level</div>
+              </div>
+              <div class="row-header-right">
+                <svg class="row-chevron" viewBox="0 0 18 18" fill="none"><path d="M4.5 6.75L9 11.25L13.5 6.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+            </div>
+          </div>
+          <!-- 6: Serving Size — PENDING -->
+          <div class="accordion-row pending">
+            <div class="row-header">
+              <div class="row-header-left">
+                <div class="row-number">6</div>
+                <div class="row-label">Serving Size</div>
+              </div>
+              <div class="row-header-right">
+                <svg class="row-chevron" viewBox="0 0 18 18" fill="none"><path d="M4.5 6.75L9 11.25L13.5 6.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="frame-annotation"><strong>Mid-flow: 3 answered, 1 active.</strong> Completed rows show green checks with inline answers. Curry Paste is the current question. Progress dots at top show 3/6 done.</div>
+  </div>
+
+  <!-- ──────────────────────────────── -->
+  <!-- FRAME 3: Revising Previous       -->
+  <!-- ──────────────────────────────── -->
+  <div class="frame-container">
+    <div class="frame-label">Frame 3</div>
+    <div class="phone-shell">
+      <div class="status-bar">
+        <span class="time">9:41</span>
+        <div class="status-icons">
+          <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><rect x="0" y="5" width="3" height="7" rx="1" fill="currentColor" opacity="0.4"/><rect x="4.5" y="3" width="3" height="9" rx="1" fill="currentColor" opacity="0.6"/><rect x="9" y="1" width="3" height="11" rx="1" fill="currentColor" opacity="0.8"/><rect x="13.5" y="0" width="3" height="12" rx="1" fill="currentColor"/></svg>
+          <svg width="15" height="12" viewBox="0 0 15 12" fill="none"><path d="M7.5 3.5C9.4 3.5 11.1 4.3 12.3 5.5L13.7 4.1C12.1 2.5 9.9 1.5 7.5 1.5C5.1 1.5 2.9 2.5 1.3 4.1L2.7 5.5C3.9 4.3 5.6 3.5 7.5 3.5ZM7.5 7.5C8.5 7.5 9.3 7.9 9.9 8.5L11.3 7.1C10.3 6.1 9 5.5 7.5 5.5C6 5.5 4.7 6.1 3.7 7.1L5.1 8.5C5.7 7.9 6.5 7.5 7.5 7.5ZM7.5 11.5C8.3 11.5 9 10.8 9 10C9 9.2 8.3 8.5 7.5 8.5C6.7 8.5 6 9.2 6 10C6 10.8 6.7 11.5 7.5 11.5Z" fill="currentColor"/></svg>
+          <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0" y="1" width="21" height="10" rx="2.5" stroke="currentColor" stroke-width="1"/><rect x="22" y="4" width="2" height="4" rx="1" fill="currentColor" opacity="0.4"/><rect x="1.5" y="2.5" width="14" height="7" rx="1.5" fill="currentColor"/></svg>
+        </div>
+      </div>
+      <div class="app-header">
+        <div class="back-arrow">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="logo-text">mise<span class="dot">.</span></div>
+      </div>
+      <div class="screen-content">
+        <div class="analysis-chip">
+          <span class="emoji">&#127835;</span>
+          <span>Massaman Curry</span>
+          <span class="count">47 sources</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-dot done"></div>
+          <div class="progress-dot done"></div>
+          <div class="progress-dot done"></div>
+          <div class="progress-dot current"></div>
+          <div class="progress-dot pending-dot"></div>
+          <div class="progress-dot pending-dot"></div>
+        </div>
+        <div class="accordion">
+          <!-- 1: Dietary Needs — COMPLETED -->
+          <div class="accordion-row completed">
+            <div class="row-header">
+              <div class="row-header-left">
+                <div class="row-number">
+                  <svg class="check-icon" viewBox="0 0 14 14" fill="none"><path d="M2.5 7.5L5.5 10.5L11.5 4.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <div class="row-label">Dietary Needs</div>
+              </div>
+              <div class="row-header-right">
+                <span class="row-answer">Nut-free</span>
+                <svg class="row-chevron" viewBox="0 0 18 18" fill="none"><path d="M4.5 6.75L9 11.25L13.5 6.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+            </div>
+          </div>
+          <!-- 2: Protein — REVISING (re-expanded) -->
+          <div class="accordion-row revising">
+            <div class="row-header">
+              <div class="row-header-left">
+                <div class="row-number">2</div>
+                <div class="row-label">Protein</div>
+              </div>
+              <div class="row-header-right">
+                <svg class="row-chevron" viewBox="0 0 18 18" fill="none"><path d="M4.5 6.75L9 11.25L13.5 6.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+            </div>
+            <div class="pill-area">
+              <div class="revise-hint">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1C3.7 1 1 3.7 1 7C1 10.3 3.7 13 7 13C10.3 13 13 10.3 13 7C13 3.7 10.3 1 7 1ZM7.5 10H6.5V6H7.5V10ZM7.5 5H6.5V4H7.5V5Z" fill="currentColor"/></svg>
+                Tap a different option to change your answer
+              </div>
+              <div class="pills">
+                <div class="pill selected">
+                  <svg class="pill-check" viewBox="0 0 14 14" fill="none"><path d="M2.5 7.5L5.5 10.5L11.5 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  Chicken thigh
+                </div>
+                <div class="pill">Chicken breast</div>
+                <div class="pill">Beef</div>
+                <div class="pill">Tofu</div>
+                <div class="pill">Shrimp</div>
+                <div class="pill">No protein</div>
+              </div>
+            </div>
+          </div>
+          <!-- 3: Cook Time — COMPLETED -->
+          <div class="accordion-row completed">
+            <div class="row-header">
+              <div class="row-header-left">
+                <div class="row-number">
+                  <svg class="check-icon" viewBox="0 0 14 14" fill="none"><path d="M2.5 7.5L5.5 10.5L11.5 4.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <div class="row-label">Cook Time</div>
+              </div>
+              <div class="row-header-right">
+                <span class="row-answer">Under 45 min</span>
+                <svg class="row-chevron" viewBox="0 0 18 18" fill="none"><path d="M4.5 6.75L9 11.25L13.5 6.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+            </div>
+          </div>
+          <!-- 4: Curry Paste — ACTIVE but displaced below revision -->
+          <div class="accordion-row active">
+            <div class="row-header">
+              <div class="row-header-left">
+                <div class="row-number">4</div>
+                <div class="row-label">Curry Paste</div>
+              </div>
+              <div class="row-header-right">
+                <svg class="row-chevron" viewBox="0 0 18 18" fill="none"><path d="M4.5 6.75L9 11.25L13.5 6.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+            </div>
+            <div class="pill-area">
+              <div class="question-text">Use store-bought or make from scratch?</div>
+              <div class="pills">
+                <div class="pill">Store-bought</div>
+                <div class="pill">Homemade</div>
+                <div class="pill">Either works</div>
+              </div>
+            </div>
+          </div>
+          <!-- 5: Spice Level — PENDING -->
+          <div class="accordion-row pending">
+            <div class="row-header">
+              <div class="row-header-left">
+                <div class="row-number">5</div>
+                <div class="row-label">Spice Level</div>
+              </div>
+              <div class="row-header-right">
+                <svg class="row-chevron" viewBox="0 0 18 18" fill="none"><path d="M4.5 6.75L9 11.25L13.5 6.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+            </div>
+          </div>
+          <!-- 6: Serving Size — PENDING -->
+          <div class="accordion-row pending">
+            <div class="row-header">
+              <div class="row-header-left">
+                <div class="row-number">6</div>
+                <div class="row-label">Serving Size</div>
+              </div>
+              <div class="row-header-right">
+                <svg class="row-chevron" viewBox="0 0 18 18" fill="none"><path d="M4.5 6.75L9 11.25L13.5 6.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="frame-annotation"><strong>Revising a previous answer.</strong> User tapped Protein row to reconsider. Amber highlight distinguishes revision from forward progress. Current question (Curry Paste) remains expanded below.</div>
+  </div>
+
+  <!-- ──────────────────────────────── -->
+  <!-- FRAME 4: All Answered            -->
+  <!-- ──────────────────────────────── -->
+  <div class="frame-container">
+    <div class="frame-label">Frame 4</div>
+    <div class="phone-shell">
+      <div class="status-bar">
+        <span class="time">9:41</span>
+        <div class="status-icons">
+          <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><rect x="0" y="5" width="3" height="7" rx="1" fill="currentColor" opacity="0.4"/><rect x="4.5" y="3" width="3" height="9" rx="1" fill="currentColor" opacity="0.6"/><rect x="9" y="1" width="3" height="11" rx="1" fill="currentColor" opacity="0.8"/><rect x="13.5" y="0" width="3" height="12" rx="1" fill="currentColor"/></svg>
+          <svg width="15" height="12" viewBox="0 0 15 12" fill="none"><path d="M7.5 3.5C9.4 3.5 11.1 4.3 12.3 5.5L13.7 4.1C12.1 2.5 9.9 1.5 7.5 1.5C5.1 1.5 2.9 2.5 1.3 4.1L2.7 5.5C3.9 4.3 5.6 3.5 7.5 3.5ZM7.5 7.5C8.5 7.5 9.3 7.9 9.9 8.5L11.3 7.1C10.3 6.1 9 5.5 7.5 5.5C6 5.5 4.7 6.1 3.7 7.1L5.1 8.5C5.7 7.9 6.5 7.5 7.5 7.5ZM7.5 11.5C8.3 11.5 9 10.8 9 10C9 9.2 8.3 8.5 7.5 8.5C6.7 8.5 6 9.2 6 10C6 10.8 6.7 11.5 7.5 11.5Z" fill="currentColor"/></svg>
+          <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0" y="1" width="21" height="10" rx="2.5" stroke="currentColor" stroke-width="1"/><rect x="22" y="4" width="2" height="4" rx="1" fill="currentColor" opacity="0.4"/><rect x="1.5" y="2.5" width="14" height="7" rx="1.5" fill="currentColor"/></svg>
+        </div>
+      </div>
+      <div class="app-header">
+        <div class="back-arrow">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="logo-text">mise<span class="dot">.</span></div>
+      </div>
+      <div class="screen-content">
+        <div class="analysis-chip">
+          <span class="emoji">&#127835;</span>
+          <span>Massaman Curry</span>
+          <span class="count">47 sources</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-dot done"></div>
+          <div class="progress-dot done"></div>
+          <div class="progress-dot done"></div>
+          <div class="progress-dot done"></div>
+          <div class="progress-dot done"></div>
+          <div class="progress-dot done"></div>
+        </div>
+        <div class="accordion">
+          <!-- All 6 COMPLETED -->
+          <div class="accordion-row completed">
+            <div class="row-header">
+              <div class="row-header-left">
+                <div class="row-number">
+                  <svg class="check-icon" viewBox="0 0 14 14" fill="none"><path d="M2.5 7.5L5.5 10.5L11.5 4.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <div class="row-label">Dietary Needs</div>
+              </div>
+              <div class="row-header-right">
+                <span class="row-answer">Nut-free</span>
+                <svg class="row-chevron" viewBox="0 0 18 18" fill="none"><path d="M4.5 6.75L9 11.25L13.5 6.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-row completed">
+            <div class="row-header">
+              <div class="row-header-left">
+                <div class="row-number">
+                  <svg class="check-icon" viewBox="0 0 14 14" fill="none"><path d="M2.5 7.5L5.5 10.5L11.5 4.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <div class="row-label">Protein</div>
+              </div>
+              <div class="row-header-right">
+                <span class="row-answer">Chicken thigh</span>
+                <svg class="row-chevron" viewBox="0 0 18 18" fill="none"><path d="M4.5 6.75L9 11.25L13.5 6.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-row completed">
+            <div class="row-header">
+              <div class="row-header-left">
+                <div class="row-number">
+                  <svg class="check-icon" viewBox="0 0 14 14" fill="none"><path d="M2.5 7.5L5.5 10.5L11.5 4.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <div class="row-label">Cook Time</div>
+              </div>
+              <div class="row-header-right">
+                <span class="row-answer">Under 45 min</span>
+                <svg class="row-chevron" viewBox="0 0 18 18" fill="none"><path d="M4.5 6.75L9 11.25L13.5 6.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-row completed">
+            <div class="row-header">
+              <div class="row-header-left">
+                <div class="row-number">
+                  <svg class="check-icon" viewBox="0 0 14 14" fill="none"><path d="M2.5 7.5L5.5 10.5L11.5 4.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <div class="row-label">Curry Paste</div>
+              </div>
+              <div class="row-header-right">
+                <span class="row-answer">Store-bought</span>
+                <svg class="row-chevron" viewBox="0 0 18 18" fill="none"><path d="M4.5 6.75L9 11.25L13.5 6.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-row completed">
+            <div class="row-header">
+              <div class="row-header-left">
+                <div class="row-number">
+                  <svg class="check-icon" viewBox="0 0 14 14" fill="none"><path d="M2.5 7.5L5.5 10.5L11.5 4.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <div class="row-label">Spice Level</div>
+              </div>
+              <div class="row-header-right">
+                <span class="row-answer">Medium</span>
+                <svg class="row-chevron" viewBox="0 0 18 18" fill="none"><path d="M4.5 6.75L9 11.25L13.5 6.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-row completed">
+            <div class="row-header">
+              <div class="row-header-left">
+                <div class="row-number">
+                  <svg class="check-icon" viewBox="0 0 14 14" fill="none"><path d="M2.5 7.5L5.5 10.5L11.5 4.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <div class="row-label">Serving Size</div>
+              </div>
+              <div class="row-header-right">
+                <span class="row-answer">4 servings</span>
+                <svg class="row-chevron" viewBox="0 0 18 18" fill="none"><path d="M4.5 6.75L9 11.25L13.5 6.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Celebration Card -->
+        <div class="celebration-card">
+          <div class="celebration-emoji">&#127881;</div>
+          <div class="celebration-title">Your Recipe is Ready</div>
+          <div class="celebration-subtitle">Classic Massaman Curry</div>
+          <button class="btn-primary">View Recipe</button>
+          <button class="btn-secondary">Start Over</button>
+        </div>
+      </div>
+    </div>
+    <div class="frame-annotation"><strong>All 6 answered, recipe ready.</strong> All rows show green checks with inline answers. Celebration card appears below with recipe title and CTAs. Any row still tappable to revise.</div>
+  </div>
+
+  <!-- ──────────────────────────────── -->
+  <!-- FRAME 5: URL Flow                -->
+  <!-- ──────────────────────────────── -->
+  <div class="frame-container">
+    <div class="frame-label">Frame 5</div>
+    <div class="phone-shell">
+      <div class="status-bar">
+        <span class="time">9:41</span>
+        <div class="status-icons">
+          <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><rect x="0" y="5" width="3" height="7" rx="1" fill="currentColor" opacity="0.4"/><rect x="4.5" y="3" width="3" height="9" rx="1" fill="currentColor" opacity="0.6"/><rect x="9" y="1" width="3" height="11" rx="1" fill="currentColor" opacity="0.8"/><rect x="13.5" y="0" width="3" height="12" rx="1" fill="currentColor"/></svg>
+          <svg width="15" height="12" viewBox="0 0 15 12" fill="none"><path d="M7.5 3.5C9.4 3.5 11.1 4.3 12.3 5.5L13.7 4.1C12.1 2.5 9.9 1.5 7.5 1.5C5.1 1.5 2.9 2.5 1.3 4.1L2.7 5.5C3.9 4.3 5.6 3.5 7.5 3.5ZM7.5 7.5C8.5 7.5 9.3 7.9 9.9 8.5L11.3 7.1C10.3 6.1 9 5.5 7.5 5.5C6 5.5 4.7 6.1 3.7 7.1L5.1 8.5C5.7 7.9 6.5 7.5 7.5 7.5ZM7.5 11.5C8.3 11.5 9 10.8 9 10C9 9.2 8.3 8.5 7.5 8.5C6.7 8.5 6 9.2 6 10C6 10.8 6.7 11.5 7.5 11.5Z" fill="currentColor"/></svg>
+          <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0" y="1" width="21" height="10" rx="2.5" stroke="currentColor" stroke-width="1"/><rect x="22" y="4" width="2" height="4" rx="1" fill="currentColor" opacity="0.4"/><rect x="1.5" y="2.5" width="14" height="7" rx="1.5" fill="currentColor"/></svg>
+        </div>
+      </div>
+      <div class="app-header">
+        <div class="back-arrow">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="logo-text">mise<span class="dot">.</span></div>
+      </div>
+      <div class="screen-content">
+        <!-- URL Entry -->
+        <div class="url-entry">
+          <svg class="url-icon" viewBox="0 0 20 20" fill="none"><path d="M8.5 11.5C9.2 12.4 10.3 13 11.5 13C13.7 13 15.5 11.2 15.5 9C15.5 6.8 13.7 5 11.5 5C10.3 5 9.2 5.6 8.5 6.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M11.5 8.5C10.8 7.6 9.7 7 8.5 7C6.3 7 4.5 8.8 4.5 11C4.5 13.2 6.3 15 8.5 15C9.7 15 10.8 14.4 11.5 13.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <span class="url-text">bonappetit.com/recipe/massaman-curry</span>
+        </div>
+
+        <!-- Recipe Preview Card -->
+        <div class="recipe-preview">
+          <div class="recipe-preview-image">
+            <span class="source-badge">bonappetit.com</span>
+          </div>
+          <div class="recipe-preview-body">
+            <h3>Classic Massaman Curry</h3>
+            <div class="recipe-preview-meta">
+              <span>1 hr 15 min</span>
+              <span>4 servings</span>
+              <span>Intermediate</span>
+            </div>
+            <p>A rich, mild Thai curry with tender potatoes, roasted peanuts, and warm spices. This beloved dish balances sweet, savory, and aromatic flavors.</p>
+          </div>
+        </div>
+
+        <!-- CTAs -->
+        <button class="btn-primary" style="margin-top: 6px;">Save &amp; Cook Now</button>
+        <button class="btn-secondary">Customize This Recipe</button>
+
+        <div class="or-divider">
+          <div class="line"></div>
+          <span>Customize</span>
+          <div class="line"></div>
+        </div>
+
+        <!-- Mini accordion (collapsed, shows after "Customize" tap) -->
+        <div class="section-label">Customize preferences</div>
+        <div class="accordion" style="opacity: 0.7;">
+          <div class="accordion-row pending" style="opacity: 0.85;">
+            <div class="row-header" style="padding: 10px 14px; min-height: 38px;">
+              <div class="row-header-left">
+                <div class="row-number" style="width: 18px; height: 18px; font-size: 10px;">1</div>
+                <div class="row-label" style="font-size: 13px;">Dietary Needs</div>
+              </div>
+              <div class="row-header-right">
+                <svg class="row-chevron" style="width: 14px; height: 14px;" viewBox="0 0 18 18" fill="none"><path d="M4.5 6.75L9 11.25L13.5 6.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-row pending" style="opacity: 0.85;">
+            <div class="row-header" style="padding: 10px 14px; min-height: 38px;">
+              <div class="row-header-left">
+                <div class="row-number" style="width: 18px; height: 18px; font-size: 10px;">2</div>
+                <div class="row-label" style="font-size: 13px;">Protein</div>
+              </div>
+              <div class="row-header-right">
+                <svg class="row-chevron" style="width: 14px; height: 14px;" viewBox="0 0 18 18" fill="none"><path d="M4.5 6.75L9 11.25L13.5 6.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-row pending" style="opacity: 0.85;">
+            <div class="row-header" style="padding: 10px 14px; min-height: 38px;">
+              <div class="row-header-left">
+                <div class="row-number" style="width: 18px; height: 18px; font-size: 10px;">3</div>
+                <div class="row-label" style="font-size: 13px;">Cook Time</div>
+              </div>
+              <div class="row-header-right">
+                <svg class="row-chevron" style="width: 14px; height: 14px;" viewBox="0 0 18 18" fill="none"><path d="M4.5 6.75L9 11.25L13.5 6.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-row pending" style="opacity: 0.85;">
+            <div class="row-header" style="padding: 10px 14px; min-height: 38px;">
+              <div class="row-header-left">
+                <div class="row-number" style="width: 18px; height: 18px; font-size: 10px;">4</div>
+                <div class="row-label" style="font-size: 13px;">Spice Level</div>
+              </div>
+              <div class="row-header-right">
+                <svg class="row-chevron" style="width: 14px; height: 14px;" viewBox="0 0 18 18" fill="none"><path d="M4.5 6.75L9 11.25L13.5 6.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="frame-annotation"><strong>URL flow: preview + fork.</strong> Recipe URL parsed into a preview card with metadata. "Save &amp; Cook Now" uses recipe as-is. "Customize This Recipe" reveals the accordion below for preference customization.</div>
+  </div>
+
+</div><!-- end frames-row -->
+
+
+<!-- ════════════════════════════════════════════ -->
+<!-- IMPLEMENTATION SPEC                          -->
+<!-- ════════════════════════════════════════════ -->
+<section class="spec-section">
+  <details>
+    <summary>Implementation Specification</summary>
+    <div class="spec-body">
+
+      <h3>Screen Overview</h3>
+      <p>The Progressive Accordion pattern presents all recipe-builder question categories as a vertical accordion list from the moment analysis completes. One question is expanded at a time (the current active question), while completed questions collapse to a single row showing the answer. Pending questions appear as dimmed collapsed rows. Users can tap any completed row to revise their answer.</p>
+
+      <h3>Layout Hierarchy</h3>
+      <ol>
+        <li><strong>StatusBar</strong> (44px) &mdash; system time, signal icons</li>
+        <li><strong>AppHeader</strong> (48px) &mdash; back arrow + "mise." logo</li>
+        <li><strong>ScrollView</strong> (flex: 1, padding: 16px)
+          <ol>
+            <li><strong>AnalysisChip</strong> &mdash; centered, tappable, shows recipe name + source count</li>
+            <li><strong>ProgressBar</strong> &mdash; 6 dots showing completion state (appears after first answer)</li>
+            <li><strong>Accordion</strong> &mdash; vertical stack of AccordionRow components
+              <ol>
+                <li><strong>AccordionRow</strong> &times; 6 (one per question category)
+                  <ol>
+                    <li><code>RowHeader</code>: number badge, label, answer text (if completed), chevron</li>
+                    <li><code>PillArea</code> (conditional): question text + pill options grid</li>
+                  </ol>
+                </li>
+              </ol>
+            </li>
+            <li><strong>CelebrationCard</strong> (conditional, after all answered) &mdash; title, subtitle, CTAs</li>
+          </ol>
+        </li>
+      </ol>
+
+      <h3>Component Spec Table</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Component</th>
+            <th>Props / Slots</th>
+            <th>Behavior</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>AnalysisChip</code></td>
+            <td><code>emoji</code>, <code>title</code>, <code>sourceCount</code></td>
+            <td>Tap opens source details sheet. Static for builder flow.</td>
+          </tr>
+          <tr>
+            <td><code>ProgressBar</code></td>
+            <td><code>total</code>, <code>completed</code>, <code>currentIndex</code></td>
+            <td>6 dots. Filled = done, elongated = current, hollow = pending.</td>
+          </tr>
+          <tr>
+            <td><code>AccordionRow</code></td>
+            <td><code>state</code>: pending | active | completed | revising<br/><code>label</code>, <code>answer?</code>, <code>options[]</code>, <code>questionText</code></td>
+            <td>Tap header toggles expand/collapse. Only 1 active + 1 revising can be open simultaneously. Completing a selection auto-collapses and opens next pending.</td>
+          </tr>
+          <tr>
+            <td><code>Pill</code></td>
+            <td><code>label</code>, <code>selected</code>, <code>preChecked</code></td>
+            <td>Tap selects (fills brand color + check). For single-select categories, selecting one deselects others. For multi-select (Dietary), multiple can be active.</td>
+          </tr>
+          <tr>
+            <td><code>CelebrationCard</code></td>
+            <td><code>recipeName</code></td>
+            <td>Appears after final answer with slide-up animation. "View Recipe" navigates to recipe detail. "Start Over" resets accordion.</td>
+          </tr>
+          <tr>
+            <td><code>RecipePreview</code></td>
+            <td><code>url</code>, <code>title</code>, <code>source</code>, <code>meta</code>, <code>summary</code></td>
+            <td>URL flow only. Shows parsed recipe data. Gradient placeholder for image.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>State Matrix</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Row State</th>
+            <th>Background</th>
+            <th>Border</th>
+            <th>Left Accent</th>
+            <th>Number Badge</th>
+            <th>Chevron</th>
+            <th>PillArea</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>pending</code></td>
+            <td><code>#FFFFFF</code></td>
+            <td><code>#F0EAE4</code></td>
+            <td>None</td>
+            <td>Gray circle, number</td>
+            <td>Down, muted</td>
+            <td>Hidden</td>
+          </tr>
+          <tr>
+            <td><code>active</code></td>
+            <td><code>#FFFFFF</code></td>
+            <td><code>#C8481C</code></td>
+            <td>3px <code>#C8481C</code></td>
+            <td>Brand circle, number</td>
+            <td>Up, brand</td>
+            <td>Visible</td>
+          </tr>
+          <tr>
+            <td><code>completed</code></td>
+            <td><code>#E8F5EC</code></td>
+            <td><code>#B7DFBF</code></td>
+            <td>None</td>
+            <td>Green circle, checkmark</td>
+            <td>Down, muted</td>
+            <td>Hidden</td>
+          </tr>
+          <tr>
+            <td><code>revising</code></td>
+            <td><code>#FFFBF0</code></td>
+            <td><code>#F0C674</code></td>
+            <td>3px <code>#F0C674</code></td>
+            <td>Amber circle, number</td>
+            <td>Up, amber</td>
+            <td>Visible + hint</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Animation &amp; Transitions</h3>
+      <ul>
+        <li><strong>Expand/Collapse:</strong> <code>LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)</code> &mdash; 250ms ease-in-out for height changes</li>
+        <li><strong>Chevron rotation:</strong> <code>Animated.timing</code> 0&deg; &harr; 180&deg;, 200ms</li>
+        <li><strong>Pill selection:</strong> Instant border/background swap via <code>className</code> conditional</li>
+        <li><strong>Row state change:</strong> Background/border color transitions via 200ms CSS transition equivalent</li>
+        <li><strong>Celebration card:</strong> Slide-up + fade-in, 300ms spring</li>
+        <li><strong>Auto-scroll:</strong> After answering, <code>scrollToIndex</code> brings the newly-active row into view</li>
+      </ul>
+
+      <h3>Interaction Rules</h3>
+      <ul>
+        <li><strong>Forward flow:</strong> Selecting a pill on the active row immediately collapses it (completed state) and expands the next pending row.</li>
+        <li><strong>Revision:</strong> Tapping any completed row header opens it in "revising" state (amber). The active row remains open. Selecting a different pill in the revising row re-collapses it with the new answer.</li>
+        <li><strong>Multi-select (Dietary):</strong> Tapping pills toggles them. A "Done" or "Next" button appears in the pill area to confirm and advance.</li>
+        <li><strong>Single-select (all others):</strong> Tapping a pill immediately selects it and auto-advances.</li>
+        <li><strong>Pre-checked pills:</strong> Shown with dashed brand border. The AI detected a likely preference (e.g., nut allergy). User can deselect.</li>
+        <li><strong>URL flow:</strong> "Customize This Recipe" button reveals the accordion below the preview card. Categories may be pre-filled from the parsed recipe.</li>
+      </ul>
+
+      <h3>Accessibility</h3>
+      <ul>
+        <li>Each <code>AccordionRow</code> header has <code>accessibilityRole="button"</code> and <code>accessibilityState={{ expanded }}</code></li>
+        <li>Pills use <code>accessibilityRole="radio"</code> (single-select) or <code>"checkbox"</code> (multi-select) with <code>accessibilityState={{ selected }}</code></li>
+        <li>Screen reader announces: "Dietary Needs, completed, Nut-free. Tap to revise." for completed rows</li>
+        <li>Progress bar: <code>accessibilityLabel="Step 4 of 6"</code></li>
+        <li>Focus management: when a row expands, focus moves to the first pill</li>
+      </ul>
+
+      <h3>Responsive Notes</h3>
+      <ul>
+        <li>Designed for 390px width (iPhone 14/15). Scales naturally to 375px (iPhone SE/13 mini) and 430px (Pro Max).</li>
+        <li>Pill grid uses <code>flexWrap: wrap</code> so pills reflow on narrower screens.</li>
+        <li>Accordion rows have a minimum touch target of 44px height.</li>
+        <li>Scroll view ensures all content is accessible when many rows are expanded (revision scenario).</li>
+        <li>Safe area insets handled by Expo's <code>SafeAreaView</code>.</li>
+      </ul>
+
+      <h3>What the Mock Does NOT Show</h3>
+      <ul>
+        <li><strong>Loading state:</strong> Skeleton rows while analysis is in progress (before Frame 1).</li>
+        <li><strong>Error handling:</strong> What happens if analysis fails or times out.</li>
+        <li><strong>Multi-select confirmation:</strong> The "Done" button in the Dietary Needs pill area for multi-select scenarios.</li>
+        <li><strong>Scroll behavior:</strong> Auto-scroll to newly active row after answering.</li>
+        <li><strong>Haptics:</strong> Light impact feedback on pill selection, medium on row completion.</li>
+        <li><strong>Analytics events:</strong> <code>builder_question_answered</code>, <code>builder_answer_revised</code>, <code>builder_completed</code>.</li>
+        <li><strong>Deep linking:</strong> Sharing a builder state via URL for collaborative recipe planning.</li>
+        <li><strong>Keyboard/Voice:</strong> No free-text input shown. Voice input for accessibility is not depicted.</li>
+        <li><strong>Recipe generation:</strong> The loading/streaming state between "all answered" and the celebration card appearing.</li>
+      </ul>
+
+    </div>
+  </details>
+</section>
+
+</body>
+</html>

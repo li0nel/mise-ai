@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mise — Variation 004: Single-Screen Configurator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ───────────────────── Custom Properties ───────────────────── */
+  :root {
+    --brand: #C8481C;
+    --brand-hover: #A33A16;
+    --bg-default: #FDFAF7;
+    --bg-surface: #F5F0EB;
+    --bg-elevated: #FFFFFF;
+    --text-primary: #1A1614;
+    --text-secondary: #6B5E54;
+    --text-muted: #9C8E82;
+    --border-default: #E8E0D8;
+    --border-subtle: #F0EAE4;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 20px;
+    --radius-full: 9999px;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.06);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+    --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+
+    --phone-w: 390px;
+    --phone-h: 760px;
+    --phone-radius: 44px;
+    --statusbar-h: 44px;
+    --header-h: 48px;
+  }
+
+  /* ───────────────────── Reset & Base ───────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: #F0ECE8;
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+    padding: 40px 24px 80px;
+  }
+
+  /* ───────────────────── Page Header ───────────────────── */
+  .page-header {
+    max-width: 1400px;
+    margin: 0 auto 48px;
+    text-align: center;
+  }
+  .page-header .badge {
+    display: inline-block;
+    background: var(--brand);
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border-radius: var(--radius-full);
+    margin-bottom: 16px;
+  }
+  .page-header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+  }
+  .page-header p {
+    font-size: 16px;
+    color: var(--text-secondary);
+    max-width: 640px;
+    margin: 0 auto;
+    line-height: 1.5;
+  }
+
+  /* ───────────────────── Frame Grid ───────────────────── */
+  .frames {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    justify-content: center;
+    max-width: 1800px;
+    margin: 0 auto;
+  }
+  .frame-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  .frame-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+  .frame-annotation {
+    font-size: 12px;
+    color: var(--text-muted);
+    max-width: var(--phone-w);
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  /* ───────────────────── Phone Shell ───────────────────── */
+  .phone {
+    width: var(--phone-w);
+    height: var(--phone-h);
+    border-radius: var(--phone-radius);
+    background: var(--bg-default);
+    box-shadow: var(--shadow-lg), 0 0 0 1px rgba(0,0,0,0.04);
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Status Bar */
+  .statusbar {
+    height: var(--statusbar-h);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 28px 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    flex-shrink: 0;
+  }
+  .statusbar-right {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 13px;
+  }
+  .statusbar-right svg { width: 16px; height: 16px; }
+
+  /* Header */
+  .app-header {
+    height: var(--header-h);
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    flex-shrink: 0;
+    gap: 12px;
+  }
+  .back-arrow {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    cursor: pointer;
+  }
+  .back-arrow svg { width: 20px; height: 20px; }
+  .logo {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  /* ───────────────────── Screen Content ───────────────────── */
+  .screen-content {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+  .screen-content::-webkit-scrollbar { display: none; }
+
+  /* Analysis Chip */
+  .analysis-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 4px 20px 12px;
+    padding: 10px 14px;
+    background: var(--bg-surface);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-subtle);
+  }
+  .analysis-chip .emoji { font-size: 20px; }
+  .analysis-chip .text {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  .analysis-chip .sub {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--text-muted);
+    margin-left: 4px;
+  }
+
+  /* Sections Container */
+  .sections {
+    flex: 1;
+    padding: 0 20px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  /* Section */
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+  .pill-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  /* Pill */
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 7px 14px;
+    border-radius: var(--radius-full);
+    border: 1.5px solid var(--border-default);
+    background: transparent;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+  }
+  .pill:hover:not(.selected) {
+    border-color: var(--text-muted);
+    color: var(--text-primary);
+  }
+  .pill.selected {
+    background: var(--brand);
+    border-color: var(--brand);
+    color: #FFFFFF;
+  }
+  .pill.selected .check { display: inline; }
+  .pill .check {
+    display: none;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .pill.prefilled {
+    background: var(--brand);
+    border-color: var(--brand);
+    color: #FFFFFF;
+    opacity: 0.85;
+  }
+  .pill.prefilled .check { display: inline; }
+
+  /* CTA */
+  .cta-container {
+    padding: 12px 20px 24px;
+    flex-shrink: 0;
+  }
+  .cta {
+    width: 100%;
+    height: 48px;
+    border-radius: var(--radius-lg);
+    border: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .cta.disabled {
+    background: var(--bg-surface);
+    color: var(--text-muted);
+    cursor: not-allowed;
+  }
+  .cta.partial {
+    background: var(--bg-surface);
+    color: var(--text-secondary);
+    border: 1.5px solid var(--border-default);
+  }
+  .cta.partial .count {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-muted);
+  }
+  .cta.active {
+    background: var(--brand);
+    color: #FFFFFF;
+    box-shadow: 0 4px 16px rgba(200, 72, 28, 0.35);
+  }
+  .cta.active:hover {
+    background: var(--brand-hover);
+  }
+
+  /* Pulse animation for active CTA */
+  @keyframes cta-pulse {
+    0%, 100% { box-shadow: 0 4px 16px rgba(200, 72, 28, 0.35); }
+    50% { box-shadow: 0 4px 24px rgba(200, 72, 28, 0.55); }
+  }
+  .cta.active.pulse {
+    animation: cta-pulse 2s ease-in-out infinite;
+  }
+
+  /* ───────────────────── Frame 4: Recipe Ready ───────────────────── */
+  .celebration {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 24px;
+    gap: 20px;
+  }
+  .celebration-icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #FFF3ED 0%, #FFE8DD 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+  }
+  .celebration h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-align: center;
+  }
+  .celebration .recipe-title {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-align: center;
+  }
+  .summary-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    padding: 0 8px;
+  }
+  .summary-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 12px;
+    border-radius: var(--radius-full);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+  }
+  .celebration-ctas {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    padding: 0 4px;
+    margin-top: 8px;
+  }
+  .cta.secondary {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1.5px solid var(--border-default);
+  }
+  .cta.secondary:hover {
+    border-color: var(--text-muted);
+    color: var(--text-primary);
+  }
+
+  /* ───────────────────── Frame 5: URL Pre-fills ───────────────────── */
+  .dual-cta {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+  }
+  .dual-cta .cta {
+    flex: 1;
+  }
+  .cta.outline {
+    background: transparent;
+    color: var(--brand);
+    border: 1.5px solid var(--brand);
+  }
+  .cta.outline:hover {
+    background: rgba(200, 72, 28, 0.06);
+  }
+
+  /* ───────────────────── Spec Section ───────────────────── */
+  .spec-section {
+    max-width: 960px;
+    margin: 80px auto 0;
+    padding: 0 24px;
+  }
+  .spec-section details {
+    background: var(--bg-elevated);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-default);
+    overflow: hidden;
+  }
+  .spec-section summary {
+    padding: 16px 20px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    cursor: pointer;
+    user-select: none;
+  }
+  .spec-section summary:hover { background: var(--bg-surface); }
+  .spec-body {
+    padding: 0 20px 24px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text-secondary);
+  }
+  .spec-body h3 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 20px 0 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .spec-body h3:first-child { margin-top: 0; }
+  .spec-body ul { padding-left: 20px; margin: 4px 0; }
+  .spec-body li { margin-bottom: 4px; }
+  .spec-body code {
+    background: var(--bg-surface);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 13px;
+  }
+  .spec-body table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 8px 0 16px;
+    font-size: 13px;
+  }
+  .spec-body th, .spec-body td {
+    text-align: left;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .spec-body th {
+    font-weight: 600;
+    color: var(--text-primary);
+    background: var(--bg-surface);
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════ PAGE HEADER ═══════════════════ -->
+<header class="page-header">
+  <span class="badge">Variation 4</span>
+  <h1>Single-Screen Configurator</h1>
+  <p>Everything on one screen. Compact pill groups in labeled sections. Maximum density, instant overview of all choices. Zero scrolling needed.</p>
+</header>
+
+<!-- ═══════════════════ FRAMES ═══════════════════ -->
+<div class="frames">
+
+  <!-- ──────── Frame 1: Analysis + Configurator (defaults) ──────── -->
+  <div class="frame-wrapper">
+    <span class="frame-label">Frame 1 &mdash; Initial State</span>
+    <div class="phone">
+      <div class="statusbar">
+        <span>9:41</span>
+        <div class="statusbar-right">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 9l4-4 4 4"/><path d="M5 5v14"/><path d="M10 18h4"/><path d="M10 14h7"/><path d="M10 10h10"/></svg>
+          <svg viewBox="0 0 24 24" fill="currentColor"><rect x="1" y="6" width="3" height="12" rx="1" opacity="0.3"/><rect x="6" y="4" width="3" height="14" rx="1" opacity="0.5"/><rect x="11" y="2" width="3" height="16" rx="1" opacity="0.7"/><rect x="16" y="0" width="3" height="18" rx="1"/></svg>
+          <svg viewBox="0 0 28 14" fill="currentColor"><rect x="0" y="1" width="24" height="12" rx="3" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="2" y="3" width="16" height="8" rx="1.5"/><rect x="25.5" y="4.5" width="2" height="5" rx="1"/></svg>
+        </div>
+      </div>
+      <div class="app-header">
+        <div class="back-arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </div>
+        <span class="logo">mise.</span>
+      </div>
+      <div class="screen-content">
+        <div class="analysis-chip">
+          <span class="emoji">&#x1F35B;</span>
+          <span class="text">Massaman Curry<span class="sub">&middot; 47 sources</span></span>
+        </div>
+        <div class="sections">
+          <!-- Dietary Needs -->
+          <div>
+            <div class="section-label">Dietary Needs</div>
+            <div class="pill-group">
+              <button class="pill selected"><span class="check">&#10003;</span> Nut-free</button>
+              <button class="pill">Dairy-free</button>
+              <button class="pill">Vegetarian</button>
+              <button class="pill">Vegan</button>
+              <button class="pill">Gluten-free</button>
+              <button class="pill">Low-sodium</button>
+            </div>
+          </div>
+          <!-- Protein -->
+          <div>
+            <div class="section-label">Protein</div>
+            <div class="pill-group">
+              <button class="pill">Chicken thigh</button>
+              <button class="pill">Beef</button>
+              <button class="pill">Tofu</button>
+              <button class="pill">Shrimp</button>
+              <button class="pill">No protein</button>
+            </div>
+          </div>
+          <!-- Cook Time -->
+          <div>
+            <div class="section-label">Cook Time</div>
+            <div class="pill-group">
+              <button class="pill">Under 30 min</button>
+              <button class="pill">Under 45 min</button>
+              <button class="pill">Under 1 hr</button>
+              <button class="pill">No limit</button>
+            </div>
+          </div>
+          <!-- Spice Level -->
+          <div>
+            <div class="section-label">Spice Level</div>
+            <div class="pill-group">
+              <button class="pill">Mild</button>
+              <button class="pill">Medium</button>
+              <button class="pill">Hot</button>
+              <button class="pill">Thai hot</button>
+            </div>
+          </div>
+          <!-- Curry Paste -->
+          <div>
+            <div class="section-label">Curry Paste</div>
+            <div class="pill-group">
+              <button class="pill">Store-bought</button>
+              <button class="pill">Homemade</button>
+              <button class="pill">Either</button>
+            </div>
+          </div>
+          <!-- Servings -->
+          <div>
+            <div class="section-label">Servings</div>
+            <div class="pill-group">
+              <button class="pill">2</button>
+              <button class="pill">4</button>
+              <button class="pill">6</button>
+              <button class="pill">8</button>
+            </div>
+          </div>
+        </div>
+        <div class="cta-container">
+          <button class="cta disabled">Build My Recipe</button>
+        </div>
+      </div>
+    </div>
+    <span class="frame-annotation">Nut-free pre-checked from saved prefs. All other sections unselected. CTA disabled.</span>
+  </div>
+
+  <!-- ──────── Frame 2: Partially Configured ──────── -->
+  <div class="frame-wrapper">
+    <span class="frame-label">Frame 2 &mdash; Partially Configured</span>
+    <div class="phone">
+      <div class="statusbar">
+        <span>9:41</span>
+        <div class="statusbar-right">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 9l4-4 4 4"/><path d="M5 5v14"/><path d="M10 18h4"/><path d="M10 14h7"/><path d="M10 10h10"/></svg>
+          <svg viewBox="0 0 24 24" fill="currentColor"><rect x="1" y="6" width="3" height="12" rx="1" opacity="0.3"/><rect x="6" y="4" width="3" height="14" rx="1" opacity="0.5"/><rect x="11" y="2" width="3" height="16" rx="1" opacity="0.7"/><rect x="16" y="0" width="3" height="18" rx="1"/></svg>
+          <svg viewBox="0 0 28 14" fill="currentColor"><rect x="0" y="1" width="24" height="12" rx="3" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="2" y="3" width="16" height="8" rx="1.5"/><rect x="25.5" y="4.5" width="2" height="5" rx="1"/></svg>
+        </div>
+      </div>
+      <div class="app-header">
+        <div class="back-arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </div>
+        <span class="logo">mise.</span>
+      </div>
+      <div class="screen-content">
+        <div class="analysis-chip">
+          <span class="emoji">&#x1F35B;</span>
+          <span class="text">Massaman Curry<span class="sub">&middot; 47 sources</span></span>
+        </div>
+        <div class="sections">
+          <!-- Dietary Needs -->
+          <div>
+            <div class="section-label">Dietary Needs</div>
+            <div class="pill-group">
+              <button class="pill selected"><span class="check">&#10003;</span> Nut-free</button>
+              <button class="pill">Dairy-free</button>
+              <button class="pill">Vegetarian</button>
+              <button class="pill">Vegan</button>
+              <button class="pill">Gluten-free</button>
+              <button class="pill">Low-sodium</button>
+            </div>
+          </div>
+          <!-- Protein -->
+          <div>
+            <div class="section-label">Protein</div>
+            <div class="pill-group">
+              <button class="pill selected"><span class="check">&#10003;</span> Chicken thigh</button>
+              <button class="pill">Beef</button>
+              <button class="pill">Tofu</button>
+              <button class="pill">Shrimp</button>
+              <button class="pill">No protein</button>
+            </div>
+          </div>
+          <!-- Cook Time -->
+          <div>
+            <div class="section-label">Cook Time</div>
+            <div class="pill-group">
+              <button class="pill">Under 30 min</button>
+              <button class="pill selected"><span class="check">&#10003;</span> Under 45 min</button>
+              <button class="pill">Under 1 hr</button>
+              <button class="pill">No limit</button>
+            </div>
+          </div>
+          <!-- Spice Level -->
+          <div>
+            <div class="section-label">Spice Level</div>
+            <div class="pill-group">
+              <button class="pill">Mild</button>
+              <button class="pill selected"><span class="check">&#10003;</span> Medium</button>
+              <button class="pill">Hot</button>
+              <button class="pill">Thai hot</button>
+            </div>
+          </div>
+          <!-- Curry Paste — unselected -->
+          <div>
+            <div class="section-label">Curry Paste</div>
+            <div class="pill-group">
+              <button class="pill">Store-bought</button>
+              <button class="pill">Homemade</button>
+              <button class="pill">Either</button>
+            </div>
+          </div>
+          <!-- Servings — unselected -->
+          <div>
+            <div class="section-label">Servings</div>
+            <div class="pill-group">
+              <button class="pill">2</button>
+              <button class="pill">4</button>
+              <button class="pill">6</button>
+              <button class="pill">8</button>
+            </div>
+          </div>
+        </div>
+        <div class="cta-container">
+          <button class="cta partial">Build My Recipe <span class="count">(4/6 selected)</span></button>
+        </div>
+      </div>
+    </div>
+    <span class="frame-annotation">4 of 6 sections filled. CTA gains prominence with progress count. Paste and Servings still empty.</span>
+  </div>
+
+  <!-- ──────── Frame 3: Fully Configured ──────── -->
+  <div class="frame-wrapper">
+    <span class="frame-label">Frame 3 &mdash; Fully Configured</span>
+    <div class="phone">
+      <div class="statusbar">
+        <span>9:41</span>
+        <div class="statusbar-right">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 9l4-4 4 4"/><path d="M5 5v14"/><path d="M10 18h4"/><path d="M10 14h7"/><path d="M10 10h10"/></svg>
+          <svg viewBox="0 0 24 24" fill="currentColor"><rect x="1" y="6" width="3" height="12" rx="1" opacity="0.3"/><rect x="6" y="4" width="3" height="14" rx="1" opacity="0.5"/><rect x="11" y="2" width="3" height="16" rx="1" opacity="0.7"/><rect x="16" y="0" width="3" height="18" rx="1"/></svg>
+          <svg viewBox="0 0 28 14" fill="currentColor"><rect x="0" y="1" width="24" height="12" rx="3" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="2" y="3" width="16" height="8" rx="1.5"/><rect x="25.5" y="4.5" width="2" height="5" rx="1"/></svg>
+        </div>
+      </div>
+      <div class="app-header">
+        <div class="back-arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </div>
+        <span class="logo">mise.</span>
+      </div>
+      <div class="screen-content">
+        <div class="analysis-chip">
+          <span class="emoji">&#x1F35B;</span>
+          <span class="text">Massaman Curry<span class="sub">&middot; 47 sources</span></span>
+        </div>
+        <div class="sections">
+          <!-- Dietary Needs -->
+          <div>
+            <div class="section-label">Dietary Needs</div>
+            <div class="pill-group">
+              <button class="pill selected"><span class="check">&#10003;</span> Nut-free</button>
+              <button class="pill">Dairy-free</button>
+              <button class="pill">Vegetarian</button>
+              <button class="pill">Vegan</button>
+              <button class="pill">Gluten-free</button>
+              <button class="pill">Low-sodium</button>
+            </div>
+          </div>
+          <!-- Protein -->
+          <div>
+            <div class="section-label">Protein</div>
+            <div class="pill-group">
+              <button class="pill selected"><span class="check">&#10003;</span> Chicken thigh</button>
+              <button class="pill">Beef</button>
+              <button class="pill">Tofu</button>
+              <button class="pill">Shrimp</button>
+              <button class="pill">No protein</button>
+            </div>
+          </div>
+          <!-- Cook Time -->
+          <div>
+            <div class="section-label">Cook Time</div>
+            <div class="pill-group">
+              <button class="pill">Under 30 min</button>
+              <button class="pill selected"><span class="check">&#10003;</span> Under 45 min</button>
+              <button class="pill">Under 1 hr</button>
+              <button class="pill">No limit</button>
+            </div>
+          </div>
+          <!-- Spice Level -->
+          <div>
+            <div class="section-label">Spice Level</div>
+            <div class="pill-group">
+              <button class="pill">Mild</button>
+              <button class="pill selected"><span class="check">&#10003;</span> Medium</button>
+              <button class="pill">Hot</button>
+              <button class="pill">Thai hot</button>
+            </div>
+          </div>
+          <!-- Curry Paste -->
+          <div>
+            <div class="section-label">Curry Paste</div>
+            <div class="pill-group">
+              <button class="pill selected"><span class="check">&#10003;</span> Store-bought</button>
+              <button class="pill">Homemade</button>
+              <button class="pill">Either</button>
+            </div>
+          </div>
+          <!-- Servings -->
+          <div>
+            <div class="section-label">Servings</div>
+            <div class="pill-group">
+              <button class="pill">2</button>
+              <button class="pill selected"><span class="check">&#10003;</span> 4</button>
+              <button class="pill">6</button>
+              <button class="pill">8</button>
+            </div>
+          </div>
+        </div>
+        <div class="cta-container">
+          <button class="cta active pulse">Build My Recipe &#10003;</button>
+        </div>
+      </div>
+    </div>
+    <span class="frame-annotation">All 6 sections selected. CTA fully active with terracotta fill and subtle pulse animation.</span>
+  </div>
+
+  <!-- ──────── Frame 4: Recipe Ready ──────── -->
+  <div class="frame-wrapper">
+    <span class="frame-label">Frame 4 &mdash; Recipe Ready</span>
+    <div class="phone">
+      <div class="statusbar">
+        <span>9:42</span>
+        <div class="statusbar-right">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 9l4-4 4 4"/><path d="M5 5v14"/><path d="M10 18h4"/><path d="M10 14h7"/><path d="M10 10h10"/></svg>
+          <svg viewBox="0 0 24 24" fill="currentColor"><rect x="1" y="6" width="3" height="12" rx="1" opacity="0.3"/><rect x="6" y="4" width="3" height="14" rx="1" opacity="0.5"/><rect x="11" y="2" width="3" height="16" rx="1" opacity="0.7"/><rect x="16" y="0" width="3" height="18" rx="1"/></svg>
+          <svg viewBox="0 0 28 14" fill="currentColor"><rect x="0" y="1" width="24" height="12" rx="3" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="2" y="3" width="16" height="8" rx="1.5"/><rect x="25.5" y="4.5" width="2" height="5" rx="1"/></svg>
+        </div>
+      </div>
+      <div class="app-header">
+        <div class="back-arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </div>
+        <span class="logo">mise.</span>
+      </div>
+      <div class="screen-content">
+        <div class="celebration">
+          <div class="celebration-icon">&#127881;</div>
+          <h2>Your Recipe is Ready</h2>
+          <span class="recipe-title">Classic Massaman Curry</span>
+          <div class="summary-chips">
+            <span class="summary-chip">Nut-free</span>
+            <span class="summary-chip">Chicken thigh</span>
+            <span class="summary-chip">Under 45 min</span>
+            <span class="summary-chip">Medium spice</span>
+            <span class="summary-chip">Store-bought paste</span>
+            <span class="summary-chip">4 servings</span>
+          </div>
+          <div class="celebration-ctas">
+            <button class="cta active">View Recipe</button>
+            <button class="cta secondary">Adjust Preferences</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <span class="frame-annotation">Configurator replaced by celebration card. All choices summarized as compact chips. Two CTAs.</span>
+  </div>
+
+  <!-- ──────── Frame 5: URL Flow with Pre-fills ──────── -->
+  <div class="frame-wrapper">
+    <span class="frame-label">Frame 5 &mdash; URL Pre-fills</span>
+    <div class="phone">
+      <div class="statusbar">
+        <span>9:41</span>
+        <div class="statusbar-right">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 9l4-4 4 4"/><path d="M5 5v14"/><path d="M10 18h4"/><path d="M10 14h7"/><path d="M10 10h10"/></svg>
+          <svg viewBox="0 0 24 24" fill="currentColor"><rect x="1" y="6" width="3" height="12" rx="1" opacity="0.3"/><rect x="6" y="4" width="3" height="14" rx="1" opacity="0.5"/><rect x="11" y="2" width="3" height="16" rx="1" opacity="0.7"/><rect x="16" y="0" width="3" height="18" rx="1"/></svg>
+          <svg viewBox="0 0 28 14" fill="currentColor"><rect x="0" y="1" width="24" height="12" rx="3" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="2" y="3" width="16" height="8" rx="1.5"/><rect x="25.5" y="4.5" width="2" height="5" rx="1"/></svg>
+        </div>
+      </div>
+      <div class="app-header">
+        <div class="back-arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </div>
+        <span class="logo">mise.</span>
+      </div>
+      <div class="screen-content">
+        <div class="analysis-chip">
+          <span class="emoji">&#x1F35C;</span>
+          <span class="text">Pad Thai<span class="sub">&middot; seriouseats.com</span></span>
+        </div>
+        <div class="sections">
+          <!-- Dietary Needs — pre-filled gluten-free -->
+          <div>
+            <div class="section-label">Dietary Needs</div>
+            <div class="pill-group">
+              <button class="pill">Nut-free</button>
+              <button class="pill">Dairy-free</button>
+              <button class="pill">Vegetarian</button>
+              <button class="pill">Vegan</button>
+              <button class="pill prefilled"><span class="check">&#10003;</span> Gluten-free</button>
+              <button class="pill">Low-sodium</button>
+            </div>
+          </div>
+          <!-- Protein — pre-filled Shrimp -->
+          <div>
+            <div class="section-label">Protein</div>
+            <div class="pill-group">
+              <button class="pill">Chicken thigh</button>
+              <button class="pill">Beef</button>
+              <button class="pill">Tofu</button>
+              <button class="pill prefilled"><span class="check">&#10003;</span> Shrimp</button>
+              <button class="pill">No protein</button>
+            </div>
+          </div>
+          <!-- Cook Time — pre-filled Under 30 min -->
+          <div>
+            <div class="section-label">Cook Time</div>
+            <div class="pill-group">
+              <button class="pill prefilled"><span class="check">&#10003;</span> Under 30 min</button>
+              <button class="pill">Under 45 min</button>
+              <button class="pill">Under 1 hr</button>
+              <button class="pill">No limit</button>
+            </div>
+          </div>
+          <!-- Spice Level — pre-filled Medium -->
+          <div>
+            <div class="section-label">Spice Level</div>
+            <div class="pill-group">
+              <button class="pill">Mild</button>
+              <button class="pill prefilled"><span class="check">&#10003;</span> Medium</button>
+              <button class="pill">Hot</button>
+              <button class="pill">Thai hot</button>
+            </div>
+          </div>
+          <!-- Fish Sauce — contextual for Pad Thai -->
+          <div>
+            <div class="section-label">Fish Sauce</div>
+            <div class="pill-group">
+              <button class="pill prefilled"><span class="check">&#10003;</span> Traditional</button>
+              <button class="pill">Vegan substitute</button>
+              <button class="pill">Either</button>
+            </div>
+          </div>
+          <!-- Servings — pre-filled 2 -->
+          <div>
+            <div class="section-label">Servings</div>
+            <div class="pill-group">
+              <button class="pill prefilled"><span class="check">&#10003;</span> 2</button>
+              <button class="pill">4</button>
+              <button class="pill">6</button>
+              <button class="pill">8</button>
+            </div>
+          </div>
+        </div>
+        <div class="cta-container">
+          <div class="dual-cta">
+            <button class="cta outline">Save As-Is</button>
+            <button class="cta active">Build Customized</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <span class="frame-annotation">URL-detected recipe auto-fills all sections. Pre-filled pills at 85% opacity. Dual CTAs for save or customize.</span>
+  </div>
+
+</div>
+
+<!-- ═══════════════════ IMPLEMENTATION SPEC ═══════════════════ -->
+<div class="spec-section">
+  <details>
+    <summary>Implementation Spec &mdash; Variation 004: Single-Screen Configurator</summary>
+    <div class="spec-body">
+
+      <h3>Screen Overview</h3>
+      <p>A single, non-scrolling (ideally) configurator screen where all recipe preference sections are visible at once. The user taps pills to make selections within each section. A primary CTA at the bottom reflects completion progress and becomes fully active when all sections are filled.</p>
+
+      <h3>Layout Hierarchy</h3>
+      <ul>
+        <li><strong>StatusBar</strong> (44px) &mdash; time, network, battery indicators</li>
+        <li><strong>AppHeader</strong> (48px) &mdash; back chevron + "mise." wordmark</li>
+        <li><strong>AnalysisChip</strong> &mdash; emoji + recipe name + source count or domain</li>
+        <li><strong>SectionsContainer</strong> (flex:1, gap:14px, pad:0 20px)
+          <ul>
+            <li><strong>Section</strong> x6 &mdash; label + pill group</li>
+          </ul>
+        </li>
+        <li><strong>CTAContainer</strong> (sticky bottom, pad:12px 20px 24px) &mdash; primary action button</li>
+      </ul>
+
+      <h3>Component Spec</h3>
+      <table>
+        <thead>
+          <tr><th>Component</th><th>Props / Variants</th><th>Dimensions</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>AnalysisChip</code></td>
+            <td>emoji, title, subtitle</td>
+            <td>Auto height, full width - 40px</td>
+            <td>Subtitle shows source count (search) or domain (URL)</td>
+          </tr>
+          <tr>
+            <td><code>SectionLabel</code></td>
+            <td>text</td>
+            <td>11px, uppercase, 600 weight</td>
+            <td>Color: <code>--text-muted</code>, letter-spacing 0.5px</td>
+          </tr>
+          <tr>
+            <td><code>Pill</code></td>
+            <td>label, selected, prefilled, onPress</td>
+            <td>Auto width, 7px 14px padding</td>
+            <td>Selected: bg brand, white text, checkmark prefix. Prefilled: same but 85% opacity</td>
+          </tr>
+          <tr>
+            <td><code>PillGroup</code></td>
+            <td>pills[], singleSelect (bool)</td>
+            <td>flex-wrap, gap: 8px</td>
+            <td>Most sections are single-select; Dietary Needs is multi-select</td>
+          </tr>
+          <tr>
+            <td><code>CTAButton</code></td>
+            <td>disabled, partial, active, label</td>
+            <td>100% width, 48px height</td>
+            <td>Three visual states. Partial shows "(N/6 selected)" count</td>
+          </tr>
+          <tr>
+            <td><code>CelebrationCard</code></td>
+            <td>title, recipeName, summaryChips[]</td>
+            <td>Centered in screen-content</td>
+            <td>Replaces configurator after build completes</td>
+          </tr>
+          <tr>
+            <td><code>SummaryChip</code></td>
+            <td>label</td>
+            <td>Auto, 5px 12px padding</td>
+            <td>Read-only summary of selections, surface bg + subtle border</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>State Matrix</h3>
+      <table>
+        <thead>
+          <tr><th>State</th><th>Sections Filled</th><th>CTA</th><th>Transition</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Initial</td><td>1 (pref-based)</td><td>Disabled (gray bg, muted text)</td><td>Analysis chip appears, sections render</td></tr>
+          <tr><td>Partial</td><td>2&ndash;5</td><td>Partial (outlined, shows count)</td><td>Pill tap toggles selection within section</td></tr>
+          <tr><td>Complete</td><td>6</td><td>Active (brand fill, pulse animation)</td><td>Last pill tap triggers CTA glow</td></tr>
+          <tr><td>Building</td><td>6</td><td>Loading spinner</td><td>CTA tap triggers API call</td></tr>
+          <tr><td>Ready</td><td>N/A</td><td>View Recipe / Adjust</td><td>Configurator fades out, celebration fades in</td></tr>
+          <tr><td>URL Pre-fill</td><td>All (auto)</td><td>Dual: Save As-Is / Build Customized</td><td>Pre-fills appear with slightly reduced opacity</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Interaction Details</h3>
+      <ul>
+        <li><strong>Pill tap (single-select section):</strong> Deselects any currently selected pill in that section, selects the tapped pill. Sends chat message: <code>"Set [section] to [value]"</code></li>
+        <li><strong>Pill tap (multi-select section):</strong> Toggles the tapped pill. Sends chat message: <code>"Add/Remove [value] from [section]"</code></li>
+        <li><strong>CTA tap (active):</strong> Sends <code>"Build my recipe with these preferences"</code> as a chat message. Triggers the recipe generation flow.</li>
+        <li><strong>Adjust Preferences:</strong> Returns to the configurator with all previous selections intact.</li>
+        <li><strong>Save As-Is (URL flow):</strong> Accepts all pre-filled values without modification.</li>
+      </ul>
+
+      <h3>Responsive Notes</h3>
+      <ul>
+        <li>Designed for 390px width (iPhone 14/15). On narrower devices (375px, SE), pills may wrap to additional rows &mdash; sections container should scroll if content exceeds viewport.</li>
+        <li>On wider devices or tablets, sections could be arranged in a 2-column grid to reduce vertical height further.</li>
+        <li>CTA container uses safe-area-inset-bottom padding on devices with home indicator.</li>
+      </ul>
+
+      <h3>What the Mock Does NOT Show</h3>
+      <ul>
+        <li><strong>Loading / building state:</strong> Spinner or progress animation on CTA during recipe generation.</li>
+        <li><strong>Error states:</strong> Network failure, generation timeout, or API error handling.</li>
+        <li><strong>Section reordering:</strong> Sections could be reordered based on recipe context (e.g., "Fish Sauce" for Thai recipes).</li>
+        <li><strong>Keyboard/accessibility:</strong> Focus ring styles, screen reader labels, keyboard navigation between pills.</li>
+        <li><strong>Haptic feedback:</strong> Pill selection should trigger light haptic on iOS.</li>
+        <li><strong>Animated transitions:</strong> Configurator-to-celebration crossfade, pill selection micro-animations.</li>
+        <li><strong>Scroll behavior:</strong> On shorter devices, the sections container scrolls with momentum; CTA remains sticky.</li>
+        <li><strong>Saved preferences sync:</strong> How user dietary prefs are stored and pre-applied across sessions.</li>
+      </ul>
+
+    </div>
+  </details>
+</div>
+
+</body>
+</html>

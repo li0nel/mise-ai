@@ -1,0 +1,1734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mise — Variation 001: Stacked Card Flow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --brand: #C8481C;
+    --brand-hover: #A33A16;
+    --bg-default: #FDFAF7;
+    --bg-surface: #F5F0EB;
+    --bg-elevated: #FFFFFF;
+    --text-primary: #1A1614;
+    --text-secondary: #6B5E54;
+    --text-muted: #9C8E82;
+    --border-default: #E8E0D8;
+    --border-subtle: #F0EAE4;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 20px;
+    --radius-full: 9999px;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.06);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+    --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #F0EAE4;
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* ── Page Layout ────────────────────────────── */
+
+  .page-header {
+    text-align: center;
+    padding: 48px 24px 32px;
+  }
+
+  .page-header .badge {
+    display: inline-block;
+    padding: 4px 14px;
+    border-radius: var(--radius-full);
+    background: var(--brand);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .page-header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+  }
+
+  .page-header p {
+    font-size: 15px;
+    color: var(--text-secondary);
+    max-width: 640px;
+    margin: 0 auto;
+    line-height: 1.5;
+  }
+
+  .frames-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 48px;
+    justify-content: center;
+    padding: 16px 32px 64px;
+  }
+
+  .frame-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .frame-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  /* ── Phone Shell ────────────────────────────── */
+
+  .phone-shell {
+    width: 390px;
+    height: 760px;
+    border-radius: 44px;
+    background: var(--bg-default);
+    position: relative;
+    overflow: hidden;
+    box-shadow:
+      0 0 0 1px rgba(0,0,0,0.08),
+      0 2px 4px rgba(0,0,0,0.04),
+      0 8px 24px rgba(0,0,0,0.10),
+      0 24px 48px rgba(0,0,0,0.12);
+  }
+
+  /* ── Status Bar ─────────────────────────────── */
+
+  .status-bar {
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+    position: relative;
+    z-index: 10;
+  }
+
+  .status-bar .time {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    width: 54px;
+  }
+
+  .status-bar .notch {
+    width: 120px;
+    height: 28px;
+    background: #1A1614;
+    border-radius: 0 0 18px 18px;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .status-bar .icons {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    width: 72px;
+    justify-content: flex-end;
+  }
+
+  .status-bar .icons svg {
+    display: block;
+  }
+
+  /* ── App Header ─────────────────────────────── */
+
+  .app-header {
+    height: 48px;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    gap: 12px;
+  }
+
+  .app-header .back-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .app-header .back-btn:hover {
+    background: var(--bg-surface);
+  }
+
+  .app-header .logo {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--brand);
+  }
+
+  /* ── Progress Bar ───────────────────────────── */
+
+  .progress-bar-track {
+    height: 4px;
+    background: var(--border-subtle);
+    margin: 0 20px;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: var(--brand);
+    border-radius: 2px;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* ── Content Area ───────────────────────────── */
+
+  .content-area {
+    flex: 1;
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow-y: auto;
+  }
+
+  .phone-body {
+    display: flex;
+    flex-direction: column;
+    height: calc(100% - 44px);
+  }
+
+  /* ── Analysis Card (Expanded) ──────────────── */
+
+  .analysis-card {
+    background: var(--bg-elevated);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-subtle);
+  }
+
+  .analysis-card .analysis-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .analysis-card .analysis-subtitle {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+    line-height: 1.4;
+  }
+
+  .analysis-sources {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .source-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
+    background: var(--bg-surface);
+    font-size: 11px;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+
+  .source-pill .globe {
+    font-size: 10px;
+  }
+
+  /* Shimmer animation for analysis phase */
+  .shimmer-block {
+    height: 12px;
+    border-radius: 6px;
+    background: linear-gradient(90deg, var(--bg-surface) 25%, var(--border-subtle) 50%, var(--bg-surface) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+    margin-bottom: 8px;
+  }
+
+  .shimmer-block:last-child {
+    width: 60%;
+    margin-bottom: 0;
+  }
+
+  .shimmer-block.short {
+    width: 75%;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  .analyzing-text {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+
+  .dot-pulse {
+    display: inline-flex;
+    gap: 3px;
+  }
+
+  .dot-pulse span {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--brand);
+    animation: dotPulse 1.2s ease-in-out infinite;
+  }
+
+  .dot-pulse span:nth-child(2) { animation-delay: 0.2s; }
+  .dot-pulse span:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes dotPulse {
+    0%, 60%, 100% { opacity: 0.3; transform: scale(0.8); }
+    30% { opacity: 1; transform: scale(1.2); }
+  }
+
+  /* Card pulse animation */
+  .pulse-card {
+    animation: cardPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes cardPulse {
+    0%, 100% { box-shadow: var(--shadow-md); }
+    50% { box-shadow: 0 4px 20px rgba(200, 72, 28, 0.12); }
+  }
+
+  /* ── Collapsed Chips ────────────────────────── */
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: var(--radius-full);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+    user-select: none;
+  }
+
+  .chip-analysis {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-default);
+    color: var(--text-primary);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .chip-analysis:hover {
+    border-color: var(--brand);
+    box-shadow: 0 1px 4px rgba(200, 72, 28, 0.12);
+  }
+
+  .chip-answer {
+    background: transparent;
+    border: 1px solid var(--border-default);
+    color: var(--text-secondary);
+  }
+
+  .chip-answer:hover {
+    border-color: var(--brand);
+    color: var(--text-primary);
+  }
+
+  .chips-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  /* ── Question Card ──────────────────────────── */
+
+  .question-card {
+    background: var(--bg-elevated);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-subtle);
+    animation: cardSlideUp 0.3s ease-out;
+  }
+
+  @keyframes cardSlideUp {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .question-card .question-text {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+  }
+
+  .question-card .question-hint {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    line-height: 1.4;
+  }
+
+  .options-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  /* ── Option Pills ───────────────────────────── */
+
+  .option-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 18px;
+    border-radius: var(--radius-full);
+    border: 1.5px solid var(--border-default);
+    background: transparent;
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
+    position: relative;
+  }
+
+  .option-pill:hover {
+    border-color: var(--brand);
+    background: rgba(200, 72, 28, 0.04);
+  }
+
+  .option-pill:focus-visible {
+    border-color: var(--brand);
+    box-shadow: 0 0 0 3px rgba(200, 72, 28, 0.15);
+  }
+
+  .option-pill:active {
+    transform: scale(0.97);
+  }
+
+  .option-pill.selected {
+    background: var(--brand);
+    border-color: var(--brand);
+    color: #FFFFFF;
+  }
+
+  .option-pill.selected:hover {
+    background: var(--brand-hover);
+    border-color: var(--brand-hover);
+  }
+
+  .option-pill.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  .option-pill .check-icon {
+    display: none;
+    width: 14px;
+    height: 14px;
+  }
+
+  .option-pill.selected .check-icon {
+    display: block;
+  }
+
+  /* ── Continue Button ────────────────────────── */
+
+  .continue-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 14px 24px;
+    border-radius: var(--radius-md);
+    background: var(--brand);
+    color: #FFFFFF;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 8px;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .continue-btn:hover {
+    background: var(--brand-hover);
+    box-shadow: var(--shadow-md);
+  }
+
+  .continue-btn:focus-visible {
+    box-shadow: 0 0 0 3px rgba(200, 72, 28, 0.25);
+  }
+
+  .continue-btn:active {
+    transform: scale(0.98);
+  }
+
+  .continue-btn.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  .continue-btn.secondary {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1.5px solid var(--border-default);
+  }
+
+  .continue-btn.secondary:hover {
+    border-color: var(--text-secondary);
+    color: var(--text-primary);
+    background: var(--bg-surface);
+    box-shadow: none;
+  }
+
+  /* ── Celebration Card ───────────────────────── */
+
+  .celebration-card {
+    background: var(--bg-elevated);
+    border-radius: var(--radius-lg);
+    padding: 32px 24px;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border-subtle);
+    text-align: center;
+    animation: celebrationPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes celebrationPop {
+    from {
+      opacity: 0;
+      transform: scale(0.92) translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+
+  .celebration-card .celebration-emoji {
+    font-size: 40px;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .celebration-card .celebration-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }
+
+  .celebration-card .recipe-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--brand);
+    margin-bottom: 8px;
+  }
+
+  .celebration-card .recipe-summary {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: 24px;
+    max-width: 280px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .celebration-card .btn-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .text-link {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    transition: color 0.15s;
+  }
+
+  .text-link:hover {
+    color: var(--text-primary);
+  }
+
+  /* ── URL Preview Card ───────────────────────── */
+
+  .url-preview-card {
+    background: var(--bg-elevated);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-subtle);
+  }
+
+  .url-preview-image {
+    width: 100%;
+    height: 160px;
+    background: linear-gradient(135deg, #E8E0D8 0%, #D4C8BC 50%, #C8B8A8 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .url-preview-image .placeholder-icon {
+    font-size: 48px;
+    opacity: 0.5;
+  }
+
+  .url-preview-image .source-badge {
+    position: absolute;
+    bottom: 10px;
+    left: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(8px);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-secondary);
+  }
+
+  .url-preview-body {
+    padding: 20px;
+  }
+
+  .url-preview-body .recipe-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+  }
+
+  .url-preview-body .recipe-meta {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.4;
+    margin-bottom: 20px;
+  }
+
+  .url-preview-body .recipe-meta span {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
+  .url-preview-body .btn-row {
+    display: flex;
+    gap: 10px;
+  }
+
+  .url-preview-body .btn-row .continue-btn {
+    flex: 1;
+    margin-top: 0;
+  }
+
+  /* ── Bottom Nav ─────────────────────────────── */
+
+  .bottom-nav {
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    border-top: 1px solid var(--border-subtle);
+    background: var(--bg-default);
+    padding-bottom: 8px;
+    flex-shrink: 0;
+  }
+
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    cursor: pointer;
+    padding: 6px 16px;
+    border-radius: var(--radius-sm);
+    transition: all 0.15s;
+  }
+
+  .nav-item:hover {
+    background: var(--bg-surface);
+  }
+
+  .nav-item .nav-icon {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .nav-item .nav-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-muted);
+  }
+
+  .nav-item.active .nav-label {
+    color: var(--brand);
+  }
+
+  .nav-item.active svg {
+    color: var(--brand);
+  }
+
+  /* ── Annotation ─────────────────────────────── */
+
+  .annotation {
+    max-width: 350px;
+    padding: 0 8px;
+  }
+
+  .annotation .dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--brand);
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+
+  .annotation .lead {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .annotation .detail {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-top: 4px;
+  }
+
+  /* ── Implementation Spec ────────────────────── */
+
+  .spec-section {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 48px 32px 80px;
+  }
+
+  .spec-section details {
+    background: var(--bg-elevated);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-default);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+  }
+
+  .spec-section summary {
+    padding: 20px 24px;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    user-select: none;
+    transition: background 0.15s;
+  }
+
+  .spec-section summary:hover {
+    background: var(--bg-surface);
+  }
+
+  .spec-section summary::marker {
+    color: var(--brand);
+  }
+
+  .spec-content {
+    padding: 0 24px 24px;
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+
+  .spec-content h3 {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 28px 0 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .spec-content h3:first-child {
+    margin-top: 4px;
+  }
+
+  .spec-content ul {
+    padding-left: 20px;
+    margin: 8px 0;
+  }
+
+  .spec-content li {
+    margin-bottom: 4px;
+  }
+
+  .spec-content code {
+    background: var(--bg-surface);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 12.5px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    color: var(--brand);
+  }
+
+  .spec-content pre {
+    background: var(--bg-surface);
+    padding: 14px 18px;
+    border-radius: var(--radius-sm);
+    overflow-x: auto;
+    font-size: 12.5px;
+    line-height: 1.6;
+    margin: 10px 0;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    color: var(--text-primary);
+  }
+
+  .spec-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 12.5px;
+  }
+
+  .spec-content thead th {
+    text-align: left;
+    padding: 8px 12px;
+    background: var(--bg-surface);
+    font-weight: 600;
+    color: var(--text-primary);
+    border-bottom: 2px solid var(--border-default);
+    white-space: nowrap;
+  }
+
+  .spec-content tbody td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border-subtle);
+    vertical-align: top;
+  }
+
+  .spec-content tbody tr:hover {
+    background: rgba(245, 240, 235, 0.5);
+  }
+
+  /* ── Utility ────────────────────────────────── */
+
+  .spacer {
+    flex: 1;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  /* ── Confetti Dots (Frame 4) ───────────────── */
+
+  .confetti-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .confetti-dot {
+    position: absolute;
+    border-radius: 50%;
+    animation: confettiFall 2.5s ease-in-out infinite;
+  }
+
+  @keyframes confettiFall {
+    0% { opacity: 0; transform: translateY(-20px) rotate(0deg); }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { opacity: 0; transform: translateY(120px) rotate(360deg); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- PAGE HEADER                                  -->
+<!-- ════════════════════════════════════════════ -->
+<header class="page-header">
+  <div class="badge">Variation 001</div>
+  <h1>Stacked Card Flow</h1>
+  <p>One question at a time as animated cards stacking vertically. Answered questions collapse to single-line chips. Clean, minimal, zero typing.</p>
+</header>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- FRAMES ROW                                   -->
+<!-- ════════════════════════════════════════════ -->
+<div class="frames-row">
+
+  <!-- ────────── FRAME 1: Analysis Phase ──────── -->
+  <div class="frame-wrapper">
+    <div class="frame-label">Frame 1 &mdash; Analysis</div>
+    <div class="phone-shell">
+      <div class="phone-body">
+        <!-- Status Bar -->
+        <div class="status-bar">
+          <span class="time">9:41</span>
+          <div class="notch"></div>
+          <div class="icons">
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><rect x="0" y="7" width="3" height="5" rx="0.5" fill="#1A1614"/><rect x="4.5" y="4.5" width="3" height="7.5" rx="0.5" fill="#1A1614"/><rect x="9" y="2" width="3" height="10" rx="0.5" fill="#1A1614"/><rect x="13.5" y="0" width="2.5" height="12" rx="0.5" fill="#1A1614" opacity="0.3"/></svg>
+            <svg width="15" height="12" viewBox="0 0 15 12" fill="none"><path d="M7.5 3.6C9.7 3.6 11.7 4.5 13.1 5.9L14.5 4.5C12.7 2.7 10.2 1.6 7.5 1.6C4.8 1.6 2.3 2.7 .5 4.5L1.9 5.9C3.3 4.5 5.3 3.6 7.5 3.6ZM7.5 7.6C8.6 7.6 9.6 8 10.3 8.7L11.7 7.3C10.6 6.2 9.1 5.6 7.5 5.6C5.9 5.6 4.4 6.2 3.3 7.3L4.7 8.7C5.4 8 6.4 7.6 7.5 7.6Z" fill="#1A1614"/><circle cx="7.5" cy="11" r="1.2" fill="#1A1614"/></svg>
+            <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0" y="1" width="21" height="10" rx="2" stroke="#1A1614" stroke-width="1"/><rect x="1.5" y="2.5" width="14" height="7" rx="1" fill="#1A1614"/><rect x="22" y="4" width="2" height="4" rx="0.5" fill="#1A1614" opacity="0.4"/></svg>
+          </div>
+        </div>
+
+        <!-- App Header -->
+        <div class="app-header">
+          <div class="back-btn">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <span class="logo">mise.</span>
+        </div>
+
+        <!-- Progress Bar: 0% -->
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill" style="width: 0%"></div>
+        </div>
+
+        <!-- Content -->
+        <div class="content-area">
+          <div class="analysis-card pulse-card">
+            <div class="analyzing-text">
+              Analyzing Massaman Curry
+              <span class="dot-pulse"><span></span><span></span><span></span></span>
+            </div>
+            <div class="analysis-subtitle">Scanning 47 sources for the best approach</div>
+            <div class="analysis-sources">
+              <span class="source-pill"><span class="globe">&#127760;</span> hotthaikitchen.com</span>
+              <span class="source-pill"><span class="globe">&#127760;</span> seriouseats.com</span>
+              <span class="source-pill"><span class="globe">&#127760;</span> bonappetit.com</span>
+            </div>
+            <div class="shimmer-block" style="width: 100%"></div>
+            <div class="shimmer-block short"></div>
+            <div class="shimmer-block" style="width: 50%"></div>
+          </div>
+          <div class="spacer"></div>
+        </div>
+
+        <!-- Bottom Nav -->
+        <div class="bottom-nav">
+          <div class="nav-item active">
+            <div class="nav-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <span class="nav-label">Chat</span>
+          </div>
+          <div class="nav-item">
+            <div class="nav-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            </div>
+            <span class="nav-label">Recipes</span>
+          </div>
+          <div class="nav-item">
+            <div class="nav-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            </div>
+            <span class="nav-label">Shopping</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="annotation">
+      <span class="dot"></span><span class="lead">Ambient Analysis.</span>
+      <div class="detail">A pulsing card with shimmer lines conveys active work. Source pills lend credibility. Zero user input required at this stage.</div>
+    </div>
+  </div>
+
+  <!-- ────────── FRAME 2: First Question ──────── -->
+  <div class="frame-wrapper">
+    <div class="frame-label">Frame 2 &mdash; Dietary</div>
+    <div class="phone-shell">
+      <div class="phone-body">
+        <div class="status-bar">
+          <span class="time">9:41</span>
+          <div class="notch"></div>
+          <div class="icons">
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><rect x="0" y="7" width="3" height="5" rx="0.5" fill="#1A1614"/><rect x="4.5" y="4.5" width="3" height="7.5" rx="0.5" fill="#1A1614"/><rect x="9" y="2" width="3" height="10" rx="0.5" fill="#1A1614"/><rect x="13.5" y="0" width="2.5" height="12" rx="0.5" fill="#1A1614" opacity="0.3"/></svg>
+            <svg width="15" height="12" viewBox="0 0 15 12" fill="none"><path d="M7.5 3.6C9.7 3.6 11.7 4.5 13.1 5.9L14.5 4.5C12.7 2.7 10.2 1.6 7.5 1.6C4.8 1.6 2.3 2.7 .5 4.5L1.9 5.9C3.3 4.5 5.3 3.6 7.5 3.6ZM7.5 7.6C8.6 7.6 9.6 8 10.3 8.7L11.7 7.3C10.6 6.2 9.1 5.6 7.5 5.6C5.9 5.6 4.4 6.2 3.3 7.3L4.7 8.7C5.4 8 6.4 7.6 7.5 7.6Z" fill="#1A1614"/><circle cx="7.5" cy="11" r="1.2" fill="#1A1614"/></svg>
+            <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0" y="1" width="21" height="10" rx="2" stroke="#1A1614" stroke-width="1"/><rect x="1.5" y="2.5" width="14" height="7" rx="1" fill="#1A1614"/><rect x="22" y="4" width="2" height="4" rx="0.5" fill="#1A1614" opacity="0.4"/></svg>
+          </div>
+        </div>
+        <div class="app-header">
+          <div class="back-btn">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <span class="logo">mise.</span>
+        </div>
+
+        <!-- Progress Bar: 15% -->
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill" style="width: 15%"></div>
+        </div>
+
+        <div class="content-area">
+          <!-- Analysis collapsed to chip -->
+          <div class="chips-row">
+            <span class="chip chip-analysis">&#127835; Massaman Curry &middot; 47 sources</span>
+          </div>
+
+          <!-- Question Card -->
+          <div class="question-card">
+            <div class="question-text">Any dietary needs?</div>
+            <div class="question-hint">Select all that apply, or skip if none.</div>
+            <div class="options-grid" id="dietary-options">
+              <button class="option-pill selected" onclick="togglePill(this)">
+                <svg class="check-icon" viewBox="0 0 14 14" fill="none"><path d="M11.5 3.5L5.5 10L2.5 7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Nut-free
+              </button>
+              <button class="option-pill" onclick="togglePill(this)">
+                <svg class="check-icon" viewBox="0 0 14 14" fill="none"><path d="M11.5 3.5L5.5 10L2.5 7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Dairy-free
+              </button>
+              <button class="option-pill" onclick="togglePill(this)">
+                <svg class="check-icon" viewBox="0 0 14 14" fill="none"><path d="M11.5 3.5L5.5 10L2.5 7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Vegetarian
+              </button>
+              <button class="option-pill" onclick="togglePill(this)">
+                <svg class="check-icon" viewBox="0 0 14 14" fill="none"><path d="M11.5 3.5L5.5 10L2.5 7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Vegan
+              </button>
+              <button class="option-pill" onclick="togglePill(this)">
+                <svg class="check-icon" viewBox="0 0 14 14" fill="none"><path d="M11.5 3.5L5.5 10L2.5 7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Gluten-free
+              </button>
+              <button class="option-pill" onclick="togglePill(this)">
+                <svg class="check-icon" viewBox="0 0 14 14" fill="none"><path d="M11.5 3.5L5.5 10L2.5 7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Low-sodium
+              </button>
+            </div>
+            <button class="continue-btn" style="margin-top: 16px;">Continue</button>
+          </div>
+          <div class="spacer"></div>
+        </div>
+
+        <div class="bottom-nav">
+          <div class="nav-item active">
+            <div class="nav-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+            <span class="nav-label">Chat</span>
+          </div>
+          <div class="nav-item">
+            <div class="nav-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
+            <span class="nav-label">Recipes</span>
+          </div>
+          <div class="nav-item">
+            <div class="nav-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>
+            <span class="nav-label">Shopping</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="annotation">
+      <span class="dot"></span><span class="lead">First Question.</span>
+      <div class="detail">Analysis collapses to a tappable chip. Multi-select pills with pre-checked saved preference (Nut-free). Border-only default, filled on selection.</div>
+    </div>
+  </div>
+
+  <!-- ────────── FRAME 3: Mid-Flow ────────────── -->
+  <div class="frame-wrapper">
+    <div class="frame-label">Frame 3 &mdash; Mid-Flow (Q4)</div>
+    <div class="phone-shell">
+      <div class="phone-body">
+        <div class="status-bar">
+          <span class="time">9:42</span>
+          <div class="notch"></div>
+          <div class="icons">
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><rect x="0" y="7" width="3" height="5" rx="0.5" fill="#1A1614"/><rect x="4.5" y="4.5" width="3" height="7.5" rx="0.5" fill="#1A1614"/><rect x="9" y="2" width="3" height="10" rx="0.5" fill="#1A1614"/><rect x="13.5" y="0" width="2.5" height="12" rx="0.5" fill="#1A1614" opacity="0.3"/></svg>
+            <svg width="15" height="12" viewBox="0 0 15 12" fill="none"><path d="M7.5 3.6C9.7 3.6 11.7 4.5 13.1 5.9L14.5 4.5C12.7 2.7 10.2 1.6 7.5 1.6C4.8 1.6 2.3 2.7 .5 4.5L1.9 5.9C3.3 4.5 5.3 3.6 7.5 3.6ZM7.5 7.6C8.6 7.6 9.6 8 10.3 8.7L11.7 7.3C10.6 6.2 9.1 5.6 7.5 5.6C5.9 5.6 4.4 6.2 3.3 7.3L4.7 8.7C5.4 8 6.4 7.6 7.5 7.6Z" fill="#1A1614"/><circle cx="7.5" cy="11" r="1.2" fill="#1A1614"/></svg>
+            <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0" y="1" width="21" height="10" rx="2" stroke="#1A1614" stroke-width="1"/><rect x="1.5" y="2.5" width="14" height="7" rx="1" fill="#1A1614"/><rect x="22" y="4" width="2" height="4" rx="0.5" fill="#1A1614" opacity="0.4"/></svg>
+          </div>
+        </div>
+        <div class="app-header">
+          <div class="back-btn">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <span class="logo">mise.</span>
+        </div>
+
+        <!-- Progress Bar: 60% -->
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill" style="width: 60%"></div>
+        </div>
+
+        <div class="content-area">
+          <!-- Collapsed chips stack -->
+          <div class="chips-row">
+            <span class="chip chip-analysis">&#127835; Massaman Curry &middot; 47 sources</span>
+          </div>
+          <div class="chips-row">
+            <span class="chip chip-answer">Diet: Nut-free</span>
+            <span class="chip chip-answer">Protein: Chicken thigh</span>
+          </div>
+          <div class="chips-row">
+            <span class="chip chip-answer">Cook time: Under 45 min</span>
+          </div>
+
+          <!-- Current Question -->
+          <div class="question-card">
+            <div class="question-text">How spicy?</div>
+            <div class="options-grid" id="spicy-options">
+              <button class="option-pill" onclick="toggleSingle(this, 'spicy-options')">
+                <svg class="check-icon" viewBox="0 0 14 14" fill="none"><path d="M11.5 3.5L5.5 10L2.5 7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Mild
+              </button>
+              <button class="option-pill selected" onclick="toggleSingle(this, 'spicy-options')">
+                <svg class="check-icon" viewBox="0 0 14 14" fill="none"><path d="M11.5 3.5L5.5 10L2.5 7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Medium
+              </button>
+              <button class="option-pill" onclick="toggleSingle(this, 'spicy-options')">
+                <svg class="check-icon" viewBox="0 0 14 14" fill="none"><path d="M11.5 3.5L5.5 10L2.5 7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Hot
+              </button>
+              <button class="option-pill" onclick="toggleSingle(this, 'spicy-options')">
+                <svg class="check-icon" viewBox="0 0 14 14" fill="none"><path d="M11.5 3.5L5.5 10L2.5 7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Thai hot
+              </button>
+            </div>
+            <button class="continue-btn" style="margin-top: 16px;">Continue</button>
+          </div>
+          <div class="spacer"></div>
+        </div>
+
+        <div class="bottom-nav">
+          <div class="nav-item active">
+            <div class="nav-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+            <span class="nav-label">Chat</span>
+          </div>
+          <div class="nav-item">
+            <div class="nav-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
+            <span class="nav-label">Recipes</span>
+          </div>
+          <div class="nav-item">
+            <div class="nav-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>
+            <span class="nav-label">Shopping</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="annotation">
+      <span class="dot"></span><span class="lead">Accumulated Context.</span>
+      <div class="detail">Previous answers compress to chips, keeping the screen uncluttered. Each chip is tappable to re-open. Single-select for spiciness; "Medium" pre-selected.</div>
+    </div>
+  </div>
+
+  <!-- ────────── FRAME 4: Recipe Ready ────────── -->
+  <div class="frame-wrapper">
+    <div class="frame-label">Frame 4 &mdash; Recipe Ready</div>
+    <div class="phone-shell">
+      <div class="phone-body">
+        <div class="status-bar">
+          <span class="time">9:42</span>
+          <div class="notch"></div>
+          <div class="icons">
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><rect x="0" y="7" width="3" height="5" rx="0.5" fill="#1A1614"/><rect x="4.5" y="4.5" width="3" height="7.5" rx="0.5" fill="#1A1614"/><rect x="9" y="2" width="3" height="10" rx="0.5" fill="#1A1614"/><rect x="13.5" y="0" width="2.5" height="12" rx="0.5" fill="#1A1614" opacity="0.3"/></svg>
+            <svg width="15" height="12" viewBox="0 0 15 12" fill="none"><path d="M7.5 3.6C9.7 3.6 11.7 4.5 13.1 5.9L14.5 4.5C12.7 2.7 10.2 1.6 7.5 1.6C4.8 1.6 2.3 2.7 .5 4.5L1.9 5.9C3.3 4.5 5.3 3.6 7.5 3.6ZM7.5 7.6C8.6 7.6 9.6 8 10.3 8.7L11.7 7.3C10.6 6.2 9.1 5.6 7.5 5.6C5.9 5.6 4.4 6.2 3.3 7.3L4.7 8.7C5.4 8 6.4 7.6 7.5 7.6Z" fill="#1A1614"/><circle cx="7.5" cy="11" r="1.2" fill="#1A1614"/></svg>
+            <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0" y="1" width="21" height="10" rx="2" stroke="#1A1614" stroke-width="1"/><rect x="1.5" y="2.5" width="14" height="7" rx="1" fill="#1A1614"/><rect x="22" y="4" width="2" height="4" rx="0.5" fill="#1A1614" opacity="0.4"/></svg>
+          </div>
+        </div>
+        <div class="app-header">
+          <div class="back-btn">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <span class="logo">mise.</span>
+        </div>
+
+        <!-- Progress Bar: 100% -->
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill" style="width: 100%"></div>
+        </div>
+
+        <div class="content-area" style="position: relative;">
+          <!-- Confetti -->
+          <div class="confetti-container">
+            <div class="confetti-dot" style="width:6px;height:6px;background:#C8481C;left:15%;top:10%;animation-delay:0s;"></div>
+            <div class="confetti-dot" style="width:5px;height:5px;background:#E8E0D8;left:30%;top:5%;animation-delay:0.3s;"></div>
+            <div class="confetti-dot" style="width:7px;height:7px;background:#C8481C;left:55%;top:8%;animation-delay:0.6s;"></div>
+            <div class="confetti-dot" style="width:4px;height:4px;background:#6B5E54;left:75%;top:12%;animation-delay:0.15s;"></div>
+            <div class="confetti-dot" style="width:6px;height:6px;background:#E8E0D8;left:85%;top:6%;animation-delay:0.45s;"></div>
+            <div class="confetti-dot" style="width:5px;height:5px;background:#C8481C;left:42%;top:3%;animation-delay:0.75s;"></div>
+            <div class="confetti-dot" style="width:4px;height:4px;background:#9C8E82;left:65%;top:15%;animation-delay:0.9s;"></div>
+            <div class="confetti-dot" style="width:6px;height:6px;background:#C8481C;left:22%;top:14%;animation-delay:1.1s;"></div>
+          </div>
+
+          <!-- Collapsed chips -->
+          <div class="chips-row">
+            <span class="chip chip-analysis">&#127835; Massaman Curry &middot; 47 sources</span>
+          </div>
+          <div class="chips-row" style="flex-wrap: wrap;">
+            <span class="chip chip-answer">Diet: Nut-free</span>
+            <span class="chip chip-answer">Protein: Chicken thigh</span>
+            <span class="chip chip-answer">Time: Under 45 min</span>
+          </div>
+          <div class="chips-row">
+            <span class="chip chip-answer">Spice: Medium</span>
+            <span class="chip chip-answer">Servings: 4</span>
+          </div>
+
+          <!-- Celebration Card -->
+          <div class="celebration-card">
+            <span class="celebration-emoji">&#127881;</span>
+            <div class="celebration-title">Your Recipe is Ready</div>
+            <div class="recipe-title">Classic Massaman Curry</div>
+            <div class="recipe-summary">A rich, nut-free chicken massaman with golden potatoes and warm spices. 40 minutes, medium heat, serves 4.</div>
+            <div class="btn-group">
+              <button class="continue-btn" onclick="void(0)">View Recipe</button>
+              <button class="text-link" onclick="void(0)">Start Over</button>
+            </div>
+          </div>
+          <div class="spacer"></div>
+        </div>
+
+        <div class="bottom-nav">
+          <div class="nav-item active">
+            <div class="nav-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+            <span class="nav-label">Chat</span>
+          </div>
+          <div class="nav-item">
+            <div class="nav-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
+            <span class="nav-label">Recipes</span>
+          </div>
+          <div class="nav-item">
+            <div class="nav-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>
+            <span class="nav-label">Shopping</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="annotation">
+      <span class="dot"></span><span class="lead">Celebration Moment.</span>
+      <div class="detail">Full progress bar, confetti dots, and a pop-in card create a satisfying conclusion. All prior choices remain visible as chips. Clear primary CTA.</div>
+    </div>
+  </div>
+
+  <!-- ────────── FRAME 5: URL Preview ─────────── -->
+  <div class="frame-wrapper">
+    <div class="frame-label">Frame 5 &mdash; URL Preview</div>
+    <div class="phone-shell">
+      <div class="phone-body">
+        <div class="status-bar">
+          <span class="time">9:43</span>
+          <div class="notch"></div>
+          <div class="icons">
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><rect x="0" y="7" width="3" height="5" rx="0.5" fill="#1A1614"/><rect x="4.5" y="4.5" width="3" height="7.5" rx="0.5" fill="#1A1614"/><rect x="9" y="2" width="3" height="10" rx="0.5" fill="#1A1614"/><rect x="13.5" y="0" width="2.5" height="12" rx="0.5" fill="#1A1614" opacity="0.3"/></svg>
+            <svg width="15" height="12" viewBox="0 0 15 12" fill="none"><path d="M7.5 3.6C9.7 3.6 11.7 4.5 13.1 5.9L14.5 4.5C12.7 2.7 10.2 1.6 7.5 1.6C4.8 1.6 2.3 2.7 .5 4.5L1.9 5.9C3.3 4.5 5.3 3.6 7.5 3.6ZM7.5 7.6C8.6 7.6 9.6 8 10.3 8.7L11.7 7.3C10.6 6.2 9.1 5.6 7.5 5.6C5.9 5.6 4.4 6.2 3.3 7.3L4.7 8.7C5.4 8 6.4 7.6 7.5 7.6Z" fill="#1A1614"/><circle cx="7.5" cy="11" r="1.2" fill="#1A1614"/></svg>
+            <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0" y="1" width="21" height="10" rx="2" stroke="#1A1614" stroke-width="1"/><rect x="1.5" y="2.5" width="14" height="7" rx="1" fill="#1A1614"/><rect x="22" y="4" width="2" height="4" rx="0.5" fill="#1A1614" opacity="0.4"/></svg>
+          </div>
+        </div>
+        <div class="app-header">
+          <div class="back-btn">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <span class="logo">mise.</span>
+        </div>
+
+        <!-- No progress bar on URL flow initial screen -->
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill" style="width: 0%"></div>
+        </div>
+
+        <div class="content-area">
+          <div class="url-preview-card">
+            <div class="url-preview-image">
+              <span class="placeholder-icon">&#127836;</span>
+              <span class="source-badge"><span class="globe">&#127760;</span> seriouseats.com</span>
+            </div>
+            <div class="url-preview-body">
+              <div class="recipe-name">Pad Thai</div>
+              <div class="recipe-meta">
+                Found: <span>12 ingredients</span>, <span>45 min cook time</span><br>
+                From Serious Eats &middot; 4.8 stars &middot; 312 reviews
+              </div>
+              <div class="btn-row">
+                <button class="continue-btn" onclick="void(0)">Save &amp; Cook Now</button>
+                <button class="continue-btn secondary" onclick="void(0)">Customize</button>
+              </div>
+            </div>
+          </div>
+          <div class="spacer"></div>
+        </div>
+
+        <div class="bottom-nav">
+          <div class="nav-item active">
+            <div class="nav-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+            <span class="nav-label">Chat</span>
+          </div>
+          <div class="nav-item">
+            <div class="nav-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
+            <span class="nav-label">Recipes</span>
+          </div>
+          <div class="nav-item">
+            <div class="nav-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>
+            <span class="nav-label">Shopping</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="annotation">
+      <span class="dot"></span><span class="lead">Instant URL Recognition.</span>
+      <div class="detail">Pasted URL resolves into a rich preview card with image, metadata, and dual CTAs. Fast path ("Save &amp; Cook Now") or branch into customization flow.</div>
+    </div>
+  </div>
+
+  <!-- ────────── FRAME 6: Customize Fork ──────── -->
+  <div class="frame-wrapper">
+    <div class="frame-label">Frame 6 &mdash; Customize Fork</div>
+    <div class="phone-shell">
+      <div class="phone-body">
+        <div class="status-bar">
+          <span class="time">9:43</span>
+          <div class="notch"></div>
+          <div class="icons">
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><rect x="0" y="7" width="3" height="5" rx="0.5" fill="#1A1614"/><rect x="4.5" y="4.5" width="3" height="7.5" rx="0.5" fill="#1A1614"/><rect x="9" y="2" width="3" height="10" rx="0.5" fill="#1A1614"/><rect x="13.5" y="0" width="2.5" height="12" rx="0.5" fill="#1A1614" opacity="0.3"/></svg>
+            <svg width="15" height="12" viewBox="0 0 15 12" fill="none"><path d="M7.5 3.6C9.7 3.6 11.7 4.5 13.1 5.9L14.5 4.5C12.7 2.7 10.2 1.6 7.5 1.6C4.8 1.6 2.3 2.7 .5 4.5L1.9 5.9C3.3 4.5 5.3 3.6 7.5 3.6ZM7.5 7.6C8.6 7.6 9.6 8 10.3 8.7L11.7 7.3C10.6 6.2 9.1 5.6 7.5 5.6C5.9 5.6 4.4 6.2 3.3 7.3L4.7 8.7C5.4 8 6.4 7.6 7.5 7.6Z" fill="#1A1614"/><circle cx="7.5" cy="11" r="1.2" fill="#1A1614"/></svg>
+            <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0" y="1" width="21" height="10" rx="2" stroke="#1A1614" stroke-width="1"/><rect x="1.5" y="2.5" width="14" height="7" rx="1" fill="#1A1614"/><rect x="22" y="4" width="2" height="4" rx="0.5" fill="#1A1614" opacity="0.4"/></svg>
+          </div>
+        </div>
+        <div class="app-header">
+          <div class="back-btn">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <span class="logo">mise.</span>
+        </div>
+
+        <!-- Progress Bar: 15% -->
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill" style="width: 15%"></div>
+        </div>
+
+        <div class="content-area">
+          <!-- Analysis chip from URL -->
+          <div class="chips-row">
+            <span class="chip chip-analysis">&#127836; Pad Thai &middot; seriouseats.com</span>
+          </div>
+
+          <!-- First customization question -->
+          <div class="question-card">
+            <div class="question-text">Any dietary needs?</div>
+            <div class="question-hint">We'll adapt the original recipe to fit.</div>
+            <div class="options-grid" id="url-dietary-options">
+              <button class="option-pill selected" onclick="togglePill(this)">
+                <svg class="check-icon" viewBox="0 0 14 14" fill="none"><path d="M11.5 3.5L5.5 10L2.5 7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Nut-free
+              </button>
+              <button class="option-pill" onclick="togglePill(this)">
+                <svg class="check-icon" viewBox="0 0 14 14" fill="none"><path d="M11.5 3.5L5.5 10L2.5 7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Dairy-free
+              </button>
+              <button class="option-pill" onclick="togglePill(this)">
+                <svg class="check-icon" viewBox="0 0 14 14" fill="none"><path d="M11.5 3.5L5.5 10L2.5 7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Vegetarian
+              </button>
+              <button class="option-pill" onclick="togglePill(this)">
+                <svg class="check-icon" viewBox="0 0 14 14" fill="none"><path d="M11.5 3.5L5.5 10L2.5 7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Vegan
+              </button>
+              <button class="option-pill" onclick="togglePill(this)">
+                <svg class="check-icon" viewBox="0 0 14 14" fill="none"><path d="M11.5 3.5L5.5 10L2.5 7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Gluten-free
+              </button>
+              <button class="option-pill" onclick="togglePill(this)">
+                <svg class="check-icon" viewBox="0 0 14 14" fill="none"><path d="M11.5 3.5L5.5 10L2.5 7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Low-sodium
+              </button>
+            </div>
+            <button class="continue-btn" style="margin-top: 16px;">Continue</button>
+          </div>
+          <div class="spacer"></div>
+        </div>
+
+        <div class="bottom-nav">
+          <div class="nav-item active">
+            <div class="nav-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+            <span class="nav-label">Chat</span>
+          </div>
+          <div class="nav-item">
+            <div class="nav-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
+            <span class="nav-label">Recipes</span>
+          </div>
+          <div class="nav-item">
+            <div class="nav-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>
+            <span class="nav-label">Shopping</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="annotation">
+      <span class="dot"></span><span class="lead">Seamless Fork.</span>
+      <div class="detail">Same stacked card flow, but the analysis chip now references the pasted URL source. The user customizes an existing recipe rather than starting from scratch.</div>
+    </div>
+  </div>
+
+</div><!-- /frames-row -->
+
+<!-- ════════════════════════════════════════════ -->
+<!-- IMPLEMENTATION SPEC                          -->
+<!-- ════════════════════════════════════════════ -->
+<div class="spec-section">
+  <details>
+    <summary>Implementation Specification</summary>
+    <div class="spec-content">
+
+      <h3>1. Screen Overview</h3>
+      <ul>
+        <li><strong>Frame 1 (Analysis):</strong> Pulsing shimmer card signals active source analysis; no user input required.</li>
+        <li><strong>Frame 2 (Dietary):</strong> Analysis collapses to chip; first multi-select question card appears with pre-filled saved preference.</li>
+        <li><strong>Frame 3 (Mid-Flow Q4):</strong> Three answered chips stack above the current single-select spiciness question.</li>
+        <li><strong>Frame 4 (Recipe Ready):</strong> Full progress bar, confetti, and celebration card with primary "View Recipe" CTA.</li>
+        <li><strong>Frame 5 (URL Preview):</strong> Pasted URL resolves to rich preview card with dual action paths.</li>
+        <li><strong>Frame 6 (Customize Fork):</strong> URL-sourced recipe enters the same stacked card customization flow.</li>
+      </ul>
+
+      <h3>2. Layout Hierarchy</h3>
+<pre>PhoneShell (390x760)
+  StatusBar (h:44)
+  AppHeader (h:48)
+    BackButton
+    Logo "mise."
+  ProgressBarTrack (h:4, mx:20)
+    ProgressBarFill
+  ContentArea (flex:1, p:16 20, scroll-y)
+    AnalysisChip | AnalysisCard
+    AnswerChip[]
+    QuestionCard | CelebrationCard | URLPreviewCard
+      QuestionText
+      QuestionHint?
+      OptionsGrid
+        OptionPill[]
+      ContinueButton
+  BottomNav (h:72)
+    NavItem[] x 3</pre>
+
+      <h3>3. Component Spec Table</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Component</th>
+            <th>Font</th>
+            <th>Color</th>
+            <th>Padding</th>
+            <th>Border</th>
+            <th>Shadow</th>
+            <th>Radius</th>
+            <th>Transition</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>OptionPill</code> (default)</td>
+            <td>Inter 500, 14px</td>
+            <td>text: <code>#1A1614</code></td>
+            <td>10px 18px</td>
+            <td>1.5px solid <code>#E8E0D8</code></td>
+            <td>none</td>
+            <td><code>9999px</code></td>
+            <td>all 0.2s cubic-bezier(0.4,0,0.2,1)</td>
+          </tr>
+          <tr>
+            <td><code>OptionPill</code> (selected)</td>
+            <td>Inter 500, 14px</td>
+            <td>text: <code>#FFFFFF</code>, bg: <code>#C8481C</code></td>
+            <td>10px 18px</td>
+            <td>1.5px solid <code>#C8481C</code></td>
+            <td>none</td>
+            <td><code>9999px</code></td>
+            <td>all 0.2s cubic-bezier(0.4,0,0.2,1)</td>
+          </tr>
+          <tr>
+            <td><code>ContinueButton</code></td>
+            <td>Inter 600, 15px</td>
+            <td>text: <code>#FFF</code>, bg: <code>#C8481C</code></td>
+            <td>14px 24px</td>
+            <td>none</td>
+            <td>none (hover: shadow-md)</td>
+            <td><code>12px</code></td>
+            <td>all 0.2s ease</td>
+          </tr>
+          <tr>
+            <td><code>QuestionCard</code></td>
+            <td>&mdash;</td>
+            <td>bg: <code>#FFFFFF</code></td>
+            <td>24px</td>
+            <td>1px solid <code>#F0EAE4</code></td>
+            <td><code>shadow-md</code></td>
+            <td><code>20px</code></td>
+            <td>slideUp 0.3s ease-out</td>
+          </tr>
+          <tr>
+            <td><code>AnalysisChip</code></td>
+            <td>Inter 500, 13px</td>
+            <td>text: <code>#1A1614</code>, bg: <code>#FFF</code></td>
+            <td>6px 14px</td>
+            <td>1px solid <code>#E8E0D8</code></td>
+            <td><code>shadow-sm</code></td>
+            <td><code>9999px</code></td>
+            <td>all 0.15s ease</td>
+          </tr>
+          <tr>
+            <td><code>AnswerChip</code></td>
+            <td>Inter 500, 13px</td>
+            <td>text: <code>#6B5E54</code>, bg: transparent</td>
+            <td>6px 14px</td>
+            <td>1px solid <code>#E8E0D8</code></td>
+            <td>none</td>
+            <td><code>9999px</code></td>
+            <td>all 0.15s ease</td>
+          </tr>
+          <tr>
+            <td><code>ProgressBarFill</code></td>
+            <td>&mdash;</td>
+            <td>bg: <code>#C8481C</code></td>
+            <td>&mdash;</td>
+            <td>&mdash;</td>
+            <td>&mdash;</td>
+            <td>2px</td>
+            <td>width 0.4s cubic-bezier(0.4,0,0.2,1)</td>
+          </tr>
+          <tr>
+            <td><code>BottomNav</code></td>
+            <td>&mdash;</td>
+            <td>bg: <code>#FDFAF7</code></td>
+            <td>pb:8</td>
+            <td>top: 1px solid <code>#F0EAE4</code></td>
+            <td>none</td>
+            <td>&mdash;</td>
+            <td>&mdash;</td>
+          </tr>
+          <tr>
+            <td><code>NavItem</code> (active)</td>
+            <td>Inter 600, 10px</td>
+            <td>label: <code>#C8481C</code>, icon: <code>#C8481C</code></td>
+            <td>6px 16px</td>
+            <td>none</td>
+            <td>none</td>
+            <td><code>8px</code></td>
+            <td>all 0.15s</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>4. State Matrix</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Element</th>
+            <th>Default</th>
+            <th>Hover</th>
+            <th>Focus</th>
+            <th>Active</th>
+            <th>Disabled</th>
+            <th>Selected</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>OptionPill</code></td>
+            <td>Border <code>#E8E0D8</code>, bg transparent</td>
+            <td>Border <code>#C8481C</code>, bg rgba(200,72,28,0.04)</td>
+            <td>Border <code>#C8481C</code>, ring 3px rgba(200,72,28,0.15)</td>
+            <td>scale(0.97)</td>
+            <td>opacity 0.4, pointer-events: none</td>
+            <td>Bg <code>#C8481C</code>, border <code>#C8481C</code>, text white, checkmark visible</td>
+          </tr>
+          <tr>
+            <td><code>ContinueButton</code></td>
+            <td>Bg <code>#C8481C</code>, text white</td>
+            <td>Bg <code>#A33A16</code>, shadow-md</td>
+            <td>Ring 3px rgba(200,72,28,0.25)</td>
+            <td>scale(0.98)</td>
+            <td>opacity 0.4, pointer-events: none</td>
+            <td>&mdash;</td>
+          </tr>
+          <tr>
+            <td><code>ContinueButton.secondary</code></td>
+            <td>Bg transparent, border <code>#E8E0D8</code></td>
+            <td>Border <code>#6B5E54</code>, bg <code>#F5F0EB</code></td>
+            <td>Ring 3px rgba(200,72,28,0.15)</td>
+            <td>scale(0.98)</td>
+            <td>opacity 0.4</td>
+            <td>&mdash;</td>
+          </tr>
+          <tr>
+            <td><code>AnalysisChip</code></td>
+            <td>Border <code>#E8E0D8</code>, shadow-sm</td>
+            <td>Border <code>#C8481C</code>, shadow brand</td>
+            <td>&mdash;</td>
+            <td>&mdash;</td>
+            <td>&mdash;</td>
+            <td>&mdash;</td>
+          </tr>
+          <tr>
+            <td><code>AnswerChip</code></td>
+            <td>Border <code>#E8E0D8</code>, text <code>#6B5E54</code></td>
+            <td>Border <code>#C8481C</code>, text <code>#1A1614</code></td>
+            <td>&mdash;</td>
+            <td>&mdash;</td>
+            <td>&mdash;</td>
+            <td>&mdash;</td>
+          </tr>
+          <tr>
+            <td><code>BackButton</code></td>
+            <td>Bg transparent</td>
+            <td>Bg <code>#F5F0EB</code></td>
+            <td>&mdash;</td>
+            <td>&mdash;</td>
+            <td>&mdash;</td>
+            <td>&mdash;</td>
+          </tr>
+          <tr>
+            <td><code>NavItem</code></td>
+            <td>Label <code>#9C8E82</code></td>
+            <td>Bg <code>#F5F0EB</code></td>
+            <td>&mdash;</td>
+            <td>&mdash;</td>
+            <td>&mdash;</td>
+            <td>Label + icon <code>#C8481C</code></td>
+          </tr>
+          <tr>
+            <td><code>TextLink</code></td>
+            <td>Color <code>#9C8E82</code></td>
+            <td>Color <code>#1A1614</code></td>
+            <td>&mdash;</td>
+            <td>&mdash;</td>
+            <td>&mdash;</td>
+            <td>&mdash;</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>5. Responsive Notes</h3>
+      <ul>
+        <li>This mock targets <strong>390px mobile viewport</strong> (iPhone 14/15 logical width).</li>
+        <li>On tablet (768px+): phone shells could display in a 2-up grid; content area gains horizontal padding.</li>
+        <li>On desktop (1024px+): phone shells display in a horizontal scroll or flex row as shown here.</li>
+        <li>The actual app viewport is always 390px equivalent due to React Native / Expo rendering.</li>
+        <li>Touch targets: all option pills meet 44px minimum touch target (10px vertical padding + 14px font + line-height achieves ~44px).</li>
+      </ul>
+
+      <h3>6. What the Mock Does NOT Show</h3>
+      <ul>
+        <li><strong>Loading skeletons:</strong> Skeleton placeholders for chip collapse animation and card transitions.</li>
+        <li><strong>Offline state:</strong> Error card with retry button when network is unavailable.</li>
+        <li><strong>Keyboard navigation:</strong> Tab order through pills, Enter/Space to select, Escape to go back.</li>
+        <li><strong>Screen reader announcements:</strong> Live region updates for progress bar, question changes, and selection confirmations.</li>
+        <li><strong>Animation durations:</strong> Card slide-up 300ms ease-out, pill selection 200ms cubic-bezier, progress bar 400ms cubic-bezier, celebration pop 400ms spring.</li>
+        <li><strong>Error states:</strong> Failed analysis, network timeout, server error recovery flows.</li>
+        <li><strong>Haptic feedback:</strong> Light impact on pill selection, medium impact on "Continue", success notification on recipe ready.</li>
+        <li><strong>Chip re-open interaction:</strong> Tapping a collapsed answer chip expands it back into a full question card (reverse of collapse animation).</li>
+        <li><strong>Skip flow:</strong> "Skip" affordance on optional questions (e.g., dietary needs).</li>
+      </ul>
+
+    </div>
+  </details>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- INTERACTIVE JS                               -->
+<!-- ════════════════════════════════════════════ -->
+<script>
+  // Multi-select toggle (dietary pills)
+  function togglePill(el) {
+    el.classList.toggle('selected');
+  }
+
+  // Single-select toggle (spiciness, etc.)
+  function toggleSingle(el, groupId) {
+    var group = document.getElementById(groupId);
+    if (!group) return;
+    var pills = group.querySelectorAll('.option-pill');
+    pills.forEach(function(pill) {
+      pill.classList.remove('selected');
+    });
+    el.classList.add('selected');
+  }
+</script>
+
+</body>
+</html>

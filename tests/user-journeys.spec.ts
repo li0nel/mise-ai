@@ -1,110 +1,108 @@
 import { test, expect } from "@playwright/test";
 
 test.describe("User journeys", () => {
-  test("Freeform recipe generation + save", async ({ page }) => {
+  test("Search → builder → answer questions → recipe ready", async ({
+    page,
+  }) => {
     const errors: string[] = [];
     page.on("console", (msg) => {
       if (msg.type() === "error") errors.push(msg.text());
     });
 
     // Navigate to main
-    await page.goto("/(main)");
-    await expect(page.getByText("Ready to cook?")).toBeVisible();
+    await page.goto("/");
+    await expect(page.getByText("Find any dish.")).toBeVisible();
 
-    // Send recipe query
-    const input = page.getByPlaceholder("Ask about recipes...");
-    await input.fill("How do I make potato puree?");
-    await input.press("Enter");
+    // Select a recently searched item (stable) to enter builder flow
+    await page.getByText("Chicken curry").click();
 
-    // Verify full-recipe widget renders
-    await expect(page.getByText("Classic Potato Puree")).toBeVisible({
-      timeout: 10_000,
+    // Analyzing phase
+    await expect(page.getByText("Analyzing variations\u2026")).toBeVisible({
+      timeout: 5_000,
     });
 
-    // Verify all sections present
-    await expect(page.getByText("Ingredients")).toBeVisible();
-    await expect(page.getByText("Yukon Gold potatoes")).toBeVisible();
-    await expect(page.getByText("Steps")).toBeVisible();
-    await expect(page.getByText("Prep potatoes")).toBeVisible();
-    await expect(page.getByText("Boil until tender")).toBeVisible();
+    // Wait for analysis to complete and conversing phase to start
+    // Mock streams 11 CoT lines at 600ms intervals + 400ms transition ≈ 7s
+    await expect(page.getByText("Which protein would you like?")).toBeVisible({
+      timeout: 15_000,
+    });
 
-    // Click save button
-    const saveButton = page.getByText("Save to My Recipes");
-    await saveButton.scrollIntoViewIfNeeded();
-    await expect(saveButton).toBeVisible();
-    await saveButton.click();
+    // Answer first question by clicking a quick reply
+    await page.getByText("\uD83D\uDC04 Beef (traditional)").click();
 
-    // Verify feedback
-    await expect(page.getByText(/Saved to My Recipes/)).toBeVisible({
+    // Second question appears
+    await expect(
+      page.getByText(/slow-cook version or something quicker/),
+    ).toBeVisible({ timeout: 5_000 });
+    await page.getByText("\u26A1 Weeknight express (45 min)").click();
+
+    // Third question
+    await expect(page.getByText(/Homemade or store-bought/)).toBeVisible({
+      timeout: 5_000,
+    });
+    await page.getByText("\uD83C\uDFEA Store-bought (totally fine)").click();
+
+    // Fourth question — spice level
+    await expect(page.getByText(/How spicy do you want it/)).toBeVisible({
+      timeout: 5_000,
+    });
+    await page.getByText("\uD83C\uDF36\uFE0F\uD83C\uDF36\uFE0F Medium").click();
+
+    // Recipe ready celebration
+    await expect(page.getByText("Your recipe is ready")).toBeVisible({
+      timeout: 5_000,
+    });
+
+    // Click View Recipe
+    await page.getByText("View Recipe \u2192").click();
+
+    // Navigated to recipe detail page
+    await expect(
+      page.getByText("Weeknight Chicken Massaman Curry"),
+    ).toBeVisible({ timeout: 5_000 });
+
+    expect(errors).toHaveLength(0);
+  });
+
+  test("Recently searched item enters builder", async ({ page }) => {
+    const errors: string[] = [];
+    page.on("console", (msg) => {
+      if (msg.type() === "error") errors.push(msg.text());
+    });
+
+    await page.goto("/");
+
+    // Click a recently searched item (use exact match to avoid quick pick collision)
+    await page.getByText("Pad Thai", { exact: true }).click();
+
+    // Builder flow starts
+    await expect(page.getByText("Analyzing variations\u2026")).toBeVisible({
       timeout: 5_000,
     });
 
     expect(errors).toHaveLength(0);
   });
 
-  test("URL import journey", async ({ page }) => {
+  test("Builder analyzing phase shows CoT lines", async ({ page }) => {
     const errors: string[] = [];
     page.on("console", (msg) => {
       if (msg.type() === "error") errors.push(msg.text());
     });
 
-    await page.goto("/(main)");
-    const input = page.getByPlaceholder("Ask about recipes...");
+    await page.goto("/");
 
-    // Send URL
-    await input.fill("https://www.example.com/recipes/chicken-tikka");
-    await input.press("Enter");
+    // Enter builder via recently searched
+    await page.getByText("Chicken curry").click();
 
-    // Verify conversational response about URL
-    await expect(page.getByText(/recipe URL/).first()).toBeVisible({
-      timeout: 10_000,
+    // Analyzing phase starts
+    await expect(page.getByText("Analyzing variations\u2026")).toBeVisible({
+      timeout: 5_000,
     });
 
-    // Send follow-up to trigger recipe generation
-    await input.fill("How do I make potato puree?");
-    await input.press("Enter");
-
-    // Verify full-recipe block appears
-    await expect(page.getByText("Classic Potato Puree")).toBeVisible({
-      timeout: 10_000,
-    });
-
-    expect(errors).toHaveLength(0);
-  });
-
-  test("Quick action + refinement", async ({ page }) => {
-    const errors: string[] = [];
-    page.on("console", (msg) => {
-      if (msg.type() === "error") errors.push(msg.text());
-    });
-
-    await page.goto("/(main)");
-    const input = page.getByPlaceholder("Ask about recipes...");
-
-    // Send recipe query
-    await input.fill("How do I make potato puree?");
-    await input.press("Enter");
-
-    // Verify full-recipe renders
-    await expect(page.getByText("Classic Potato Puree")).toBeVisible({
-      timeout: 10_000,
-    });
-
-    // Verify quick-action pills render with labels + arrows
-    const variationAction = page.getByText("Show me a variation");
-    await variationAction.scrollIntoViewIfNeeded();
-    await expect(variationAction).toBeVisible();
-    await expect(page.getByText("What to serve with this?")).toBeVisible();
-
-    // Arrows visible
-    const arrows = page.getByText("\u2192");
-    await expect(arrows.first()).toBeVisible();
-
-    // Click a chat-type quick-action — verify message injected into chat
-    await variationAction.click();
+    // CoT lines stream in
     await expect(
-      page.getByText("Show me a different variation of this recipe"),
-    ).toBeVisible({ timeout: 5_000 });
+      page.getByText("Searching the web for massaman curry recipes\u2026"),
+    ).toBeVisible({ timeout: 10_000 });
 
     expect(errors).toHaveLength(0);
   });

@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
-test.describe("Chat messaging journey", () => {
-  test("empty state → empty submit blocked → send message → AI responds → input clears", async ({
+test.describe("Home screen and search journey", () => {
+  test("empty state shows branding, search bar, quick picks, and recently searched", async ({
     page,
   }) => {
     const errors: string[] = [];
@@ -9,76 +9,54 @@ test.describe("Chat messaging journey", () => {
       if (msg.type() === "error") errors.push(msg.text());
     });
 
-    await page.goto("/(main)");
+    await page.goto("/");
 
-    // Empty state visible
-    await expect(page.getByText("Ready to cook?")).toBeVisible();
-    await expect(page.getByText(/Ask me anything about recipes/)).toBeVisible();
+    // Tagline visible
+    await expect(page.getByText("Find any dish.")).toBeVisible();
+    await expect(page.getByText("Make it yours.")).toBeVisible();
 
     // App bar branding
     await expect(page.getByText("mise.")).toBeVisible();
 
-    // Chat input present with placeholder
-    const input = page.getByPlaceholder("Ask about recipes...");
-    await expect(input).toBeVisible();
+    // Search bar present
+    const searchBar = page.getByRole("textbox").first();
+    await expect(searchBar).toBeVisible();
 
-    // FAILURE MODE: empty input doesn't send
-    await input.press("Enter");
-    await expect(page.getByText("Ready to cook?")).toBeVisible();
+    // Quick picks section
+    await expect(page.getByText("Quick picks")).toBeVisible();
 
-    // Input accepts text
-    await input.fill("Hello mise");
-    await expect(input).toHaveValue("Hello mise");
+    // Recently searched items
+    await expect(page.getByText("Recently Searched")).toBeVisible();
+    await expect(page.getByText("Chicken curry")).toBeVisible();
+    await expect(page.getByText("Pasta carbonara")).toBeVisible();
+    await expect(page.getByText("Pad Thai")).toBeVisible();
 
-    // Send message
-    await input.press("Enter");
-
-    // Input clears after send
-    await expect(input).toHaveValue("");
-
-    // User bubble appears
-    await expect(page.getByText("Hello mise")).toBeVisible({
-      timeout: 5_000,
-    });
-
-    // AI responds via streaming (mock AI greeting)
-    await expect(page.getByText(/Welcome to Mise/).first()).toBeVisible({
-      timeout: 10_000,
-    });
-
-    // Empty state gone
-    await expect(page.getByText("Ready to cook?")).not.toBeVisible();
+    // Bottom navigation tabs
+    await expect(page.getByRole("tab", { name: "Home" })).toBeVisible();
+    await expect(page.getByRole("tab", { name: "My Recipes" })).toBeVisible();
+    await expect(page.getByRole("tab", { name: "Shopping" })).toBeVisible();
 
     expect(errors).toHaveLength(0);
   });
 
-  test("URL and recipe text can be sent as messages", async ({ page }) => {
+  test("search text triggers search suggestions overlay", async ({ page }) => {
     const errors: string[] = [];
     page.on("console", (msg) => {
       if (msg.type() === "error") errors.push(msg.text());
     });
 
-    await page.goto("/(main)");
-    const input = page.getByPlaceholder("Ask about recipes...");
+    await page.goto("/");
 
-    // Send a URL
-    await input.fill("https://www.example.com/recipes/chicken-tikka");
-    await input.press("Enter");
-    await expect(
-      page.getByText("https://www.example.com/recipes/chicken-tikka"),
-    ).toBeVisible({ timeout: 10_000 });
+    // Click the search bar to open suggestions overlay
+    const searchBar = page.getByRole("textbox").first();
+    await searchBar.click();
 
-    // AI responds about URL
-    await expect(page.getByText(/recipe URL/).first()).toBeVisible({
-      timeout: 10_000,
-    });
+    // Search suggestions overlay appears with its own input
+    await expect(page.getByText("Cancel")).toBeVisible({ timeout: 5_000 });
 
-    // Send recipe text
-    await input.fill("I want to cook pasta carbonara with eggs and pancetta");
-    await input.press("Enter");
-    await expect(
-      page.getByText("I want to cook pasta carbonara with eggs and pancetta"),
-    ).toBeVisible({ timeout: 5_000 });
+    // Cancel closes the overlay
+    await page.getByText("Cancel").click();
+    await expect(page.getByText("Find any dish.")).toBeVisible();
 
     expect(errors).toHaveLength(0);
   });
